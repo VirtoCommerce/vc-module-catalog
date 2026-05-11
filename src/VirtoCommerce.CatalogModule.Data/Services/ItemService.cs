@@ -218,20 +218,16 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                 .Where(x => sourcePvIds.Contains(x.Id))
                 .ToListAsync();
 
-            foreach (var existingPv in existingPvs)
+            // Cross-owner = row exists in DB but its ItemId points at a different parent than
+            // the manifest claims. Delete those so the manifest's INSERT in the same SaveChanges
+            // batch wins (true upsert semantics — manifest ownership is authoritative).
+            var crossOwnerPvs = existingPvs.Where(existingPv =>
+                sourcePvToParent.TryGetValue(existingPv.Id, out var claimedOwner) &&
+                !string.Equals(existingPv.ItemId, claimedOwner, StringComparison.OrdinalIgnoreCase));
+
+            foreach (var pv in crossOwnerPvs)
             {
-                if (!sourcePvToParent.TryGetValue(existingPv.Id, out var sourceParentId))
-                {
-                    continue;
-                }
-                // Same owner already — Patch path will handle it cleanly.
-                if (string.Equals(existingPv.ItemId, sourceParentId, StringComparison.OrdinalIgnoreCase))
-                {
-                    continue;
-                }
-                // Cross-owner row (different Item, or attached to a Category/Catalog). Delete it
-                // so the source's INSERT in the same SaveChanges batch wins.
-                repository.Remove(existingPv);
+                repository.Remove(pv);
             }
         }
 

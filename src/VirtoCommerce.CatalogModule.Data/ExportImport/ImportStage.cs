@@ -52,6 +52,12 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
     /// </summary>
     public sealed class ImportStageException : Exception
     {
+        /// <summary>
+        /// How many Ids to inline into the error message before truncating with a "…" suffix.
+        /// Keeps log lines bounded for large batches; the full id set is still on <see cref="EntityIds"/>.
+        /// </summary>
+        private const int MaxInlineIdCount = 5;
+
         public string ModuleId { get; }
         public string Stage { get; }
         public string EntityType { get; }
@@ -77,7 +83,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             {
                 0 => "<no ids>",
                 1 => $"{entityType} '{ids[0]}'",
-                _ => $"{ids.Count} {entityType}(s) [{string.Join(", ", ids.Take(5))}{(ids.Count > 5 ? ", …" : "")}]",
+                _ => $"{ids.Count} {entityType}(s) [{string.Join(", ", ids.Take(MaxInlineIdCount))}{(ids.Count > MaxInlineIdCount ? ", …" : "")}]",
             };
         }
     }
@@ -99,51 +105,70 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
         ///   <item><description><see cref="OnImportError.SkipItem"/> — retries items one-at-a-time, logs each failure, returns the count of survivors.</description></item>
         /// </list>
         /// </summary>
-        /// <returns>Number of items considered successfully saved (used to feed back into progress counters).</returns>
-        public static async Task<int> RunBatchAsync<T>(
+        /// <returns>
+        /// The list of items considered successfully saved. Under <see cref="OnImportError.SkipItem"/>,
+        /// the list excludes individual items whose per-entity retry threw. Callers MUST iterate this
+        /// list (not the original batch) when accumulating "already saved" state, otherwise failed
+        /// items get marked as saved and dropped from any later retry path.
+        /// </returns>
+        public static Task<IList<T>> RunBatchAsync<T>(
             ImportStageContext ctx,
             IList<T> batch,
             Func<IList<T>, Task> saveBatchAsync,
             Func<T, string> getId)
             where T : class
         {
+            // Parameter validation runs synchronously (S4457) — exceptions emerge from the call,
+            // not from awaiting a faulted task. The async body lives in RunBatchAsyncCore.
             ArgumentNullException.ThrowIfNull(ctx);
             ArgumentNullException.ThrowIfNull(saveBatchAsync);
             ArgumentNullException.ThrowIfNull(getId);
 
             if (batch is null || batch.Count == 0)
             {
-                return 0;
+                return Task.FromResult<IList<T>>(Array.Empty<T>());
             }
 
+            return RunBatchAsyncCore(ctx, batch, saveBatchAsync, getId);
+        }
+
+        private static async Task<IList<T>> RunBatchAsyncCore<T>(
+            ImportStageContext ctx,
+            IList<T> batch,
+            Func<IList<T>, Task> saveBatchAsync,
+            Func<T, string> getId)
+            where T : class
+        {
             try
             {
                 await saveBatchAsync(batch);
-                return batch.Count;
+                return batch;
             }
             catch (Exception ex) when (ctx.ErrorPolicy == OnImportError.SkipBatch)
             {
                 var ids = batch.Select(getId).ToList();
                 EmitError(ctx, ids, ex, outcome: $"BATCH SKIPPED ({ids.Count} item(s) not imported)");
-                return 0;
+                return Array.Empty<T>();
             }
             catch (Exception ex) when (ctx.ErrorPolicy == OnImportError.SkipItem)
             {
                 // EF rolled the whole batch back. Retry one-at-a-time to isolate failing rows.
-                var saved = 0;
+                // Only items whose individual retry succeeded are returned to the caller so the
+                // caller's "alreadySavedIds" set doesn't permanently mask failed items from retry.
+                var saved = new List<T>(batch.Count);
                 foreach (var item in batch)
                 {
                     try
                     {
                         await saveBatchAsync([item]);
-                        saved++;
+                        saved.Add(item);
                     }
                     catch (Exception itemEx)
                     {
                         EmitError(ctx, [getId(item)], itemEx, outcome: "SKIPPED");
                     }
                 }
-                if (saved == 0)
+                if (saved.Count == 0)
                 {
                     EmitError(ctx, batch.Select(getId).ToList(), ex,
                         outcome: $"BATCH SKIPPED ({batch.Count} item(s) not imported)",
@@ -158,7 +183,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
         }
 
         /// <summary>Convenience wrapper for a single-entity save.</summary>
-        public static Task<int> RunOneAsync<T>(
+        public static Task<IList<T>> RunOneAsync<T>(
             ImportStageContext ctx,
             T item,
             Func<T, Task> saveAsync,

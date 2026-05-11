@@ -105,10 +105,8 @@ public class ProductConfigurationService : CrudService<ProductConfiguration, Pro
             }
         }
 
-        foreach (var image in images)
+        foreach (var image in images.Where(i => !string.IsNullOrEmpty(i.Url)))
         {
-            if (string.IsNullOrEmpty(image.Url))
-                continue;
             image.RelativeUrl = !string.IsNullOrEmpty(image.RelativeUrl) ? image.RelativeUrl : image.Url;
             image.Url = _blobUrlResolver.GetAbsoluteUrl(image.Url);
         }

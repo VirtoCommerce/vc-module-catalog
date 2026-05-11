@@ -42,10 +42,6 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
 
         private readonly int _batchSize = 50;
 
-        // Toggle to OnImportError.SkipItem to triage a failing backup row-by-row,
-        // or OnImportError.SkipBatch to skip whole failing batches and keep going.
-        // Default Stop preserves the historical behaviour: first failure aborts the catalog
-        // module's import (other modules continue thanks to the platform's per-module catch).
         private const OnImportError ImportErrorPolicy = OnImportError.SkipItem;
 
         public CatalogExportImport(ICatalogService catalogService, ICatalogSearchService catalogSearchService, IProductSearchService productSearchService, ICategorySearchService categorySearchService, ICategoryService categoryService,
@@ -499,7 +495,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                 {
                     var saved = await ImportStage.RunBatchAsync(linksStage, categories.ToList(), items => _categoryService.SaveChangesAsync(items), x => x.Id);
 
-                    processedCount += saved;
+                    processedCount += saved.Count;
                     progressInfo.Description = $"{processedCount} of {categoryLinks.Count} category links have been imported";
                     progressCallback(progressInfo);
                 }
@@ -510,11 +506,12 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
         {
             var itemsArray = categories.ToArray();
             var saved = await ImportStage.RunBatchAsync(stage, itemsArray, items => _categoryService.SaveChangesAsync(items), c => c.Id);
-            if (saved > 0)
+            if (saved.Count > 0)
             {
-                ImportImages(itemsArray.OfType<IHasImages>().ToArray(), progressInfo);
+                // Image binaries only need to be uploaded for categories that actually persisted.
+                ImportImages(saved.OfType<IHasImages>().ToArray(), progressInfo);
             }
-            return saved;
+            return saved.Count;
         }
 
         private Task ImportPropertyGroups(JsonTextReader reader, List<PropertyGroup> propertyGroupsWithForeignKeys, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback, ICancellationToken cancellationToken)
@@ -648,13 +645,17 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                 if (parentsToSave.Count > 0)
                 {
                     var savedParents = await ImportStage.RunBatchAsync(productsStage, parentsToSave, batch => _itemService.SaveChangesAsync(batch), p => p.Id);
-                    foreach (var parent in parentsToSave)
+                    // Only mark items that actually saved as "already done". Items that failed (under
+                    // SkipItem policy) must remain eligible for retry if they appear again later in the
+                    // manifest (e.g. a variation that was nested under one parent and is also listed
+                    // standalone). Otherwise a transient failure would silently drop the row.
+                    foreach (var parent in savedParents)
                     {
                         alreadySavedIds.Add(parent.Id);
                     }
-                    if (options != null && options.HandleBinaryData && savedParents > 0)
+                    if (options != null && options.HandleBinaryData && savedParents.Count > 0)
                     {
-                        ImportImages(parentsToSave.OfType<IHasImages>().ToArray(), progressInfo);
+                        ImportImages(savedParents.OfType<IHasImages>().ToArray(), progressInfo);
                     }
                 }
 
@@ -664,13 +665,13 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                 foreach (var variationBatch in variationsToSave.Paginate(_batchSize))
                 {
                     var savedVariations = await ImportStage.RunBatchAsync(variationsStage, variationBatch.ToList(), batch => _itemService.SaveChangesAsync(batch), p => p.Id);
-                    foreach (var variation in variationBatch)
+                    foreach (var variation in savedVariations)
                     {
                         alreadySavedIds.Add(variation.Id);
                     }
-                    if (options != null && options.HandleBinaryData && savedVariations > 0)
+                    if (options != null && options.HandleBinaryData && savedVariations.Count > 0)
                     {
-                        ImportImages(variationBatch.OfType<IHasImages>().ToArray(), progressInfo);
+                        ImportImages(savedVariations.OfType<IHasImages>().ToArray(), progressInfo);
                     }
                 }
             }, processedCount =>

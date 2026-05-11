@@ -250,10 +250,6 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                 return Array.Empty<ItemEntity>();
             }
 
-            // Use breaking query EF performance concept https://docs.microsoft.com/en-us/ef/ef6/fundamentals/performance/perf-whitepaper#8-loading-related-entities
-            // TODO: propagate `cancellationToken` to the LoadAsync calls below (Properties / Links / Images
-            // / Assets / EditorialReviews / SeoInfos / Variations / Associations branches). Currently only
-            // the top-level Items query honors cancellation; the sub-collection loads still ignore it.
             var result = await Items
                 .Include(x => x.LocalizedNames)
                 .Where(x => itemIds.Contains(x.Id))
@@ -278,7 +274,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                             .Include(x => x.DictionaryItem.DictionaryItemValues)
                             .Where(x => x.ItemId == itemId)
                             .AsSplitQuery()
-                            .LoadAsync();
+                            .LoadAsync(cancellationToken);
                     }
                     else
                     {
@@ -286,40 +282,41 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                             .Include(x => x.DictionaryItem.DictionaryItemValues)
                             .Where(x => itemIds.Contains(x.ItemId))
                             .AsSplitQuery()
-                            .LoadAsync();
+                            .LoadAsync(cancellationToken);
                     }
                 }
 
                 if (itemResponseGroup.HasFlag(ItemResponseGroup.Links))
                 {
-                    await CategoryItemRelations.Where(x => itemIds.Contains(x.ItemId)).LoadAsync();
+                    await CategoryItemRelations.Where(x => itemIds.Contains(x.ItemId)).LoadAsync(cancellationToken);
                 }
 
                 if (itemResponseGroup.HasFlag(ItemResponseGroup.WithImages))
                 {
-                    await Images.Where(x => itemIds.Contains(x.ItemId)).LoadAsync();
+                    await Images.Where(x => itemIds.Contains(x.ItemId)).LoadAsync(cancellationToken);
                 }
 
                 if (itemResponseGroup.HasFlag(ItemResponseGroup.ItemAssets))
                 {
-                    await Assets.Where(x => itemIds.Contains(x.ItemId)).LoadAsync();
+                    await Assets.Where(x => itemIds.Contains(x.ItemId)).LoadAsync(cancellationToken);
                 }
 
                 if (itemResponseGroup.HasFlag(ItemResponseGroup.ItemEditorialReviews))
                 {
-                    await EditorialReviews.Where(x => itemIds.Contains(x.ItemId)).LoadAsync();
+                    await EditorialReviews.Where(x => itemIds.Contains(x.ItemId)).LoadAsync(cancellationToken);
                 }
 
                 if (itemResponseGroup.HasFlag(ItemResponseGroup.WithSeo))
                 {
-                    await SeoInfos.Where(x => itemIds.Contains(x.ItemId)).LoadAsync();
+                    await SeoInfos.Where(x => itemIds.Contains(x.ItemId)).LoadAsync(cancellationToken);
                 }
 
 #pragma warning disable CS0618 // Variations can be used here
                 if (itemResponseGroup.HasFlag(ItemResponseGroup.Variations))
 #pragma warning restore CS0618
                 {
-                    // Call GetItemByIds for variations recursively (need to measure performance and data amount first)
+                    // Recursive variation load — measure performance for very large variation graphs before
+                    // turning this on by default. Currently opted in via the deprecated `Variations` flag only.
                     IQueryable<ItemEntity> variationsQuery = Items
                         .Where(x => itemIds.Contains(x.ParentId))
                         .Include(x => x.Images)
@@ -341,14 +338,14 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                         variationsQuery = variationsQuery.Include(x => x.SeoInfos);
                     }
 
-                    await variationsQuery.AsSplitQuery().LoadAsync();
+                    await variationsQuery.AsSplitQuery().LoadAsync(cancellationToken);
                 }
 
                 if (itemResponseGroup.HasFlag(ItemResponseGroup.ItemAssociations))
                 {
                     var associations = await Associations
                         .Where(x => itemIds.Contains(x.ItemId))
-                        .ToListAsync();
+                        .ToListAsync(cancellationToken);
 
                     var associatedProductIds = associations
                         .Where(x => x.AssociatedItemId != null)
@@ -362,7 +359,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                         .Distinct()
                         .ToList();
 
-                    await GetItemByIdsAsync(associatedProductIds, (ItemResponseGroup.ItemInfo | ItemResponseGroup.ItemAssets).ToString());
+                    await GetItemByIdsAsync(associatedProductIds, (ItemResponseGroup.ItemInfo | ItemResponseGroup.ItemAssets).ToString(), cancellationToken);
                     await GetCategoriesByIdsAsync(associatedCategoryIds, (CategoryResponseGroup.Info | CategoryResponseGroup.WithImages).ToString());
                 }
 
@@ -370,14 +367,14 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                 {
                     var referencedAssociations = await Associations
                         .Where(x => itemIds.Contains(x.AssociatedItemId))
-                        .ToListAsync();
+                        .ToListAsync(cancellationToken);
 
                     var referencedProductIds = referencedAssociations
                         .Select(x => x.ItemId)
                         .Distinct()
                         .ToList();
 
-                    await GetItemByIdsAsync(referencedProductIds, nameof(ItemResponseGroup.ItemInfo));
+                    await GetItemByIdsAsync(referencedProductIds, nameof(ItemResponseGroup.ItemInfo), cancellationToken);
                 }
 
                 // Load parents
@@ -386,7 +383,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                     .Select(x => x.ParentId)
                     .ToList();
 
-                await GetItemByIdsAsync(parentIds, responseGroup);
+                await GetItemByIdsAsync(parentIds, responseGroup, cancellationToken);
             }
 
             return result;
