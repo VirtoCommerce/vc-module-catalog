@@ -87,16 +87,26 @@ public class ProductConfigurationService : CrudService<ProductConfiguration, Pro
                     images.Add(image);
                 }
             }
+
             if (configuration.Sections == null)
+            {
                 continue;
+            }
+
             foreach (var section in configuration.Sections)
             {
                 if (section.Options == null)
+                {
                     continue;
+                }
+
                 foreach (var option in section.Options)
                 {
                     if (option.Product?.Images == null)
+                    {
                         continue;
+                    }
+
                     foreach (var image in option.Product.Images)
                     {
                         images.Add(image);
