@@ -129,8 +129,8 @@ public class ItemServiceGetIdsByCodesCacheTests
             .Returns(items.BuildMockDbSet().Object);
 
         repositoryMock
-            .Setup(x => x.GetItemByIdsAsync(It.IsAny<IList<string>>(), It.IsAny<string>()))
-            .ReturnsAsync((IList<string> ids, string _) =>
+            .Setup(x => x.GetItemByIdsAsync(It.IsAny<IList<string>>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((IList<string> ids, string _, CancellationToken __) =>
             {
                 return items.Where(x => ids.Contains(x.Id)).ToList();
             });
