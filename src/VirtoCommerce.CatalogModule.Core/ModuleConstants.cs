@@ -10,6 +10,8 @@ namespace VirtoCommerce.CatalogModule.Core
     [ExcludeFromCodeCoverage]
     public static class ModuleConstants
     {
+        public const string ModuleId = "VirtoCommerce.Catalog";
+
         public const string ConfigurationSectionTypeProduct = "Product";
         public const string ConfigurationSectionTypeVariation = "Variation";
         public const string ConfigurationSectionTypeText = "Text";

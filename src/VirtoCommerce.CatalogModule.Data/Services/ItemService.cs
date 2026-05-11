@@ -143,6 +143,98 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             return ((ICatalogRepository)repository).GetItemByIdsAsync(ids, responseGroup);
         }
 
+        // Override the existence-check load used by SaveChangesAsync only. Two changes vs. base:
+        //
+        // 1. Exclude `Variations` from the response group. Loading a parent's variations into the
+        //    same EF tracker creates relationship-fixup races (sub-rows like Images/PropertyValues
+        //    re-attributed between parent and variation as Patch's Add/Remove paths fire), which
+        //    surface as `DbUpdateConcurrencyException` ("expected 1 row, got 0") on commit. Each
+        //    variation is upserted separately as its own batch by the catalog importer (see
+        //    ImportProductsAsync's per-parent variation save loop), so the parent's save doesn't
+        //    need them tracked here.
+        //
+        // 2. Resolve cross-owner PropertyValue collisions. When the manifest references a PV Id
+        //    that already exists in DB under a different owner (different Item, or under a
+        //    Category/Catalog), the default save path takes the `Added` branch and INSERTs,
+        //    hitting a PK violation. We pre-emptively `Remove` the cross-owner row; EF batches
+        //    DELETE-before-INSERT within one SaveChanges so the source's INSERT proceeds cleanly.
+        //    Net effect: the manifest's ownership wins (upsert semantics).
+        //
+        // Reads (`GetByIds…`) keep their existing full ItemLarge path because they go through a
+        // different load path (`GetOrLoadEntities` via `_platformMemoryCache`).
+        protected override async Task<IList<ItemEntity>> LoadExistingEntities(IRepository repository, IList<CatalogProduct> models)
+        {
+            var ids = models?.Where(x => !x.IsTransient()).Select(x => x.Id).ToList() ?? new List<string>();
+            if (ids.Count == 0)
+            {
+                return Array.Empty<ItemEntity>();
+            }
+
+#pragma warning disable CS0618 // ItemResponseGroup.Variations is referenced here only to *exclude* it.
+            var saveResponseGroup = (ItemResponseGroup.Full & ~ItemResponseGroup.Variations).ToString();
+#pragma warning restore CS0618
+            var existingEntities = await ((ICatalogRepository)repository).GetItemByIdsAsync(ids, saveResponseGroup);
+
+            await ResolveCrossOwnerPropertyValueCollisionsAsync(repository, models);
+
+            return existingEntities;
+        }
+
+        private static async Task ResolveCrossOwnerPropertyValueCollisionsAsync(IRepository repository, IList<CatalogProduct> models)
+        {
+            // Map: source PV Id -> source product Id (the parent the manifest claims for it).
+            var sourcePvToParent = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            foreach (var product in models)
+            {
+                if (product?.Properties == null || string.IsNullOrEmpty(product.Id))
+                {
+                    continue;
+                }
+                foreach (var prop in product.Properties)
+                {
+                    if (prop?.Values == null)
+                    {
+                        continue;
+                    }
+                    foreach (var pv in prop.Values)
+                    {
+                        if (!string.IsNullOrEmpty(pv?.Id))
+                        {
+                            sourcePvToParent[pv.Id] = product.Id;
+                        }
+                    }
+                }
+            }
+
+            if (sourcePvToParent.Count == 0)
+            {
+                return;
+            }
+
+            var catalogRepo = (ICatalogRepository)repository;
+            var sourcePvIds = sourcePvToParent.Keys.ToList();
+
+            var existingPvs = await catalogRepo.PropertyValues
+                .Where(x => sourcePvIds.Contains(x.Id))
+                .ToListAsync();
+
+            foreach (var existingPv in existingPvs)
+            {
+                if (!sourcePvToParent.TryGetValue(existingPv.Id, out var sourceParentId))
+                {
+                    continue;
+                }
+                // Same owner already — Patch path will handle it cleanly.
+                if (string.Equals(existingPv.ItemId, sourceParentId, StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+                // Cross-owner row (different Item, or attached to a Category/Catalog). Delete it
+                // so the source's INSERT in the same SaveChanges batch wins.
+                repository.Remove(existingPv);
+            }
+        }
+
         protected override IQueryable<ItemEntity> GetEntitiesQuery(IRepository repository)
         {
             return ((ICatalogRepository)repository).Items;

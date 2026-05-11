@@ -68,6 +68,10 @@ public class ProductConfigurationOptionEntity : AuditableEntity, IDataEntity<Pro
 
     public virtual void Patch(ProductConfigurationOptionEntity target)
     {
+        ArgumentNullException.ThrowIfNull(target);
+
+        target.SectionId = SectionId;
+        target.ProductId = ProductId;
         target.Quantity = Quantity;
         target.Text = Text;
     }
