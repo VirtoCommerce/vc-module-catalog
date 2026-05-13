@@ -10,12 +10,6 @@ namespace VirtoCommerce.CatalogModule.Data.MySql.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<int>(
-                name: "MaxLength",
-                table: "ProductConfigurationSection",
-                type: "int",
-                nullable: true);
-
             migrationBuilder.AddColumn<bool>(
                 name: "IsDefault",
                 table: "ProductConfigurationOption",
@@ -27,10 +21,6 @@ namespace VirtoCommerce.CatalogModule.Data.MySql.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "MaxLength",
-                table: "ProductConfigurationSection");
-
             migrationBuilder.DropColumn(
                 name: "IsDefault",
                 table: "ProductConfigurationOption");

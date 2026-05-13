@@ -12,7 +12,7 @@ using VirtoCommerce.CatalogModule.Data.Repositories;
 namespace VirtoCommerce.CatalogModule.Data.PostgreSql.Migrations
 {
     [DbContext(typeof(CatalogDbContext))]
-    [Migration("20260504024049_AddProductConfigurationOptionDefault")]
+    [Migration("20260513110001_AddProductConfigurationOptionDefault")]
     partial class AddProductConfigurationOptionDefault
     {
         /// <inheritdoc />
@@ -2024,7 +2024,8 @@ namespace VirtoCommerce.CatalogModule.Data.PostgreSql.Migrations
 
                     b.HasOne("VirtoCommerce.CatalogModule.Data.Model.ProductConfigurationSectionEntity", "DependsOnSection")
                         .WithMany()
-                        .HasForeignKey("DependsOnSectionId");
+                        .HasForeignKey("DependsOnSectionId")
+                        .OnDelete(DeleteBehavior.ClientSetNull);
 
                     b.Navigation("Configuration");
 

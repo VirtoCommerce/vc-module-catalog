@@ -2021,7 +2021,8 @@ namespace VirtoCommerce.CatalogModule.Data.MySql.Migrations
 
                     b.HasOne("VirtoCommerce.CatalogModule.Data.Model.ProductConfigurationSectionEntity", "DependsOnSection")
                         .WithMany()
-                        .HasForeignKey("DependsOnSectionId");
+                        .HasForeignKey("DependsOnSectionId")
+                        .OnDelete(DeleteBehavior.ClientSetNull);
 
                     b.Navigation("Configuration");
 
