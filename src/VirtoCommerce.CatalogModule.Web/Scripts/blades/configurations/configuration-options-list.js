@@ -77,6 +77,17 @@ angular.module('virtoCommerce.catalogModule')
                 deleteList([data]);
             };
 
+            $scope.toggleDefaultOption = function (item) {
+                blade.setDefaultOption(item, item.isDefault);
+            };
+
+            blade.setDefaultOption = function (item, shouldSetAsDefault) {
+                _.each(blade.sectionEntity.options, function (option) {
+                    option.isDefault = shouldSetAsDefault && option === item;
+                    syncOptionDetailBlade(option);
+                });
+            };
+
             function deleteList(list) {
                 bladeNavigationService.closeChildrenBlades(blade,
                     function () {
@@ -92,6 +103,20 @@ angular.module('virtoCommerce.catalogModule')
             function canAddOptions() {
                 return blade.sectionEntity.type === 'Product' ||
                     blade.sectionEntity.type === 'Text' && blade.sectionEntity.allowPredefinedOptions;
+            }
+
+            function syncOptionDetailBlade(option) {
+                angular.forEach(blade.childrenBlades || [], function (childBlade) {
+                    if (childBlade.origEntity !== option) {
+                        return;
+                    }
+
+                    childBlade.origEntity.isDefault = option.isDefault;
+
+                    if (childBlade.currentEntity) {
+                        childBlade.currentEntity.isDefault = option.isDefault;
+                    }
+                });
             }
 
             function openOptionAddBlade() {

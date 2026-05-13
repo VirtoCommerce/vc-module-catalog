@@ -10,6 +10,15 @@
                    placeholder="{{ 'catalog.blades.option-details.placeholders.quantity' | translate }}">
           </div>
         </div>
+        <div class="form-group">
+          <label class="form-label">{{ 'catalog.blades.option-details.labels.default' | translate }}</label>
+          <div class="form-input">
+            <label class="form-label __switch">
+              <input type="checkbox" ng-model="blade.currentEntity.isDefault" />
+              <span class="switch"></span>
+            </label>
+          </div>
+        </div>
       </form>
     </div>
   </div>
