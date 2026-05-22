@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using VirtoCommerce.AssetsModule.Core.Assets;
@@ -69,195 +70,213 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             _propertyGroupSearchService = propertyGroupSearchService;
         }
 
-        public async Task DoExportAsync(Stream outStream, ExportImportOptions options, Action<ExportImportProgressInfo> progressCallback, ICancellationToken cancellationToken)
+        public async Task DoExportAsync(Stream outStream, ExportImportOptions options, Action<ExportImportProgressInfo> progressCallback, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
             var progressInfo = new ExportImportProgressInfo { Description = "loading data..." };
             progressCallback(progressInfo);
 
-            using (var sw = new StreamWriter(outStream))
-            using (var writer = new JsonTextWriter(sw))
+            using var sw = new StreamWriter(outStream);
+            using var writer = new JsonTextWriter(sw);
+            await writer.WriteStartObjectAsync(cancellationToken);
+
+            #region Export propertyGroups
+
+            progressInfo.Description = "Property groups exporting...";
+            progressCallback(progressInfo);
+
+            await writer.WritePropertyNameAsync("PropertyGroups", cancellationToken);
+#pragma warning disable VC0014
+            await writer.SerializeArrayWithPagingAsync(_jsonSerializer, _batchSize, async (skip, take) =>
             {
-                await writer.WriteStartObjectAsync();
-
-                #region Export propertyGroups
-
-                progressInfo.Description = "Property groups exporting...";
-                progressCallback(progressInfo);
-
-                await writer.WritePropertyNameAsync("PropertyGroups");
-                await writer.SerializeArrayWithPagingAsync(_jsonSerializer, _batchSize, async (skip, take) =>
-                {
-                    var searchResult = await _propertyGroupSearchService.SearchAsync(new PropertyGroupSearchCriteria { Skip = skip, Take = take });
-                    return (GenericSearchResult<PropertyGroup>)searchResult;
-                }
-                , (processedCount, totalCount) =>
-                {
-                    progressInfo.Description = $"{processedCount} of {totalCount} property groups have been exported";
-                    progressCallback(progressInfo);
-                }, cancellationToken);
-
-                #endregion Export propertyGroups
-
-                #region Export properties
-
-                progressInfo.Description = "Properties exporting...";
-                progressCallback(progressInfo);
-
-                await writer.WritePropertyNameAsync("Properties");
-                await writer.SerializeArrayWithPagingAsync(_jsonSerializer, _batchSize, async (skip, take) =>
-                {
-                    var searchResult = await _propertySearchService.SearchPropertiesAsync(new PropertySearchCriteria { Skip = skip, Take = take });
-                    foreach (var item in searchResult.Results)
-                    {
-                        ResetRedundantReferences(item);
-                    }
-                    return (GenericSearchResult<Property>)searchResult;
-                }
-                , (processedCount, totalCount) =>
-                {
-                    progressInfo.Description = $"{processedCount} of {totalCount} properties have been exported";
-                    progressCallback(progressInfo);
-                }, cancellationToken);
-
-                #endregion Export properties
-
-                #region Export propertyDictionaryItems
-
-                progressInfo.Description = "PropertyDictionaryItems exporting...";
-                progressCallback(progressInfo);
-
-                await writer.WritePropertyNameAsync("PropertyDictionaryItems");
-                await writer.SerializeArrayWithPagingAsync(_jsonSerializer, _batchSize, async (skip, take) =>
-                    (GenericSearchResult<PropertyDictionaryItem>)await _propertyDictionarySearchService.SearchAsync(new PropertyDictionaryItemSearchCriteria { Skip = skip, Take = take }, clone: true)
-                , (processedCount, totalCount) =>
-                {
-                    progressInfo.Description = $"{processedCount} of {totalCount} property dictionary items have been exported";
-                    progressCallback(progressInfo);
-                }, cancellationToken);
-
-                #endregion Export propertyDictionaryItems
-
-                #region Export catalogs
-
-                progressInfo.Description = "Catalogs exporting...";
-                progressCallback(progressInfo);
-
-                await writer.WritePropertyNameAsync("Catalogs");
-                await writer.SerializeArrayWithPagingAsync(_jsonSerializer, _batchSize, async (skip, take) =>
-                    (GenericSearchResult<Catalog>)await _catalogSearchService.SearchNoCloneAsync(new CatalogSearchCriteria { Skip = skip, Take = take })
-                , (processedCount, totalCount) =>
-                {
-                    progressInfo.Description = $"{processedCount} of {totalCount} catalogs have been exported";
-                    progressCallback(progressInfo);
-                }, cancellationToken);
-
-                #endregion Export catalogs
-
-                #region Export categories
-
-                progressInfo.Description = "Categories exporting...";
-                progressCallback(progressInfo);
-
-                await writer.WritePropertyNameAsync("Categories");
-                await writer.SerializeArrayWithPagingAsync(_jsonSerializer, _batchSize, async (skip, take) =>
-                {
-                    var searchResult = await _categorySearchService.SearchAsync(new CategorySearchCriteria { Skip = skip, Take = take });
-                    LoadImages(searchResult.Results.OfType<IHasImages>().ToArray(), progressInfo, options.HandleBinaryData);
-                    foreach (var item in searchResult.Results)
-                    {
-                        ResetRedundantReferences(item);
-                    }
-
-                    return (GenericSearchResult<Category>)searchResult;
-                }, (processedCount, totalCount) =>
-                {
-                    progressInfo.Description = $"{processedCount} of {totalCount} categories have been exported";
-                    progressCallback(progressInfo);
-                }, cancellationToken);
-
-                #endregion Export categories
-
-                #region Export products
-
-                progressInfo.Description = "Products exporting...";
-                progressCallback(progressInfo);
-
-                await writer.WritePropertyNameAsync("Products");
-                await writer.SerializeArrayWithPagingAsync(_jsonSerializer, _batchSize, async (skip, take) =>
-                {
-                    var searchResult = await _productSearchService.SearchAsync(new ProductSearchCriteria { Skip = skip, Take = take, ResponseGroup = ItemResponseGroup.Full.ToString() });
-                    LoadImages(searchResult.Results.OfType<IHasImages>().ToArray(), progressInfo, options.HandleBinaryData);
-                    foreach (var item in searchResult.Results)
-                    {
-                        ResetRedundantReferences(item);
-                    }
-                    return (GenericSearchResult<CatalogProduct>)searchResult;
-                }, (processedCount, totalCount) =>
-                {
-                    progressInfo.Description = $"{processedCount} of {totalCount} products have been exported";
-                    progressCallback(progressInfo);
-                }, cancellationToken);
-
-                #endregion Export products
-
-                #region Export product configurations
-
-                progressInfo.Description = "Product configurations exporting...";
-                progressCallback(progressInfo);
-
-                await writer.WritePropertyNameAsync("ProductConfigurations");
-                await writer.SerializeArrayWithPagingAsync(_jsonSerializer, _batchSize, async (skip, take) =>
-                {
-                    var searchCriteria = AbstractTypeFactory<ProductConfigurationSearchCriteria>.TryCreateInstance();
-                    searchCriteria.Skip = skip;
-                    searchCriteria.Take = take;
-                    var searchResult = await _configurationSearchService.SearchAsync(searchCriteria);
-
-                    foreach (var item in searchResult.Results)
-                    {
-                        ResetRedundantReferences(item);
-                    }
-
-                    return (GenericSearchResult<ProductConfiguration>)searchResult;
-                }, (processedCount, totalCount) =>
-                {
-                    progressInfo.Description = $"{processedCount} of {totalCount} product configurations have been exported";
-                    progressCallback(progressInfo);
-                }, cancellationToken);
-
-                #endregion Export products
-
-                #region Export measures
-
-                progressInfo.Description = "Measures exporting...";
-                progressCallback(progressInfo);
-
-                await writer.WritePropertyNameAsync("Measures");
-                await writer.SerializeArrayWithPagingAsync(_jsonSerializer, _batchSize, async (skip, take) =>
-                {
-                    var searchResult = await _measureSearchService.SearchAsync(new MeasureSearchCriteria { Skip = skip, Take = take, ResponseGroup = ItemResponseGroup.Full.ToString() });
-
-                    foreach (var item in searchResult.Results)
-                    {
-                        ResetRedundantReferences(item);
-                    }
-
-                    return (GenericSearchResult<Measure>)searchResult;
-                }, (processedCount, totalCount) =>
-                {
-                    progressInfo.Description = $"{processedCount} of {totalCount} measures have been exported";
-                    progressCallback(progressInfo);
-                }, cancellationToken);
-
-                #endregion Export measures
-
-                await writer.WriteEndObjectAsync();
-                await writer.FlushAsync();
+                var searchResult = await _propertyGroupSearchService.SearchAsync(new PropertyGroupSearchCriteria { Skip = skip, Take = take });
+                return (GenericSearchResult<PropertyGroup>)searchResult;
             }
+            , (processedCount, totalCount) =>
+            {
+                progressInfo.Description = $"{processedCount} of {totalCount} property groups have been exported";
+                progressCallback(progressInfo);
+            }, new CancellationTokenWrapper(cancellationToken));
+#pragma warning restore VC0014
+
+            #endregion Export propertyGroups
+
+            #region Export properties
+
+            progressInfo.Description = "Properties exporting...";
+            progressCallback(progressInfo);
+
+            await writer.WritePropertyNameAsync("Properties", cancellationToken);
+#pragma warning disable VC0014
+            await writer.SerializeArrayWithPagingAsync(_jsonSerializer, _batchSize, async (skip, take) =>
+            {
+                var searchResult = await _propertySearchService.SearchPropertiesAsync(new PropertySearchCriteria { Skip = skip, Take = take });
+                foreach (var item in searchResult.Results)
+                {
+                    ResetRedundantReferences(item);
+                }
+                return (GenericSearchResult<Property>)searchResult;
+            }
+            , (processedCount, totalCount) =>
+            {
+                progressInfo.Description = $"{processedCount} of {totalCount} properties have been exported";
+                progressCallback(progressInfo);
+            }, new CancellationTokenWrapper(cancellationToken));
+#pragma warning restore VC0014
+
+            #endregion Export properties
+
+            #region Export propertyDictionaryItems
+
+            progressInfo.Description = "PropertyDictionaryItems exporting...";
+            progressCallback(progressInfo);
+
+            await writer.WritePropertyNameAsync("PropertyDictionaryItems", cancellationToken);
+#pragma warning disable VC0014
+            await writer.SerializeArrayWithPagingAsync(_jsonSerializer, _batchSize, async (skip, take) =>
+                (GenericSearchResult<PropertyDictionaryItem>)await _propertyDictionarySearchService.SearchAsync(new PropertyDictionaryItemSearchCriteria { Skip = skip, Take = take }, clone: true)
+            , (processedCount, totalCount) =>
+            {
+                progressInfo.Description = $"{processedCount} of {totalCount} property dictionary items have been exported";
+                progressCallback(progressInfo);
+            }, new CancellationTokenWrapper(cancellationToken));
+#pragma warning restore VC0014
+
+            #endregion Export propertyDictionaryItems
+
+            #region Export catalogs
+
+            progressInfo.Description = "Catalogs exporting...";
+            progressCallback(progressInfo);
+
+            await writer.WritePropertyNameAsync("Catalogs", cancellationToken);
+#pragma warning disable VC0014
+            await writer.SerializeArrayWithPagingAsync(_jsonSerializer, _batchSize, async (skip, take) =>
+                (GenericSearchResult<Catalog>)await _catalogSearchService.SearchNoCloneAsync(new CatalogSearchCriteria { Skip = skip, Take = take })
+            , (processedCount, totalCount) =>
+            {
+                progressInfo.Description = $"{processedCount} of {totalCount} catalogs have been exported";
+                progressCallback(progressInfo);
+            }, new CancellationTokenWrapper(cancellationToken));
+#pragma warning restore VC0014
+
+            #endregion Export catalogs
+
+            #region Export categories
+
+            progressInfo.Description = "Categories exporting...";
+            progressCallback(progressInfo);
+
+            await writer.WritePropertyNameAsync("Categories", cancellationToken);
+#pragma warning disable VC0014
+            await writer.SerializeArrayWithPagingAsync(_jsonSerializer, _batchSize, async (skip, take) =>
+            {
+                var searchResult = await _categorySearchService.SearchAsync(new CategorySearchCriteria { Skip = skip, Take = take });
+                LoadImages(searchResult.Results.OfType<IHasImages>().ToArray(), progressInfo, options.HandleBinaryData);
+                foreach (var item in searchResult.Results)
+                {
+                    ResetRedundantReferences(item);
+                }
+
+                return (GenericSearchResult<Category>)searchResult;
+            }, (processedCount, totalCount) =>
+            {
+                progressInfo.Description = $"{processedCount} of {totalCount} categories have been exported";
+                progressCallback(progressInfo);
+            }, new CancellationTokenWrapper(cancellationToken));
+#pragma warning restore VC0014
+
+            #endregion Export categories
+
+            #region Export products
+
+            progressInfo.Description = "Products exporting...";
+            progressCallback(progressInfo);
+
+            await writer.WritePropertyNameAsync("Products", cancellationToken);
+#pragma warning disable VC0014
+            await writer.SerializeArrayWithPagingAsync(_jsonSerializer, _batchSize, async (skip, take) =>
+            {
+                var searchResult = await _productSearchService.SearchAsync(new ProductSearchCriteria { Skip = skip, Take = take, ResponseGroup = ItemResponseGroup.Full.ToString() });
+                LoadImages(searchResult.Results.OfType<IHasImages>().ToArray(), progressInfo, options.HandleBinaryData);
+                foreach (var item in searchResult.Results)
+                {
+                    ResetRedundantReferences(item);
+                }
+                return (GenericSearchResult<CatalogProduct>)searchResult;
+            }, (processedCount, totalCount) =>
+            {
+                progressInfo.Description = $"{processedCount} of {totalCount} products have been exported";
+                progressCallback(progressInfo);
+            }, new CancellationTokenWrapper(cancellationToken));
+#pragma warning restore VC0014
+
+            #endregion Export products
+
+            #region Export product configurations
+
+            progressInfo.Description = "Product configurations exporting...";
+            progressCallback(progressInfo);
+
+            await writer.WritePropertyNameAsync("ProductConfigurations", cancellationToken);
+#pragma warning disable VC0014
+            await writer.SerializeArrayWithPagingAsync(_jsonSerializer, _batchSize, async (skip, take) =>
+            {
+                var searchCriteria = AbstractTypeFactory<ProductConfigurationSearchCriteria>.TryCreateInstance();
+                searchCriteria.Skip = skip;
+                searchCriteria.Take = take;
+                var searchResult = await _configurationSearchService.SearchAsync(searchCriteria);
+
+                foreach (var item in searchResult.Results)
+                {
+                    ResetRedundantReferences(item);
+                }
+
+                return (GenericSearchResult<ProductConfiguration>)searchResult;
+            }, (processedCount, totalCount) =>
+            {
+                progressInfo.Description = $"{processedCount} of {totalCount} product configurations have been exported";
+                progressCallback(progressInfo);
+            }, new CancellationTokenWrapper(cancellationToken));
+#pragma warning restore VC0014
+
+            #endregion Export products
+
+            #region Export measures
+
+            progressInfo.Description = "Measures exporting...";
+            progressCallback(progressInfo);
+
+            await writer.WritePropertyNameAsync("Measures", cancellationToken);
+#pragma warning disable VC0014
+            await writer.SerializeArrayWithPagingAsync(_jsonSerializer, _batchSize, async (skip, take) =>
+            {
+                var searchResult = await _measureSearchService.SearchAsync(new MeasureSearchCriteria { Skip = skip, Take = take, ResponseGroup = ItemResponseGroup.Full.ToString() });
+
+                foreach (var item in searchResult.Results)
+                {
+                    ResetRedundantReferences(item);
+                }
+
+                return (GenericSearchResult<Measure>)searchResult;
+            }, (processedCount, totalCount) =>
+            {
+                progressInfo.Description = $"{processedCount} of {totalCount} measures have been exported";
+                progressCallback(progressInfo);
+            }, new CancellationTokenWrapper(cancellationToken));
+#pragma warning restore VC0014
+
+            #endregion Export measures
+
+            await writer.WriteEndObjectAsync(cancellationToken);
+            await writer.FlushAsync(cancellationToken);
         }
 
-        public async Task DoImportAsync(Stream inputStream, ExportImportOptions options, Action<ExportImportProgressInfo> progressCallback, ICancellationToken cancellationToken)
+        [Obsolete("Use the cancellation-aware overload instead.", DiagnosticId = "VC0014", UrlFormat = "https://docs.virtocommerce.org/products/products-virto3-versions")]
+        public Task DoExportAsync(Stream outStream, ExportImportOptions options, Action<ExportImportProgressInfo> progressCallback, ICancellationToken cancellationToken)
+            => DoExportAsync(outStream, options, progressCallback, CancellationToken.None);
+
+        public async Task DoImportAsync(Stream inputStream, ExportImportOptions options, Action<ExportImportProgressInfo> progressCallback, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -269,7 +288,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             using (var streamReader = new StreamReader(inputStream))
             using (var reader = new JsonTextReader(streamReader))
             {
-                while (await reader.ReadAsync())
+                while (await reader.ReadAsync(cancellationToken))
                 {
                     if (reader.TokenType != JsonToken.PropertyName)
                     {
@@ -339,42 +358,46 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             }
         }
 
-        private Task ImportCatalogsAsync(JsonTextReader reader, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback, ICancellationToken cancellationToken)
+        [Obsolete("Use the cancellation-aware overload instead.", DiagnosticId = "VC0014", UrlFormat = "https://docs.virtocommerce.org/products/products-virto3-versions")]
+        public Task DoImportAsync(Stream inputStream, ExportImportOptions options, Action<ExportImportProgressInfo> progressCallback, ICancellationToken cancellationToken)
+            => DoImportAsync(inputStream, options, progressCallback, CancellationToken.None);
+
+        private Task ImportCatalogsAsync(JsonTextReader reader, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback, CancellationToken cancellationToken)
         {
             return reader.DeserializeArrayWithPagingAsync<Catalog>(_jsonSerializer, _batchSize, async catalogs =>
+            {
+                foreach (var catalog in catalogs)
                 {
-                    foreach (var catalog in catalogs)
+                    // Do not import property groups, they are imported separately
+                    catalog.PropertyGroups = null;
+
+                    if (catalog.SeoInfos == null || !catalog.SeoInfos.Any())
                     {
-                        // Do not import property groups, they are imported separately
-                        catalog.PropertyGroups = null;
-
-                        if (catalog.SeoInfos == null || !catalog.SeoInfos.Any())
-                        {
-                            var defaultLanguage = catalog.Languages.First(x => x.IsDefault).LanguageCode;
-                            var seoInfo = AbstractTypeFactory<SeoInfo>.TryCreateInstance();
-                            seoInfo.LanguageCode = defaultLanguage;
-                            seoInfo.SemanticUrl = "catalog";
-                            seoInfo.PageTitle = "Catalog";
-                            catalog.SeoInfos = [seoInfo];
-                        }
-
-                        foreach (var seoInfo in catalog.SeoInfos)
-                        {
-                            seoInfo.SemanticUrl ??= "catalog";
-                            seoInfo.PageTitle ??= "Catalog";
-                        }
+                        var defaultLanguage = catalog.Languages.First(x => x.IsDefault).LanguageCode;
+                        var seoInfo = AbstractTypeFactory<SeoInfo>.TryCreateInstance();
+                        seoInfo.LanguageCode = defaultLanguage;
+                        seoInfo.SemanticUrl = "catalog";
+                        seoInfo.PageTitle = "Catalog";
+                        catalog.SeoInfos = [seoInfo];
                     }
 
-                    await _catalogService.SaveChangesAsync(catalogs);
-                },
+                    foreach (var seoInfo in catalog.SeoInfos)
+                    {
+                        seoInfo.SemanticUrl ??= "catalog";
+                        seoInfo.PageTitle ??= "Catalog";
+                    }
+                }
+
+                await _catalogService.SaveChangesAsync(catalogs);
+            },
                 processedCount =>
                 {
                     progressInfo.Description = $"{processedCount} catalogs have been imported";
                     progressCallback(progressInfo);
-                }, cancellationToken);
+                }, new CancellationTokenWrapper(cancellationToken));
         }
 
-        private async Task ImportCategoriesAsync(JsonTextReader reader, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback, ICancellationToken cancellationToken)
+        private async Task ImportCategoriesAsync(JsonTextReader reader, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback, CancellationToken cancellationToken)
         {
             var processedCount = 0;
             var categoriesByHierarchyLevel = new Dictionary<int, IList<Category>>();
@@ -439,7 +462,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             {
                 progressInfo.Description = $"{processedCount} categories have been imported";
                 progressCallback(progressInfo);
-            }, cancellationToken);
+            }, new CancellationTokenWrapper(cancellationToken));
 
             // save hierarchy level 1+ categories
             foreach (var categories in categoriesByHierarchyLevel.OrderBy(x => x.Key))
@@ -490,7 +513,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             return itemsArray.Length;
         }
 
-        private Task ImportPropertyGroups(JsonTextReader reader, List<PropertyGroup> propertyGroupsWithForeignKeys, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback, ICancellationToken cancellationToken)
+        private Task ImportPropertyGroups(JsonTextReader reader, List<PropertyGroup> propertyGroupsWithForeignKeys, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback, CancellationToken cancellationToken)
         {
             return reader.DeserializeArrayWithPagingAsync<PropertyGroup>(_jsonSerializer, _batchSize, async items =>
             {
@@ -508,10 +531,10 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             {
                 progressInfo.Description = $"{processedCount} property groups have been imported";
                 progressCallback(progressInfo);
-            }, cancellationToken);
+            }, new CancellationTokenWrapper(cancellationToken));
         }
 
-        private Task ImportPropertiesAsync(JsonTextReader reader, List<Property> propertiesWithForeignKeys, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback, ICancellationToken cancellationToken)
+        private Task ImportPropertiesAsync(JsonTextReader reader, List<Property> propertiesWithForeignKeys, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback, CancellationToken cancellationToken)
         {
             return reader.DeserializeArrayWithPagingAsync<Property>(_jsonSerializer, _batchSize, async items =>
             {
@@ -530,19 +553,19 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             {
                 progressInfo.Description = $"{processedCount} properties have been imported";
                 progressCallback(progressInfo);
-            }, cancellationToken);
+            }, new CancellationTokenWrapper(cancellationToken));
         }
 
-        private Task ImportPropertyDictionaryItemsAsync(JsonTextReader reader, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback, ICancellationToken cancellationToken)
+        private Task ImportPropertyDictionaryItemsAsync(JsonTextReader reader, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback, CancellationToken cancellationToken)
         {
             return reader.DeserializeArrayWithPagingAsync<PropertyDictionaryItem>(_jsonSerializer, _batchSize, items => _propertyDictionaryService.SaveChangesAsync(items), processedCount =>
             {
                 progressInfo.Description = $"{processedCount} property dictionary items have been imported";
                 progressCallback(progressInfo);
-            }, cancellationToken);
+            }, new CancellationTokenWrapper(cancellationToken));
         }
 
-        private async Task ImportProductsAsync(JsonTextReader reader, ExportImportOptions options, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback, ICancellationToken cancellationToken)
+        private async Task ImportProductsAsync(JsonTextReader reader, ExportImportOptions options, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback, CancellationToken cancellationToken)
         {
             var associationBackupMap = new Dictionary<string, IList<ProductAssociation>>();
 
@@ -572,7 +595,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             {
                 progressInfo.Description = $"{processedCount} products have been imported";
                 progressCallback(progressInfo);
-            }, cancellationToken);
+            }, new CancellationTokenWrapper(cancellationToken));
 
             //Import products associations separately to avoid DB constrain violation
             var totalProductsWithAssociationsCount = associationBackupMap.Count;
@@ -592,7 +615,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                 progressCallback(progressInfo);
             }
         }
-        private Task ImportProductConfigurationsAsync(JsonTextReader reader, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback, ICancellationToken cancellationToken)
+        private Task ImportProductConfigurationsAsync(JsonTextReader reader, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback, CancellationToken cancellationToken)
         {
             return reader.DeserializeArrayWithPagingAsync<ProductConfiguration>(_jsonSerializer, _batchSize, async configurations =>
             {
@@ -610,10 +633,10 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             {
                 progressInfo.Description = $"{processedCount} product configurations have been imported";
                 progressCallback(progressInfo);
-            }, cancellationToken);
+            }, new CancellationTokenWrapper(cancellationToken));
         }
 
-        private Task ImportMeasuresAsync(JsonTextReader reader, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback, ICancellationToken cancellationToken)
+        private Task ImportMeasuresAsync(JsonTextReader reader, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback, CancellationToken cancellationToken)
         {
             return reader.DeserializeArrayWithPagingAsync<Measure>(_jsonSerializer, _batchSize, async measures =>
             {
@@ -622,7 +645,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             {
                 progressInfo.Description = $"{processedCount} measures have been imported";
                 progressCallback(progressInfo);
-            }, cancellationToken);
+            }, new CancellationTokenWrapper(cancellationToken));
         }
 
         //Remove redundant references to reduce resulting JSON size
@@ -732,10 +755,8 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                 {
                     try
                     {
-                        using (var stream = _blobStorageProvider.OpenRead(image.Url))
-                        {
-                            image.BinaryData = stream.ReadFully();
-                        }
+                        using var stream = _blobStorageProvider.OpenRead(image.Url);
+                        image.BinaryData = stream.ReadFully();
                     }
                     catch (Exception ex)
                     {
@@ -757,11 +778,9 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                     //do not save images with external url
                     if (!string.IsNullOrEmpty(url))
                     {
-                        using (var sourceStream = new MemoryStream(image.BinaryData))
-                        using (var targetStream = _blobStorageProvider.OpenWrite(image.Url))
-                        {
-                            sourceStream.CopyTo(targetStream);
-                        }
+                        using var sourceStream = new MemoryStream(image.BinaryData);
+                        using var targetStream = _blobStorageProvider.OpenWrite(image.Url);
+                        sourceStream.CopyTo(targetStream);
                     }
                 }
                 catch (Exception ex)
