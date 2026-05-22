@@ -28,6 +28,38 @@ public static class SearchServiceExtensions
     public static Task<IList<ListEntryBase>> SearchAllAsync(this IInternalListEntrySearchService searchService, CatalogListEntrySearchCriteria searchCriteria, ICancellationToken cancellationToken)
         => searchService.SearchAllAsync(searchCriteria, CancellationToken.None);
 
+    public static async Task<IList<ListEntryBase>> SearchAllAsync(this IListEntrySearchService searchService, CatalogListEntrySearchCriteria searchCriteria, CancellationToken cancellationToken)
+    {
+        var result = new List<ListEntryBase>();
+
+        await foreach (var searchResult in searchService.SearchBatchesAsync(searchCriteria, cancellationToken))
+        {
+            result.AddRange(searchResult.Results);
+        }
+
+        return result;
+    }
+
+    [Obsolete("Use the cancellation-aware overload instead.", DiagnosticId = "VC0014", UrlFormat = "https://docs.virtocommerce.org/products/products-virto3-versions")]
+    public static Task<IList<ListEntryBase>> SearchAllAsync(this IListEntrySearchService searchService, CatalogListEntrySearchCriteria searchCriteria, ICancellationToken cancellationToken)
+        => searchService.SearchAllAsync(searchCriteria, CancellationToken.None);
+
+    public static async Task<IList<CategoryLink>> SearchAllAsync(this ILinkSearchService searchService, LinkSearchCriteria searchCriteria, CancellationToken cancellationToken)
+    {
+        var result = new List<CategoryLink>();
+
+        await foreach (var searchResult in searchService.SearchBatchesAsync(searchCriteria, cancellationToken))
+        {
+            result.AddRange(searchResult.Results);
+        }
+
+        return result;
+    }
+
+    [Obsolete("Use the cancellation-aware overload instead.", DiagnosticId = "VC0014", UrlFormat = "https://docs.virtocommerce.org/products/products-virto3-versions")]
+    public static Task<IList<CategoryLink>> SearchAllAsync(this ILinkSearchService searchService, LinkSearchCriteria searchCriteria, ICancellationToken cancellationToken)
+        => searchService.SearchAllAsync(searchCriteria, CancellationToken.None);
+
     public static async IAsyncEnumerable<ListEntrySearchResult> SearchBatchesAsync(this IInternalListEntrySearchService searchService, CatalogListEntrySearchCriteria searchCriteria, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
         int totalCount;
@@ -59,22 +91,6 @@ public static class SearchServiceExtensions
     public static IAsyncEnumerable<ListEntrySearchResult> SearchBatchesAsync(this IInternalListEntrySearchService searchService, CatalogListEntrySearchCriteria searchCriteria, ICancellationToken cancellationToken)
         => searchService.SearchBatchesAsync(searchCriteria, CancellationToken.None);
 
-    public static async Task<IList<ListEntryBase>> SearchAllAsync(this IListEntrySearchService searchService, CatalogListEntrySearchCriteria searchCriteria, CancellationToken cancellationToken)
-    {
-        var result = new List<ListEntryBase>();
-
-        await foreach (var searchResult in searchService.SearchBatchesAsync(searchCriteria, cancellationToken))
-        {
-            result.AddRange(searchResult.Results);
-        }
-
-        return result;
-    }
-
-    [Obsolete("Use the cancellation-aware overload instead.", DiagnosticId = "VC0014", UrlFormat = "https://docs.virtocommerce.org/products/products-virto3-versions")]
-    public static Task<IList<ListEntryBase>> SearchAllAsync(this IListEntrySearchService searchService, CatalogListEntrySearchCriteria searchCriteria, ICancellationToken cancellationToken)
-        => searchService.SearchAllAsync(searchCriteria, CancellationToken.None);
-
     public static async IAsyncEnumerable<ListEntrySearchResult> SearchBatchesAsync(this IListEntrySearchService searchService, CatalogListEntrySearchCriteria searchCriteria, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
         int totalCount;
@@ -105,23 +121,6 @@ public static class SearchServiceExtensions
     [Obsolete("Use the cancellation-aware overload instead.", DiagnosticId = "VC0014", UrlFormat = "https://docs.virtocommerce.org/products/products-virto3-versions")]
     public static IAsyncEnumerable<ListEntrySearchResult> SearchBatchesAsync(this IListEntrySearchService searchService, CatalogListEntrySearchCriteria searchCriteria, ICancellationToken cancellationToken)
         => searchService.SearchBatchesAsync(searchCriteria, CancellationToken.None);
-
-
-    public static async Task<IList<CategoryLink>> SearchAllAsync(this ILinkSearchService searchService, LinkSearchCriteria searchCriteria, CancellationToken cancellationToken)
-    {
-        var result = new List<CategoryLink>();
-
-        await foreach (var searchResult in searchService.SearchBatchesAsync(searchCriteria, cancellationToken))
-        {
-            result.AddRange(searchResult.Results);
-        }
-
-        return result;
-    }
-
-    [Obsolete("Use the cancellation-aware overload instead.", DiagnosticId = "VC0014", UrlFormat = "https://docs.virtocommerce.org/products/products-virto3-versions")]
-    public static Task<IList<CategoryLink>> SearchAllAsync(this ILinkSearchService searchService, LinkSearchCriteria searchCriteria, ICancellationToken cancellationToken)
-        => searchService.SearchAllAsync(searchCriteria, CancellationToken.None);
 
     public static async IAsyncEnumerable<LinkSearchResult> SearchBatchesAsync(this ILinkSearchService searchService, LinkSearchCriteria searchCriteria, [EnumeratorCancellation] CancellationToken cancellationToken)
     {

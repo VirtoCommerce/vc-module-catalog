@@ -93,6 +93,10 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             await writer.FlushAsync(cancellationToken);
         }
 
+        [Obsolete("Use the cancellation-aware overload instead.", DiagnosticId = "VC0014", UrlFormat = "https://docs.virtocommerce.org/products/products-virto3-versions")]
+        public Task DoExportAsync(Stream outStream, ExportImportOptions options, Action<ExportImportProgressInfo> progressCallback, ICancellationToken cancellationToken)
+            => DoExportAsync(outStream, options, progressCallback, CancellationToken.None);
+
         private async Task ExportPropertyGroupsAsync(JsonTextWriter writer, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback, CancellationToken cancellationToken)
         {
             progressInfo.Description = "Property groups exporting...";
@@ -273,10 +277,6 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
 #pragma warning restore VC0014
         }
 
-        [Obsolete("Use the cancellation-aware overload instead.", DiagnosticId = "VC0014", UrlFormat = "https://docs.virtocommerce.org/products/products-virto3-versions")]
-        public Task DoExportAsync(Stream outStream, ExportImportOptions options, Action<ExportImportProgressInfo> progressCallback, ICancellationToken cancellationToken)
-            => DoExportAsync(outStream, options, progressCallback, CancellationToken.None);
-
         public async Task DoImportAsync(Stream inputStream, ExportImportOptions options, Action<ExportImportProgressInfo> progressCallback, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -313,6 +313,10 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             await UpdatePropertyAssociationsAsync(propertiesWithForeignKeys, progressInfo, progressCallback);
             await UpdatePropertyGroupAssociationsAsync(propertyGroupsWithForeignKeys, progressInfo, progressCallback);
         }
+
+        [Obsolete("Use the cancellation-aware overload instead.", DiagnosticId = "VC0014", UrlFormat = "https://docs.virtocommerce.org/products/products-virto3-versions")]
+        public Task DoImportAsync(Stream inputStream, ExportImportOptions options, Action<ExportImportProgressInfo> progressCallback, ICancellationToken cancellationToken)
+            => DoImportAsync(inputStream, options, progressCallback, CancellationToken.None);
 
         private async Task UpdatePropertyAssociationsAsync(List<Property> propertiesWithForeignKeys, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback)
         {
@@ -351,10 +355,6 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                 progressCallback(progressInfo);
             }
         }
-
-        [Obsolete("Use the cancellation-aware overload instead.", DiagnosticId = "VC0014", UrlFormat = "https://docs.virtocommerce.org/products/products-virto3-versions")]
-        public Task DoImportAsync(Stream inputStream, ExportImportOptions options, Action<ExportImportProgressInfo> progressCallback, ICancellationToken cancellationToken)
-            => DoImportAsync(inputStream, options, progressCallback, CancellationToken.None);
 
         private Task ImportCatalogsAsync(JsonTextReader reader, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback, CancellationToken cancellationToken)
         {
