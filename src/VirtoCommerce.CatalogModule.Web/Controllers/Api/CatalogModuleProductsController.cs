@@ -410,7 +410,68 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             return NoContent();
         }
 
-        private async Task<CatalogProduct[]> InnerSaveProducts(CatalogProduct[] products)
+        /// <summary>
+        /// Partial update for multiple products. Each patch document must contain a replace /id operation to identify the target product.
+        /// </summary>
+        /// <param name="patchDocuments">Array of JsonPatchDocument objects, each with a replace /id operation</param>
+        [HttpPatch]
+        [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
+        public async Task<ActionResult> BulkPatchProducts([FromBody] JsonPatchDocument<CatalogProduct>[] patchDocuments)
+        {
+            if (patchDocuments == null || patchDocuments.Length == 0)
+            {
+                return BadRequest();
+            }
+
+            var products = new List<CatalogProduct>();
+
+            foreach (var patchDocument in patchDocuments)
+            {
+                var idOperation = patchDocument.Operations
+                    .FirstOrDefault(x => string.Equals(x.path, "/id", StringComparison.OrdinalIgnoreCase)
+                                      && string.Equals(x.op, "replace", StringComparison.OrdinalIgnoreCase));
+
+                var id = idOperation?.value?.ToString();
+                if (string.IsNullOrEmpty(id))
+                {
+                    return BadRequest("Each patch document must contain a replace /id operation.");
+                }
+
+                var product = await itemsService.GetByIdAsync(id);
+                if (product == null)
+                {
+                    return NotFound();
+                }
+
+                var authorizationResult = await authorizationService.AuthorizeAsync(User, product, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.Update));
+                if (!authorizationResult.Succeeded)
+                {
+                    return Forbid();
+                }
+
+                var customPropertyResult = await authorizationService.AuthorizeAsync(User, product, new CustomPropertyRequirement());
+                if (!customPropertyResult.Succeeded)
+                {
+                    return Forbid();
+                }
+
+                patchDocument.Operations.Remove(idOperation);
+                patchDocument.ApplyTo(product, ModelState);
+
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                products.Add(product);
+            }
+
+            await InnerSaveProducts([.. products]);
+
+            return NoContent();
+        }
+
+        private async Task<CatalogProduct[]> InnerSaveProducts(CatalogProduct[] products, HashSet<string> existingProductIds = null)
         {
             var toSaveList = new List<CatalogProduct>();
             var catalogs = await catalogService.GetNoCloneAsync(products.Select(pr => pr.CatalogId).Distinct().ToList());
