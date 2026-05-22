@@ -80,8 +80,21 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             using var writer = new JsonTextWriter(sw);
             await writer.WriteStartObjectAsync(cancellationToken);
 
-            #region Export propertyGroups
+            await ExportPropertyGroupsAsync(writer, progressInfo, progressCallback, cancellationToken);
+            await ExportPropertiesAsync(writer, progressInfo, progressCallback, cancellationToken);
+            await ExportPropertyDictionaryItemsAsync(writer, progressInfo, progressCallback, cancellationToken);
+            await ExportCatalogsAsync(writer, progressInfo, progressCallback, cancellationToken);
+            await ExportCategoriesAsync(writer, options, progressInfo, progressCallback, cancellationToken);
+            await ExportProductsAsync(writer, options, progressInfo, progressCallback, cancellationToken);
+            await ExportProductConfigurationsAsync(writer, progressInfo, progressCallback, cancellationToken);
+            await ExportMeasuresAsync(writer, progressInfo, progressCallback, cancellationToken);
 
+            await writer.WriteEndObjectAsync(cancellationToken);
+            await writer.FlushAsync(cancellationToken);
+        }
+
+        private async Task ExportPropertyGroupsAsync(JsonTextWriter writer, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback, CancellationToken cancellationToken)
+        {
             progressInfo.Description = "Property groups exporting...";
             progressCallback(progressInfo);
 
@@ -98,11 +111,10 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                 progressCallback(progressInfo);
             }, new CancellationTokenWrapper(cancellationToken));
 #pragma warning restore VC0014
+        }
 
-            #endregion Export propertyGroups
-
-            #region Export properties
-
+        private async Task ExportPropertiesAsync(JsonTextWriter writer, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback, CancellationToken cancellationToken)
+        {
             progressInfo.Description = "Properties exporting...";
             progressCallback(progressInfo);
 
@@ -123,11 +135,10 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                 progressCallback(progressInfo);
             }, new CancellationTokenWrapper(cancellationToken));
 #pragma warning restore VC0014
+        }
 
-            #endregion Export properties
-
-            #region Export propertyDictionaryItems
-
+        private async Task ExportPropertyDictionaryItemsAsync(JsonTextWriter writer, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback, CancellationToken cancellationToken)
+        {
             progressInfo.Description = "PropertyDictionaryItems exporting...";
             progressCallback(progressInfo);
 
@@ -141,11 +152,10 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                 progressCallback(progressInfo);
             }, new CancellationTokenWrapper(cancellationToken));
 #pragma warning restore VC0014
+        }
 
-            #endregion Export propertyDictionaryItems
-
-            #region Export catalogs
-
+        private async Task ExportCatalogsAsync(JsonTextWriter writer, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback, CancellationToken cancellationToken)
+        {
             progressInfo.Description = "Catalogs exporting...";
             progressCallback(progressInfo);
 
@@ -159,11 +169,10 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                 progressCallback(progressInfo);
             }, new CancellationTokenWrapper(cancellationToken));
 #pragma warning restore VC0014
+        }
 
-            #endregion Export catalogs
-
-            #region Export categories
-
+        private async Task ExportCategoriesAsync(JsonTextWriter writer, ExportImportOptions options, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback, CancellationToken cancellationToken)
+        {
             progressInfo.Description = "Categories exporting...";
             progressCallback(progressInfo);
 
@@ -185,11 +194,10 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                 progressCallback(progressInfo);
             }, new CancellationTokenWrapper(cancellationToken));
 #pragma warning restore VC0014
+        }
 
-            #endregion Export categories
-
-            #region Export products
-
+        private async Task ExportProductsAsync(JsonTextWriter writer, ExportImportOptions options, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback, CancellationToken cancellationToken)
+        {
             progressInfo.Description = "Products exporting...";
             progressCallback(progressInfo);
 
@@ -210,11 +218,10 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                 progressCallback(progressInfo);
             }, new CancellationTokenWrapper(cancellationToken));
 #pragma warning restore VC0014
+        }
 
-            #endregion Export products
-
-            #region Export product configurations
-
+        private async Task ExportProductConfigurationsAsync(JsonTextWriter writer, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback, CancellationToken cancellationToken)
+        {
             progressInfo.Description = "Product configurations exporting...";
             progressCallback(progressInfo);
 
@@ -239,11 +246,10 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                 progressCallback(progressInfo);
             }, new CancellationTokenWrapper(cancellationToken));
 #pragma warning restore VC0014
+        }
 
-            #endregion Export products
-
-            #region Export measures
-
+        private async Task ExportMeasuresAsync(JsonTextWriter writer, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback, CancellationToken cancellationToken)
+        {
             progressInfo.Description = "Measures exporting...";
             progressCallback(progressInfo);
 
@@ -265,11 +271,6 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                 progressCallback(progressInfo);
             }, new CancellationTokenWrapper(cancellationToken));
 #pragma warning restore VC0014
-
-            #endregion Export measures
-
-            await writer.WriteEndObjectAsync(cancellationToken);
-            await writer.FlushAsync(cancellationToken);
         }
 
         [Obsolete("Use the cancellation-aware overload instead.", DiagnosticId = "VC0014", UrlFormat = "https://docs.virtocommerce.org/products/products-virto3-versions")]
@@ -285,76 +286,69 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             var propertyGroupsWithForeignKeys = new List<PropertyGroup>();
             var propertiesWithForeignKeys = new List<Property>();
 
-            using (var streamReader = new StreamReader(inputStream))
-            using (var reader = new JsonTextReader(streamReader))
-            {
-                while (await reader.ReadAsync(cancellationToken))
-                {
-                    if (reader.TokenType != JsonToken.PropertyName)
-                    {
-                        continue;
-                    }
+            using var streamReader = new StreamReader(inputStream);
+            using var reader = new JsonTextReader(streamReader);
 
-                    switch (reader.Value.ToString())
-                    {
-                        case "PropertyGroups":
-                            await ImportPropertyGroups(reader, propertyGroupsWithForeignKeys, progressInfo, progressCallback, cancellationToken);
-                            break;
-                        case "Properties":
-                            await ImportPropertiesAsync(reader, propertiesWithForeignKeys, progressInfo, progressCallback, cancellationToken);
-                            break;
-                        case "PropertyDictionaryItems":
-                            await ImportPropertyDictionaryItemsAsync(reader, progressInfo, progressCallback, cancellationToken);
-                            break;
-                        case "Catalogs":
-                            await ImportCatalogsAsync(reader, progressInfo, progressCallback, cancellationToken);
-                            break;
-                        case "Categories":
-                            await ImportCategoriesAsync(reader, progressInfo, progressCallback, cancellationToken);
-                            break;
-                        case "Products":
-                            await ImportProductsAsync(reader, options, progressInfo, progressCallback, cancellationToken);
-                            break;
-                        case "ProductConfigurations":
-                            await ImportProductConfigurationsAsync(reader, progressInfo, progressCallback, cancellationToken);
-                            break;
-                        case "Measures":
-                            await ImportMeasuresAsync(reader, progressInfo, progressCallback, cancellationToken);
-                            break;
-                        default:
-                            continue;
-                    }
+            var handlers = new Dictionary<string, Func<Task>>
+            {
+                ["PropertyGroups"] = () => ImportPropertyGroups(reader, propertyGroupsWithForeignKeys, progressInfo, progressCallback, cancellationToken),
+                ["Properties"] = () => ImportPropertiesAsync(reader, propertiesWithForeignKeys, progressInfo, progressCallback, cancellationToken),
+                ["PropertyDictionaryItems"] = () => ImportPropertyDictionaryItemsAsync(reader, progressInfo, progressCallback, cancellationToken),
+                ["Catalogs"] = () => ImportCatalogsAsync(reader, progressInfo, progressCallback, cancellationToken),
+                ["Categories"] = () => ImportCategoriesAsync(reader, progressInfo, progressCallback, cancellationToken),
+                ["Products"] = () => ImportProductsAsync(reader, options, progressInfo, progressCallback, cancellationToken),
+                ["ProductConfigurations"] = () => ImportProductConfigurationsAsync(reader, progressInfo, progressCallback, cancellationToken),
+                ["Measures"] = () => ImportMeasuresAsync(reader, progressInfo, progressCallback, cancellationToken),
+            };
+
+            while (await reader.ReadAsync(cancellationToken))
+            {
+                if (reader.TokenType == JsonToken.PropertyName &&
+                    handlers.TryGetValue(reader.Value.ToString(), out var handler))
+                {
+                    await handler();
                 }
             }
 
-            //Update property associations after all required data are saved (Catalogs and Categories)
-            if (propertiesWithForeignKeys.Count > 0)
-            {
-                progressInfo.Description = $"Updating {propertiesWithForeignKeys.Count} property associations…";
-                progressCallback(progressInfo);
+            await UpdatePropertyAssociationsAsync(propertiesWithForeignKeys, progressInfo, progressCallback);
+            await UpdatePropertyGroupAssociationsAsync(propertyGroupsWithForeignKeys, progressInfo, progressCallback);
+        }
 
-                var totalCount = propertiesWithForeignKeys.Count;
-                for (var i = 0; i < totalCount; i += _batchSize)
-                {
-                    await _propertyService.SaveChangesAsync(propertiesWithForeignKeys.Skip(i).Take(_batchSize).ToArray());
-                    progressInfo.Description = $"{Math.Min(totalCount, i + _batchSize)} of {totalCount} property associations updated.";
-                    progressCallback(progressInfo);
-                }
+        private async Task UpdatePropertyAssociationsAsync(List<Property> propertiesWithForeignKeys, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback)
+        {
+            if (propertiesWithForeignKeys.Count == 0)
+            {
+                return;
             }
 
-            //Update property group associations after all required data are saved (Catalogs and Categories)
-            if (propertyGroupsWithForeignKeys.Count > 0)
-            {
-                progressInfo.Description = $"Updating {propertyGroupsWithForeignKeys.Count} property group associations…";
-                progressCallback(progressInfo);
+            progressInfo.Description = $"Updating {propertiesWithForeignKeys.Count} property associations…";
+            progressCallback(progressInfo);
 
-                var totalCount = propertyGroupsWithForeignKeys.Count;
-                for (var i = 0; i < totalCount; i += _batchSize)
-                {
-                    await _propertyGroupService.SaveChangesAsync(propertyGroupsWithForeignKeys.Skip(i).Take(_batchSize).ToArray());
-                    progressInfo.Description = $"{Math.Min(totalCount, i + _batchSize)} of {totalCount} property group associations updated.";
-                    progressCallback(progressInfo);
-                }
+            var totalCount = propertiesWithForeignKeys.Count;
+            for (var i = 0; i < totalCount; i += _batchSize)
+            {
+                await _propertyService.SaveChangesAsync(propertiesWithForeignKeys.Skip(i).Take(_batchSize).ToArray());
+                progressInfo.Description = $"{Math.Min(totalCount, i + _batchSize)} of {totalCount} property associations updated.";
+                progressCallback(progressInfo);
+            }
+        }
+
+        private async Task UpdatePropertyGroupAssociationsAsync(List<PropertyGroup> propertyGroupsWithForeignKeys, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback)
+        {
+            if (propertyGroupsWithForeignKeys.Count == 0)
+            {
+                return;
+            }
+
+            progressInfo.Description = $"Updating {propertyGroupsWithForeignKeys.Count} property group associations…";
+            progressCallback(progressInfo);
+
+            var totalCount = propertyGroupsWithForeignKeys.Count;
+            for (var i = 0; i < totalCount; i += _batchSize)
+            {
+                await _propertyGroupService.SaveChangesAsync(propertyGroupsWithForeignKeys.Skip(i).Take(_batchSize).ToArray());
+                progressInfo.Description = $"{Math.Min(totalCount, i + _batchSize)} of {totalCount} property group associations updated.";
+                progressCallback(progressInfo);
             }
         }
 
@@ -403,67 +397,92 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             var categoriesByHierarchyLevel = new Dictionary<int, IList<Category>>();
             var categoryLinks = new List<CategoryLink>();
 
+#pragma warning disable VC0014
             await reader.DeserializeArrayWithPagingAsync<Category>(_jsonSerializer, _batchSize, async items =>
             {
-                var categories = new List<Category>();
-
-                foreach (var category in items)
-                {
-                    var slugUrl = category.Name.GenerateSlug();
-
-                    if (category.SeoInfos.IsNullOrEmpty() && !string.IsNullOrEmpty(slugUrl))
-                    {
-                        var catalog = await _catalogService.GetNoCloneAsync(category.CatalogId);
-                        var defaultLanguage = catalog?.Languages.First(x => x.IsDefault).LanguageCode;
-                        var seoInfo = AbstractTypeFactory<SeoInfo>.TryCreateInstance();
-                        seoInfo.LanguageCode = defaultLanguage;
-                        seoInfo.SemanticUrl = slugUrl;
-                        seoInfo.PageTitle = category.Name.SoftTruncate(ModuleConstants.MaxSEOTitleLength);
-                        category.SeoInfos = [seoInfo];
-                    }
-
-                    foreach (var seoInfo in category.SeoInfos)
-                    {
-                        if (string.IsNullOrEmpty(seoInfo.SemanticUrl) && !string.IsNullOrEmpty(slugUrl))
-                        {
-                            seoInfo.SemanticUrl = slugUrl;
-                        }
-                        seoInfo.PageTitle ??= category.Name.SoftTruncate(ModuleConstants.MaxSEOTitleLength);
-                    }
-
-                    // clear category links (to save later)
-                    foreach (var link in category.Links.Where(x => x.EntryId == null))
-                    {
-                        link.ListEntryId = category.Id;
-                    }
-
-                    categoryLinks.AddRange(category.Links);
-                    category.Links = [];
-
-                    if (category.Level > 0)
-                    {
-                        if (!categoriesByHierarchyLevel.TryGetValue(category.Level, out var levelCategories))
-                        {
-                            levelCategories = [];
-                            categoriesByHierarchyLevel.Add(category.Level, levelCategories);
-                        }
-
-                        levelCategories.Add(category);
-                    }
-                    else
-                    {
-                        categories.Add(category);
-                    }
-                }
-
-                // save hierarchy level 0 (root) categories
-                processedCount += await SaveCategories(categories, progressInfo);
+                processedCount += await ProcessCategoryBatchAsync(items, categoriesByHierarchyLevel, categoryLinks, progressInfo);
             }, _ =>
             {
                 progressInfo.Description = $"{processedCount} categories have been imported";
                 progressCallback(progressInfo);
             }, new CancellationTokenWrapper(cancellationToken));
+#pragma warning restore VC0014
 
+            processedCount = await SaveCategoriesByHierarchyAsync(categoriesByHierarchyLevel, processedCount, progressInfo, progressCallback);
+            await SaveCategoryLinksAsync(categoryLinks, progressInfo, progressCallback);
+        }
+
+        private async Task<int> ProcessCategoryBatchAsync(IList<Category> items, Dictionary<int, IList<Category>> categoriesByHierarchyLevel, List<CategoryLink> categoryLinks, ExportImportProgressInfo progressInfo)
+        {
+            var rootCategories = new List<Category>();
+
+            foreach (var category in items)
+            {
+                await SetupCategorySeoAsync(category);
+                CollectCategoryLinks(category, categoryLinks);
+                ClassifyCategory(category, categoriesByHierarchyLevel, rootCategories);
+            }
+
+            return await SaveCategories(rootCategories, progressInfo);
+        }
+
+        private async Task SetupCategorySeoAsync(Category category)
+        {
+            var slugUrl = category.Name.GenerateSlug();
+
+            if (category.SeoInfos.IsNullOrEmpty() && !string.IsNullOrEmpty(slugUrl))
+            {
+                var catalog = await _catalogService.GetNoCloneAsync(category.CatalogId);
+                var defaultLanguage = catalog?.Languages.First(x => x.IsDefault).LanguageCode;
+                var seoInfo = AbstractTypeFactory<SeoInfo>.TryCreateInstance();
+                seoInfo.LanguageCode = defaultLanguage;
+                seoInfo.SemanticUrl = slugUrl;
+                seoInfo.PageTitle = category.Name.SoftTruncate(ModuleConstants.MaxSEOTitleLength);
+                category.SeoInfos = [seoInfo];
+            }
+
+            foreach (var seoInfo in category.SeoInfos)
+            {
+                if (string.IsNullOrEmpty(seoInfo.SemanticUrl) && !string.IsNullOrEmpty(slugUrl))
+                {
+                    seoInfo.SemanticUrl = slugUrl;
+                }
+                seoInfo.PageTitle ??= category.Name.SoftTruncate(ModuleConstants.MaxSEOTitleLength);
+            }
+        }
+
+        private static void CollectCategoryLinks(Category category, List<CategoryLink> categoryLinks)
+        {
+            // clear category links (to save later)
+            foreach (var link in category.Links.Where(x => x.EntryId == null))
+            {
+                link.ListEntryId = category.Id;
+            }
+
+            categoryLinks.AddRange(category.Links);
+            category.Links = [];
+        }
+
+        private static void ClassifyCategory(Category category, Dictionary<int, IList<Category>> categoriesByHierarchyLevel, List<Category> rootCategories)
+        {
+            if (category.Level > 0)
+            {
+                if (!categoriesByHierarchyLevel.TryGetValue(category.Level, out var levelCategories))
+                {
+                    levelCategories = [];
+                    categoriesByHierarchyLevel.Add(category.Level, levelCategories);
+                }
+
+                levelCategories.Add(category);
+            }
+            else
+            {
+                rootCategories.Add(category);
+            }
+        }
+
+        private async Task<int> SaveCategoriesByHierarchyAsync(Dictionary<int, IList<Category>> categoriesByHierarchyLevel, int processedCount, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback)
+        {
             // save hierarchy level 1+ categories
             foreach (var categories in categoriesByHierarchyLevel.OrderBy(x => x.Key))
             {
@@ -475,9 +494,13 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                     progressCallback(progressInfo);
                 }
             }
+            return processedCount;
+        }
 
+        private async Task SaveCategoryLinksAsync(List<CategoryLink> categoryLinks, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback)
+        {
             // save category links separately after all categories are saved, to avoid DB constraint violation
-            processedCount = 0;
+            var processedCount = 0;
 
             foreach (var page in categoryLinks.Paginate(_batchSize))
             {
