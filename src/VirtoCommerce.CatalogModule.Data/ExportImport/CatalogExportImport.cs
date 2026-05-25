@@ -103,7 +103,6 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             progressCallback(progressInfo);
 
             await writer.WritePropertyNameAsync("PropertyGroups", cancellationToken);
-#pragma warning disable VC0014
             await writer.SerializeArrayWithPagingAsync(_jsonSerializer, _batchSize, async (skip, take) =>
             {
                 var searchResult = await _propertyGroupSearchService.SearchAsync(new PropertyGroupSearchCriteria { Skip = skip, Take = take });
@@ -113,8 +112,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             {
                 progressInfo.Description = $"{processedCount} of {totalCount} property groups have been exported";
                 progressCallback(progressInfo);
-            }, new CancellationTokenWrapper(cancellationToken));
-#pragma warning restore VC0014
+            }, cancellationToken);
         }
 
         private async Task ExportPropertiesAsync(JsonTextWriter writer, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback, CancellationToken cancellationToken)
@@ -123,7 +121,6 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             progressCallback(progressInfo);
 
             await writer.WritePropertyNameAsync("Properties", cancellationToken);
-#pragma warning disable VC0014
             await writer.SerializeArrayWithPagingAsync(_jsonSerializer, _batchSize, async (skip, take) =>
             {
                 var searchResult = await _propertySearchService.SearchPropertiesAsync(new PropertySearchCriteria { Skip = skip, Take = take });
@@ -137,8 +134,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             {
                 progressInfo.Description = $"{processedCount} of {totalCount} properties have been exported";
                 progressCallback(progressInfo);
-            }, new CancellationTokenWrapper(cancellationToken));
-#pragma warning restore VC0014
+            }, cancellationToken);
         }
 
         private async Task ExportPropertyDictionaryItemsAsync(JsonTextWriter writer, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback, CancellationToken cancellationToken)
@@ -147,15 +143,13 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             progressCallback(progressInfo);
 
             await writer.WritePropertyNameAsync("PropertyDictionaryItems", cancellationToken);
-#pragma warning disable VC0014
             await writer.SerializeArrayWithPagingAsync(_jsonSerializer, _batchSize, async (skip, take) =>
                 (GenericSearchResult<PropertyDictionaryItem>)await _propertyDictionarySearchService.SearchAsync(new PropertyDictionaryItemSearchCriteria { Skip = skip, Take = take }, clone: true)
             , (processedCount, totalCount) =>
             {
                 progressInfo.Description = $"{processedCount} of {totalCount} property dictionary items have been exported";
                 progressCallback(progressInfo);
-            }, new CancellationTokenWrapper(cancellationToken));
-#pragma warning restore VC0014
+            }, cancellationToken);
         }
 
         private async Task ExportCatalogsAsync(JsonTextWriter writer, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback, CancellationToken cancellationToken)
@@ -164,15 +158,13 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             progressCallback(progressInfo);
 
             await writer.WritePropertyNameAsync("Catalogs", cancellationToken);
-#pragma warning disable VC0014
             await writer.SerializeArrayWithPagingAsync(_jsonSerializer, _batchSize, async (skip, take) =>
                 (GenericSearchResult<Catalog>)await _catalogSearchService.SearchNoCloneAsync(new CatalogSearchCriteria { Skip = skip, Take = take })
             , (processedCount, totalCount) =>
             {
                 progressInfo.Description = $"{processedCount} of {totalCount} catalogs have been exported";
                 progressCallback(progressInfo);
-            }, new CancellationTokenWrapper(cancellationToken));
-#pragma warning restore VC0014
+            }, cancellationToken);
         }
 
         private async Task ExportCategoriesAsync(JsonTextWriter writer, ExportImportOptions options, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback, CancellationToken cancellationToken)
@@ -181,7 +173,6 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             progressCallback(progressInfo);
 
             await writer.WritePropertyNameAsync("Categories", cancellationToken);
-#pragma warning disable VC0014
             await writer.SerializeArrayWithPagingAsync(_jsonSerializer, _batchSize, async (skip, take) =>
             {
                 var searchResult = await _categorySearchService.SearchAsync(new CategorySearchCriteria { Skip = skip, Take = take });
@@ -196,8 +187,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             {
                 progressInfo.Description = $"{processedCount} of {totalCount} categories have been exported";
                 progressCallback(progressInfo);
-            }, new CancellationTokenWrapper(cancellationToken));
-#pragma warning restore VC0014
+            }, cancellationToken);
         }
 
         private async Task ExportProductsAsync(JsonTextWriter writer, ExportImportOptions options, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback, CancellationToken cancellationToken)
@@ -206,7 +196,6 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             progressCallback(progressInfo);
 
             await writer.WritePropertyNameAsync("Products", cancellationToken);
-#pragma warning disable VC0014
             await writer.SerializeArrayWithPagingAsync(_jsonSerializer, _batchSize, async (skip, take) =>
             {
                 var searchResult = await _productSearchService.SearchAsync(new ProductSearchCriteria { Skip = skip, Take = take, ResponseGroup = ItemResponseGroup.Full.ToString() });
@@ -220,8 +209,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             {
                 progressInfo.Description = $"{processedCount} of {totalCount} products have been exported";
                 progressCallback(progressInfo);
-            }, new CancellationTokenWrapper(cancellationToken));
-#pragma warning restore VC0014
+            }, cancellationToken);
         }
 
         private async Task ExportProductConfigurationsAsync(JsonTextWriter writer, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback, CancellationToken cancellationToken)
@@ -230,7 +218,6 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             progressCallback(progressInfo);
 
             await writer.WritePropertyNameAsync("ProductConfigurations", cancellationToken);
-#pragma warning disable VC0014
             await writer.SerializeArrayWithPagingAsync(_jsonSerializer, _batchSize, async (skip, take) =>
             {
                 var searchCriteria = AbstractTypeFactory<ProductConfigurationSearchCriteria>.TryCreateInstance();
@@ -248,8 +235,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             {
                 progressInfo.Description = $"{processedCount} of {totalCount} product configurations have been exported";
                 progressCallback(progressInfo);
-            }, new CancellationTokenWrapper(cancellationToken));
-#pragma warning restore VC0014
+            }, cancellationToken);
         }
 
         private async Task ExportMeasuresAsync(JsonTextWriter writer, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback, CancellationToken cancellationToken)
@@ -258,7 +244,6 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             progressCallback(progressInfo);
 
             await writer.WritePropertyNameAsync("Measures", cancellationToken);
-#pragma warning disable VC0014
             await writer.SerializeArrayWithPagingAsync(_jsonSerializer, _batchSize, async (skip, take) =>
             {
                 var searchResult = await _measureSearchService.SearchAsync(new MeasureSearchCriteria { Skip = skip, Take = take, ResponseGroup = ItemResponseGroup.Full.ToString() });
@@ -273,8 +258,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             {
                 progressInfo.Description = $"{processedCount} of {totalCount} measures have been exported";
                 progressCallback(progressInfo);
-            }, new CancellationTokenWrapper(cancellationToken));
-#pragma warning restore VC0014
+            }, cancellationToken);
         }
 
         public async Task DoImportAsync(Stream inputStream, ExportImportOptions options, Action<ExportImportProgressInfo> progressCallback, CancellationToken cancellationToken)
@@ -388,7 +372,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                 {
                     progressInfo.Description = $"{processedCount} catalogs have been imported";
                     progressCallback(progressInfo);
-                }, new CancellationTokenWrapper(cancellationToken));
+                }, cancellationToken);
         }
 
         private async Task ImportCategoriesAsync(JsonTextReader reader, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback, CancellationToken cancellationToken)
@@ -397,7 +381,6 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             var categoriesByHierarchyLevel = new Dictionary<int, IList<Category>>();
             var categoryLinks = new List<CategoryLink>();
 
-#pragma warning disable VC0014
             await reader.DeserializeArrayWithPagingAsync<Category>(_jsonSerializer, _batchSize, async items =>
             {
                 processedCount += await ProcessCategoryBatchAsync(items, categoriesByHierarchyLevel, categoryLinks, progressInfo);
@@ -405,9 +388,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             {
                 progressInfo.Description = $"{processedCount} categories have been imported";
                 progressCallback(progressInfo);
-            }, new CancellationTokenWrapper(cancellationToken));
-#pragma warning restore VC0014
-
+            }, cancellationToken);
             processedCount = await SaveCategoriesByHierarchyAsync(categoriesByHierarchyLevel, processedCount, progressInfo, progressCallback);
             await SaveCategoryLinksAsync(categoryLinks, progressInfo, progressCallback);
         }
@@ -554,7 +535,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             {
                 progressInfo.Description = $"{processedCount} property groups have been imported";
                 progressCallback(progressInfo);
-            }, new CancellationTokenWrapper(cancellationToken));
+            }, cancellationToken);
         }
 
         private Task ImportPropertiesAsync(JsonTextReader reader, List<Property> propertiesWithForeignKeys, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback, CancellationToken cancellationToken)
@@ -576,7 +557,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             {
                 progressInfo.Description = $"{processedCount} properties have been imported";
                 progressCallback(progressInfo);
-            }, new CancellationTokenWrapper(cancellationToken));
+            }, cancellationToken);
         }
 
         private Task ImportPropertyDictionaryItemsAsync(JsonTextReader reader, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback, CancellationToken cancellationToken)
@@ -585,7 +566,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             {
                 progressInfo.Description = $"{processedCount} property dictionary items have been imported";
                 progressCallback(progressInfo);
-            }, new CancellationTokenWrapper(cancellationToken));
+            }, cancellationToken);
         }
 
         private async Task ImportProductsAsync(JsonTextReader reader, ExportImportOptions options, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback, CancellationToken cancellationToken)
@@ -618,7 +599,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             {
                 progressInfo.Description = $"{processedCount} products have been imported";
                 progressCallback(progressInfo);
-            }, new CancellationTokenWrapper(cancellationToken));
+            }, cancellationToken);
 
             //Import products associations separately to avoid DB constrain violation
             var totalProductsWithAssociationsCount = associationBackupMap.Count;
@@ -656,7 +637,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             {
                 progressInfo.Description = $"{processedCount} product configurations have been imported";
                 progressCallback(progressInfo);
-            }, new CancellationTokenWrapper(cancellationToken));
+            }, cancellationToken);
         }
 
         private Task ImportMeasuresAsync(JsonTextReader reader, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback, CancellationToken cancellationToken)
@@ -668,7 +649,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             {
                 progressInfo.Description = $"{processedCount} measures have been imported";
                 progressCallback(progressInfo);
-            }, new CancellationTokenWrapper(cancellationToken));
+            }, cancellationToken);
         }
 
         //Remove redundant references to reduce resulting JSON size
