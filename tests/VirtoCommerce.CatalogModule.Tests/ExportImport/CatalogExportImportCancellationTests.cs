@@ -10,7 +10,6 @@ using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.ExportImport;
-using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.ExportImport;
 using Xunit;
 
@@ -108,44 +107,5 @@ namespace VirtoCommerce.CatalogModule.Tests.ExportImport
                 () => _exportImport.DoImportAsync(Stream.Null, new ExportImportOptions(), _ => { }, cts.Token));
         }
 
-        [Fact]
-#pragma warning disable VC0014
-        public async Task DoExportAsync_LegacyOverload_DropsCancellation()
-#pragma warning restore VC0014
-        {
-            //Arrange — mock token that would throw if consulted
-            var mockToken = new Mock<ICancellationToken>();
-            mockToken.Setup(t => t.ThrowIfCancellationRequested())
-                .Throws<OperationCanceledException>();
-
-            //Act
-            using var outStream = new MemoryStream();
-#pragma warning disable VC0014
-            await _exportImport.DoExportAsync(outStream, new ExportImportOptions(), _ => { }, mockToken.Object);
-#pragma warning restore VC0014
-
-            //Assert — shim delegates to CancellationToken.None, mock token never consulted
-            mockToken.Verify(t => t.ThrowIfCancellationRequested(), Times.Never);
-        }
-
-        [Fact]
-#pragma warning disable VC0014
-        public async Task DoImportAsync_LegacyOverload_DropsCancellation()
-#pragma warning restore VC0014
-        {
-            //Arrange — mock token that would throw if consulted
-            var mockToken = new Mock<ICancellationToken>();
-            mockToken.Setup(t => t.ThrowIfCancellationRequested())
-                .Throws<OperationCanceledException>();
-
-            //Act
-            using var inputStream = new MemoryStream();
-#pragma warning disable VC0014
-            await _exportImport.DoImportAsync(inputStream, new ExportImportOptions(), _ => { }, mockToken.Object);
-#pragma warning restore VC0014
-
-            //Assert — shim delegates to CancellationToken.None, mock token never consulted
-            mockToken.Verify(t => t.ThrowIfCancellationRequested(), Times.Never);
-        }
     }
 }

@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
@@ -16,7 +16,7 @@
   <ItemGroup>
     <PackageReference Include="VirtoCommerce.CoreModule.Core" Version="3.1003.0" />
     <PackageReference Include="VirtoCommerce.ExportModule.Core" Version="3.1000.0" />
-    <PackageReference Include="VirtoCommerce.Platform.Core" Version="3.1031.0-alpha.13289-vcst-5044" />
+    <PackageReference Include="VirtoCommerce.Platform.Core" Version="3.1031.0-alpha.13290-vcst-5044" />
     <PackageReference Include="VirtoCommerce.SearchModule.Core" Version="3.1000.0" />
     <PackageReference Include="VirtoCommerce.Seo.Core" Version="3.1002.0" />
     <PackageReference Include="VirtoCommerce.StoreModule.Core" Version="3.1000.0" />

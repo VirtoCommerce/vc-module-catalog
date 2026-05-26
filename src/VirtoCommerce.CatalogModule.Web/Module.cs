@@ -199,7 +199,7 @@ namespace VirtoCommerce.CatalogModule.Web
             serviceCollection.AddTransient<AbstractValidator<CategoryPropertyValidationRequest>, CategoryPropertyNameValidator>();
 
             PropertyValueValidator PropertyValueValidatorFactory(PropertyValidationRule rule) => new PropertyValueValidator(rule);
-            serviceCollection.AddSingleton(PropertyValueValidatorFactory);
+            serviceCollection.AddSingleton((Func<PropertyValidationRule, PropertyValueValidator>)PropertyValueValidatorFactory);
             serviceCollection.AddTransient<AbstractValidator<IHasProperties>, HasPropertiesValidator>();
 
             serviceCollection.AddTransient<AbstractValidator<CatalogProduct>, ProductValidator>();
@@ -417,14 +417,8 @@ namespace VirtoCommerce.CatalogModule.Web
         public Task ExportAsync(Stream outStream, ExportImportOptions options, Action<ExportImportProgressInfo> progressCallback, CancellationToken cancellationToken)
             => _appBuilder.ApplicationServices.GetRequiredService<CatalogExportImport>().DoExportAsync(outStream, options, progressCallback, cancellationToken);
 
-        public Task ExportAsync(Stream outStream, ExportImportOptions options, Action<ExportImportProgressInfo> progressCallback, ICancellationToken cancellationToken)
-            => _appBuilder.ApplicationServices.GetRequiredService<CatalogExportImport>().DoExportAsync(outStream, options, progressCallback, CancellationToken.None);
-
         public Task ImportAsync(Stream inputStream, ExportImportOptions options, Action<ExportImportProgressInfo> progressCallback, CancellationToken cancellationToken)
             => _appBuilder.ApplicationServices.GetRequiredService<CatalogExportImport>().DoImportAsync(inputStream, options, progressCallback, cancellationToken);
-
-        public Task ImportAsync(Stream inputStream, ExportImportOptions options, Action<ExportImportProgressInfo> progressCallback, ICancellationToken cancellationToken)
-            => _appBuilder.ApplicationServices.GetRequiredService<CatalogExportImport>().DoImportAsync(inputStream, options, progressCallback, CancellationToken.None);
 
         private void RegisterBulkAction(string name, string contextTypeName)
         {
