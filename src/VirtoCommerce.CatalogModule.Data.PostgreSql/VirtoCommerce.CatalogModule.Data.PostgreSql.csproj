@@ -9,7 +9,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="VirtoCommerce.Platform.Data.PostgreSql" Version="3.1031.0-alpha.13290-vcst-5044" />
+    <PackageReference Include="VirtoCommerce.Platform.Data.PostgreSql" Version="3.1031.0-alpha.13291-vcst-5044" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\VirtoCommerce.CatalogModule.Data\VirtoCommerce.CatalogModule.Data.csproj" />
