@@ -79,17 +79,17 @@ jobs:
           fetch-depth: 0
 
       - name: Install VirtoCommerce.GlobalTool
-        uses: VirtoCommerce/vc-github-actions/setup-vcbuild@master
+        uses: VirtoCommerce/vc-github-actions/setup-vcbuild@VCST-5054 #master
 
       - name: Install dotnet-sonarscanner
         run: dotnet tool install --global dotnet-sonarscanner
 
       - name: Get Changelog
         id: changelog
-        uses: VirtoCommerce/vc-github-actions/changelog-generator@master
+        uses: VirtoCommerce/vc-github-actions/changelog-generator@VCST-5054 #master
 
       - name: Get Artifact Version
-        uses: VirtoCommerce/vc-github-actions/get-image-version@master
+        uses: VirtoCommerce/vc-github-actions/get-image-version@VCST-5054 #master
         id: artifact_ver
 
       - name: Check if .deployment folder exists
@@ -113,12 +113,12 @@ jobs:
 
       - name: Add version suffix
         if: ${{ github.ref != 'refs/heads/master' && github.ref != 'refs/heads/main' }}
-        uses: VirtoCommerce/vc-github-actions/add-version-suffix@master
+        uses: VirtoCommerce/vc-github-actions/add-version-suffix@VCST-5054 #master
         with:
           versionSuffix: ${{ env.VERSION_SUFFIX }}
 
       - name: SonarCloud Begin
-        uses: VirtoCommerce/vc-github-actions/sonar-scanner-begin@master
+        uses: VirtoCommerce/vc-github-actions/sonar-scanner-begin@VCST-5054 #master
         with:
           repoOrg: ${{ github.repository_owner }}
           sonarOrg: ${{secrets.SONAR_ORG_KEY}}
@@ -130,10 +130,10 @@ jobs:
         run: vc-build Test -skip
 
       - name: SonarCloud End
-        uses: VirtoCommerce/vc-github-actions/sonar-scanner-end@master
+        uses: VirtoCommerce/vc-github-actions/sonar-scanner-end@VCST-5054 #master
 
       - name: Quality Gate
-        uses: VirtoCommerce/vc-github-actions/sonar-quality-gate@master
+        uses: VirtoCommerce/vc-github-actions/sonar-quality-gate@VCST-5054 #master
         with:
           login: ${{secrets.SONAR_TOKEN}}
 
@@ -142,12 +142,12 @@ jobs:
 
       - name: Publish Nuget
         if: ${{ github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main' }}
-        uses: VirtoCommerce/vc-github-actions/publish-nuget@master
+        uses: VirtoCommerce/vc-github-actions/publish-nuget@VCST-5054 #master
 
       - name: Publish to Blob
         if: ${{ github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev' || github.event_name == 'pull_request' || (github.event_name == 'workflow_dispatch' && github.ref != 'refs/heads/master') || (github.event_name == 'workflow_dispatch' && github.ref != 'refs/heads/main') }}
         id: blobRelease
-        uses: VirtoCommerce/vc-github-actions/publish-blob-release@master
+        uses: VirtoCommerce/vc-github-actions/publish-blob-release@VCST-5054 #master
         with:
           blobSAS: ${{ secrets.BLOB_TOKEN }}
           blobUrl: ${{ vars.BLOB_URL }}
@@ -169,7 +169,7 @@ jobs:
 
       - name: Add Jira link
         if: ${{ github.event_name == 'pull_request' }}
-        uses: VirtoCommerce/vc-github-actions/publish-jira-link@master
+        uses: VirtoCommerce/vc-github-actions/publish-jira-link@VCST-5054 #master
         with:
           branchName: ${{ steps.sanitize_branch.outputs.branchName }}
           repoOrg: ${{ github.repository_owner }}
@@ -178,7 +178,7 @@ jobs:
 
       - name: Add link to PR
         if: ${{ github.event_name == 'pull_request' }}
-        uses: VirtoCommerce/vc-github-actions/publish-artifact-link@master
+        uses: VirtoCommerce/vc-github-actions/publish-artifact-link@VCST-5054 #master
         with:
           artifactUrl: ${{ steps.blobRelease.outputs.packageUrl }}
           repoOrg: ${{ github.repository_owner }}
@@ -190,7 +190,7 @@ jobs:
         with:
           changelog: ${{ steps.changelog.outputs.changelog }}
           organization: ${{ github.repository_owner }}
-        uses: VirtoCommerce/vc-github-actions/publish-github-release@master
+        uses: VirtoCommerce/vc-github-actions/publish-github-release@VCST-5054 #master
 
       - name: Set artifactUrl value
         id: artifactUrl
@@ -203,7 +203,7 @@ jobs:
 
       - name: Create deployment matrix
         if: ${{ github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main' }}
-        uses: VirtoCommerce/vc-github-actions/cloud-create-deploy-matrix@master
+        uses: VirtoCommerce/vc-github-actions/cloud-create-deploy-matrix@VCST-5054 #master
         id: deployment-matrix
         with:
           deployConfigPath: '.deployment/module/cloudDeploy.json'
@@ -241,18 +241,18 @@ jobs:
 
       - name: Setup Git Credentials
         if: ${{ (github.ref == 'refs/heads/dev' && github.event_name != 'workflow_dispatch') || github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main' }}
-        uses: VirtoCommerce/vc-github-actions/setup-git-credentials-github@master
+        uses: VirtoCommerce/vc-github-actions/setup-git-credentials-github@VCST-5054 #master
         with:
           githubToken: ${{ secrets.REPO_TOKEN }}
 
       - name: Publish Manifest
         if: ${{ (github.ref == 'refs/heads/dev' && github.event_name != 'workflow_dispatch') || github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main' }}
-        uses: VirtoCommerce/vc-github-actions/publish-manifest@master
+        uses: VirtoCommerce/vc-github-actions/publish-manifest@VCST-5054 #master
         with:
           packageUrl: ${{ steps.artifactUrl.outputs.download_url }}
 
       - name: Parse Jira Keys from All Commits
-        uses: VirtoCommerce/vc-github-actions/get-jira-keys@master
+        uses: VirtoCommerce/vc-github-actions/get-jira-keys@VCST-5054 #master
         if: always()
         id: jira_keys
         with:
