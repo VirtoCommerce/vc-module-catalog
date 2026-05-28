@@ -246,13 +246,13 @@ jobs:
           githubUser: ${{ env.GITHUB_ACTOR }}
           githubToken: ${{ env.GITHUB_TOKEN }}
           # platformDockerTag: ${{ env.DOCKER_TAG }}
-          # platformImage: ${{ env.PACKAGE_SERVER }}/virtocommerce/platform
           installSampleData: 'false'
           installModules: 'false'
           installCustomModule: 'true'
           customModuleId: ${{ steps.artifact_ver.outputs.moduleId }}
           customModuleUrl: ${{ steps.artifactUrl.outputs.download_url }}
           requiredModulesListUrl: ${{ steps.extract_required_modules_list_url_from_pr.outputs.url }}
+          platformImage: ghcr.io/virtocommerce/platform
 
       - name: Setup Git Credentials
         if: ${{ (github.ref == 'refs/heads/dev' && github.event_name != 'workflow_dispatch') || github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main' }}
