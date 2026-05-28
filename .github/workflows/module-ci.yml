@@ -240,7 +240,7 @@ jobs:
           }
 
       - name: Swagger validation
-        uses: VirtoCommerce/vc-github-actions/docker-env@VCST-5054 #master
+        uses: VirtoCommerce/vc-github-actions/docker-env@master #VCST-5054
         if: ${{ github.ref == 'refs/heads/dev' || (github.event_name == 'pull_request' && github.base_ref == 'dev') }}
         with:
           githubUser: ${{ github.actor }}
