@@ -217,16 +217,16 @@ jobs:
           PR_BODY: ${{ github.event.pull_request.body }}
         run: |
           $text = $env:PR_BODY
-          $marker = 'Required modules list URL'
-
           $url = ''
-          if ($null -ne $text -and $text.Contains($marker)) {
-            $startIndex = $text.IndexOf($marker)
-            if ($startIndex -ge 0) {
-              $slice = $text.Substring($startIndex)
-              $match = [regex]::Match($slice, 'https?://[^ )\r\n]+')
-              if ($match.Success) {
-                $url = $match.Value
+          if ($null -ne $text) {
+            $pattern = 'Required modules list URL\s*:?\s*(https?://[^\s)>\]]+)'
+            $m = [regex]::Match($text, $pattern, 'IgnoreCase')
+            if ($m.Success) {
+              $candidate = $m.Groups[1].Value.TrimEnd('.', ',', ';')
+              if ($candidate -match '\.json($|\?)') {
+                $url = $candidate
+              } else {
+                Write-Host "Candidate URL '$candidate' is not a .json file; ignoring."
               }
             }
           }
