@@ -243,9 +243,8 @@ jobs:
         uses: VirtoCommerce/vc-github-actions/docker-env@VCST-5054 #master
         if: ${{ github.ref == 'refs/heads/dev' || (github.event_name == 'pull_request' && github.base_ref == 'dev') }}
         with:
-          githubUser: ${{ env.GITHUB_ACTOR }}
+          githubUser: ${{ github.actor }}
           githubToken: ${{ env.GITHUB_TOKEN }}
-          # platformDockerTag: ${{ env.DOCKER_TAG }}
           installSampleData: 'false'
           installModules: 'false'
           installCustomModule: 'true'
