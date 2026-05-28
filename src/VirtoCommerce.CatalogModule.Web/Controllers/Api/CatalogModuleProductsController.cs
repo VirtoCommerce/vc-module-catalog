@@ -432,7 +432,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         /// <param name="patchDocuments">Array of JsonPatchDocument objects, each with a replace /id operation</param>
         [HttpPatch]
         [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
-        public async Task<ActionResult> BulkPatchProducts([FromBody] JsonPatchDocument<CatalogProduct>[] patchDocuments)
+        public async Task<ActionResult> BulkPatchProducts([FromBody] JsonPatchDocument[] patchDocuments)
         {
             if (patchDocuments == null || patchDocuments.Length == 0)
             {
@@ -466,7 +466,11 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 }
 
                 patchDocument.Operations.Remove(idOperation);
-                patchDocument.ApplyTo(product, ModelState);
+                patchDocument.ApplyTo(product, error =>
+                {
+                    var key = error.AffectedObject?.GetType().Name ?? nameof(CatalogProduct);
+                    ModelState.AddModelError(key, error.ErrorMessage);
+                });
 
                 if (!ModelState.IsValid)
                 {
