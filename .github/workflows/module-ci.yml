@@ -239,6 +239,21 @@ jobs:
             Add-Content -Path $env:GITHUB_OUTPUT -Value "url="
           }
 
+      - name: Swagger validation
+        uses: VirtoCommerce/vc-github-actions/docker-env@VCST-5054 #master
+        if: ${{ github.ref == 'refs/heads/dev' || (github.event_name == 'pull_request' && github.base_ref == 'dev') }}
+        with:
+          githubUser: ${{ env.GITHUB_ACTOR }}
+          githubToken: ${{ env.GITHUB_TOKEN }}
+          # platformDockerTag: ${{ env.DOCKER_TAG }}
+          # platformImage: ${{ env.PACKAGE_SERVER }}/virtocommerce/platform
+          installSampleData: 'false'
+          installModules: 'false'
+          installCustomModule: 'true'
+          customModuleId: ${{ steps.artifact_ver.outputs.moduleId }}
+          customModuleUrl: ${{ steps.artifactUrl.outputs.download_url }}
+          requiredModulesListUrl: ${{ steps.extract_required_modules_list_url_from_pr.outputs.url }}
+
       - name: Setup Git Credentials
         if: ${{ (github.ref == 'refs/heads/dev' && github.event_name != 'workflow_dispatch') || github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main' }}
         uses: VirtoCommerce/vc-github-actions/setup-git-credentials-github@master
