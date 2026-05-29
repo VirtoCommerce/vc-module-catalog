@@ -1,5 +1,5 @@
-# v3.800.35
-# https://virtocommerce.atlassian.net/browse/VCST-5063
+# v3.800.36
+# https://virtocommerce.atlassian.net/browse/VCST-5151
 name: Module CI
 
 on:
@@ -217,16 +217,16 @@ jobs:
           PR_BODY: ${{ github.event.pull_request.body }}
         run: |
           $text = $env:PR_BODY
-          $marker = 'Required modules list URL'
-
           $url = ''
-          if ($null -ne $text -and $text.Contains($marker)) {
-            $startIndex = $text.IndexOf($marker)
-            if ($startIndex -ge 0) {
-              $slice = $text.Substring($startIndex)
-              $match = [regex]::Match($slice, 'https?://[^ )\r\n]+')
-              if ($match.Success) {
-                $url = $match.Value
+          if ($null -ne $text) {
+            $pattern = 'Required modules list URL\s*:?\s*(https?://[^\s)>\]]+)'
+            $m = [regex]::Match($text, $pattern, 'IgnoreCase')
+            if ($m.Success) {
+              $candidate = $m.Groups[1].Value.TrimEnd('.', ',', ';')
+              if ($candidate -match '\.json($|\?)') {
+                $url = $candidate
+              } else {
+                Write-Host "Candidate URL '$candidate' is not a .json file; ignoring."
               }
             }
           }
@@ -238,6 +238,20 @@ jobs:
             Write-Host "url NOT found"
             Add-Content -Path $env:GITHUB_OUTPUT -Value "url="
           }
+
+      - name: Swagger validation
+        uses: VirtoCommerce/vc-github-actions/docker-env@master
+        if: ${{ github.ref == 'refs/heads/dev' || (github.event_name == 'pull_request' && github.base_ref == 'dev') }}
+        with:
+          githubUser: ${{ github.actor }}
+          githubToken: ${{ env.GITHUB_TOKEN }}
+          installSampleData: 'false'
+          installModules: 'false'
+          installCustomModule: 'true'
+          customModuleId: ${{ steps.artifact_ver.outputs.moduleId }}
+          customModuleUrl: ${{ steps.artifactUrl.outputs.download_url }}
+          requiredModulesListUrl: ${{ steps.extract_required_modules_list_url_from_pr.outputs.url }}
+          platformImage: ghcr.io/virtocommerce/platform
 
       - name: Setup Git Credentials
         if: ${{ (github.ref == 'refs/heads/dev' && github.event_name != 'workflow_dispatch') || github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main' }}
@@ -289,7 +303,7 @@ jobs:
     if: ${{ ((github.ref == 'refs/heads/dev') && (github.event_name == 'push')) ||
         (github.event_name == 'workflow_dispatch') || ((github.base_ref == 'dev') && (github.event_name == 'pull_request')) }}
     needs: ci
-    uses: VirtoCommerce/.github/.github/workflows/pytest-tests.yml@v3.800.35
+    uses: VirtoCommerce/.github/.github/workflows/pytest-tests.yml@v3.800.36
     with:
       installModules: 'false'
       installCustomModule: 'true'
@@ -310,7 +324,7 @@ jobs:
       && github.event_name == 'push'
       && needs.ci.outputs.deployment-folder-exists == 'true'}}
     needs: ci
-    uses: VirtoCommerce/.github/.github/workflows/deploy-cloud.yml@v3.800.35
+    uses: VirtoCommerce/.github/.github/workflows/deploy-cloud.yml@v3.800.36
     with:
       releaseSource: module
       moduleId: ${{ needs.ci.outputs.moduleId }}
