@@ -1364,6 +1364,16 @@
           "title": "Filtering properties",
           "description": "Per-store faceted browsing filter configuration. Edit through the Filtering properties widget on the store page"
         }
+      },
+      "BackupRestore": {
+        "BatchSize": {
+          "title": "Import/export batch size",
+          "description": "Number of records saved per batch during catalog export and import. Lower values reduce memory usage; higher values improve throughput"
+        },
+        "ErrorPolicy": {
+          "title": "Import error policy",
+          "description": "Behavior when a batch fails to save during import: 'Stop' aborts the module import, 'SkipBatch' skips the whole failed batch, 'SkipItem' retries items one-by-one and skips only the failing rows"
+        }
       }
     },
     "VirtoCommerce": {

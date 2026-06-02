@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Data.Model;
@@ -39,9 +38,9 @@ namespace VirtoCommerce.CatalogModule2.Data.Repositories
         {
             return base.GetCategoriesByIdsAsync(categoriesIds, responseGroup);
         }
-        public override Task<IList<ItemEntity>> GetItemByIdsAsync(IList<string> itemIds, string responseGroup = null, CancellationToken cancellationToken = default)
+        public override Task<IList<ItemEntity>> GetItemByIdsAsync(IList<string> itemIds, string responseGroup = null)
         {
-            return base.GetItemByIdsAsync(itemIds, responseGroup, cancellationToken);
+            return base.GetItemByIdsAsync(itemIds, responseGroup);
         }
         public override Task<IList<PropertyEntity>> GetPropertiesByIdsAsync(IList<string> propIds, bool loadDictValues = false)
         {

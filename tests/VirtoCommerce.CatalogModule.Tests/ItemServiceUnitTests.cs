@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
 using FluentValidation;
 using FluentValidation.Results;
@@ -69,7 +68,7 @@ namespace VirtoCommerce.CatalogModule.Tests
             _repositoryMock.Setup(x => x.Add(newItemEntity))
                 .Callback(() =>
                 {
-                    _repositoryMock.Setup(o => o.GetItemByIdsAsync(new[] { id }, null, It.IsAny<CancellationToken>()))
+                    _repositoryMock.Setup(o => o.GetItemByIdsAsync(new[] { id }, null))
                         .ReturnsAsync(new[] { newItemEntity });
                 });
 

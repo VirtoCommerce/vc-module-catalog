@@ -14,6 +14,7 @@ using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.ExportImport;
+using VirtoCommerce.Platform.Core.Settings;
 using VirtoCommerce.Seo.Core.Models;
 
 namespace VirtoCommerce.CatalogModule.Data.ExportImport
@@ -39,16 +40,19 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
         private readonly IMeasureSearchService _measureSearchService;
         private readonly IPropertyGroupService _propertyGroupService;
         private readonly IPropertyGroupSearchService _propertyGroupSearchService;
+        private readonly ISettingsManager _settingsManager;
 
-        private readonly int _batchSize = 50;
-
-        private const OnImportError ImportErrorPolicy = OnImportError.SkipItem;
+        // Defaults preserve the previous hard-coded behaviour; they are overwritten from Platform
+        // Settings at the start of every export/import via LoadSettingsAsync.
+        private int _batchSize = 50;
+        private OnImportError _importErrorPolicy = OnImportError.SkipItem;
 
         public CatalogExportImport(ICatalogService catalogService, ICatalogSearchService catalogSearchService, IProductSearchService productSearchService, ICategorySearchService categorySearchService, ICategoryService categoryService,
                                   IItemService itemService, IPropertyService propertyService, IPropertySearchService propertySearchService, IPropertyDictionaryItemSearchService propertyDictionarySearchService,
                                   IPropertyDictionaryItemService propertyDictionaryService, JsonSerializer jsonSerializer, IBlobStorageProvider blobStorageProvider, IAssociationService associationService,
                                   IProductConfigurationService configurationService, IProductConfigurationSearchService configurationSearchService,
-                                  IMeasureService measureService, IMeasureSearchService measureSearchService, IPropertyGroupService propertyGroupService, IPropertyGroupSearchService propertyGroupSearchService)
+                                  IMeasureService measureService, IMeasureSearchService measureSearchService, IPropertyGroupService propertyGroupService, IPropertyGroupSearchService propertyGroupSearchService,
+                                  ISettingsManager settingsManager)
         {
             _catalogService = catalogService;
             _productSearchService = productSearchService;
@@ -69,11 +73,32 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             _measureService = measureService;
             _propertyGroupService = propertyGroupService;
             _propertyGroupSearchService = propertyGroupSearchService;
+            _settingsManager = settingsManager;
+        }
+
+        // Reads the import/export tuning knobs from Platform Settings, falling back to the
+        // current field values (the historical defaults) when settingsManager is unavailable.
+        private async Task LoadSettingsAsync()
+        {
+            if (_settingsManager == null)
+            {
+                return;
+            }
+
+            _batchSize = await _settingsManager.GetValueAsync<int>(ModuleConstants.Settings.BackupRestore.BatchSize);
+
+            var errorPolicy = await _settingsManager.GetValueAsync<string>(ModuleConstants.Settings.BackupRestore.ErrorPolicy);
+            if (Enum.TryParse<OnImportError>(errorPolicy, ignoreCase: true, out var policy))
+            {
+                _importErrorPolicy = policy;
+            }
         }
 
         public async Task DoExportAsync(Stream outStream, ExportImportOptions options, Action<ExportImportProgressInfo> progressCallback, ICancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
+            await LoadSettingsAsync();
+
             var progressInfo = new ExportImportProgressInfo { Description = "loading data..." };
             progressCallback(progressInfo);
 
@@ -259,12 +284,12 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             }
         }
 
-        private static ImportStageContext BuildStage(string stage, string entityType, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback) => new()
+        private ImportStageContext BuildStage(string stage, string entityType, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback) => new()
         {
             ModuleId = ModuleConstants.ModuleId,
             Stage = stage,
             EntityType = entityType,
-            ErrorPolicy = ImportErrorPolicy,
+            ErrorPolicy = _importErrorPolicy,
             ProgressInfo = progressInfo,
             ProgressCallback = progressCallback,
         };
@@ -272,6 +297,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
         public async Task DoImportAsync(Stream inputStream, ExportImportOptions options, Action<ExportImportProgressInfo> progressCallback, ICancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
+            await LoadSettingsAsync();
 
             var progressInfo = new ExportImportProgressInfo();
 
@@ -464,7 +490,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             foreach (var categories in categoriesByHierarchyLevel.OrderBy(x => x.Key))
             {
                 var levelStage = BuildStage($"Categories Level {categories.Key}", nameof(Category), progressInfo, progressCallback);
-                foreach (var page in categories.Value.Paginate(50))
+                foreach (var page in categories.Value.Paginate(_batchSize))
                 {
                     processedCount += await SaveCategories(page, levelStage, progressInfo);
 
@@ -615,8 +641,14 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                     if (!product.Associations.IsNullOrEmpty())
                     {
                         associationBackupMap[product.Id] = product.Associations;
-                        product.Associations = null;
                     }
+                    // Always detach associations before the parent save, even for an empty list.
+                    // An empty (non-null) collection reaches ItemEntity.FromModel as a real
+                    // ObservableCollection, which Patch then treats as "delete all associations"
+                    // (it is not an IsNullCollection sentinel). Nulling it makes Patch skip the
+                    // collection so existing DB associations survive; real associations are
+                    // re-imported in the second pass below.
+                    product.Associations = null;
 
                     parentsToSave.Add(product);
                     pendingIds.Add(product.Id);
@@ -634,8 +666,10 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                         if (!variation.Associations.IsNullOrEmpty())
                         {
                             associationBackupMap[variation.Id] = variation.Associations;
-                            variation.Associations = null;
                         }
+                        // See the parent block above: null even an empty list so Patch skips
+                        // associations instead of clearing existing rows.
+                        variation.Associations = null;
 
                         variationsToSave.Add(variation);
                         pendingIds.Add(variation.Id);

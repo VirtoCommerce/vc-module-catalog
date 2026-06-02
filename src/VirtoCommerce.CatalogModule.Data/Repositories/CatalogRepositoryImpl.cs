@@ -96,7 +96,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                     .ToList();
                 if (productIds.Count > 0)
                 {
-                    await GetItemByIdsAsync(productIds, nameof(ItemResponseGroup.ItemInfo), cancellationToken);
+                    await GetItemByIdsAsync(productIds, nameof(ItemResponseGroup.ItemInfo));
                 }
             }
 
@@ -243,7 +243,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             return result;
         }
 
-        public virtual async Task<IList<ItemEntity>> GetItemByIdsAsync(IList<string> itemIds, string responseGroup = null, CancellationToken cancellationToken = default)
+        public virtual async Task<IList<ItemEntity>> GetItemByIdsAsync(IList<string> itemIds, string responseGroup = null)
         {
             if (itemIds.IsNullOrEmpty())
             {
@@ -254,7 +254,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                 .Include(x => x.LocalizedNames)
                 .Where(x => itemIds.Contains(x.Id))
                 .AsSplitQuery()
-                .ToListAsync(cancellationToken);
+                .ToListAsync();
 
             if (result.Any())
             {
@@ -274,7 +274,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                             .Include(x => x.DictionaryItem.DictionaryItemValues)
                             .Where(x => x.ItemId == itemId)
                             .AsSplitQuery()
-                            .LoadAsync(cancellationToken);
+                            .LoadAsync();
                     }
                     else
                     {
@@ -282,33 +282,33 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                             .Include(x => x.DictionaryItem.DictionaryItemValues)
                             .Where(x => itemIds.Contains(x.ItemId))
                             .AsSplitQuery()
-                            .LoadAsync(cancellationToken);
+                            .LoadAsync();
                     }
                 }
 
                 if (itemResponseGroup.HasFlag(ItemResponseGroup.Links))
                 {
-                    await CategoryItemRelations.Where(x => itemIds.Contains(x.ItemId)).LoadAsync(cancellationToken);
+                    await CategoryItemRelations.Where(x => itemIds.Contains(x.ItemId)).LoadAsync();
                 }
 
                 if (itemResponseGroup.HasFlag(ItemResponseGroup.WithImages))
                 {
-                    await Images.Where(x => itemIds.Contains(x.ItemId)).LoadAsync(cancellationToken);
+                    await Images.Where(x => itemIds.Contains(x.ItemId)).LoadAsync();
                 }
 
                 if (itemResponseGroup.HasFlag(ItemResponseGroup.ItemAssets))
                 {
-                    await Assets.Where(x => itemIds.Contains(x.ItemId)).LoadAsync(cancellationToken);
+                    await Assets.Where(x => itemIds.Contains(x.ItemId)).LoadAsync();
                 }
 
                 if (itemResponseGroup.HasFlag(ItemResponseGroup.ItemEditorialReviews))
                 {
-                    await EditorialReviews.Where(x => itemIds.Contains(x.ItemId)).LoadAsync(cancellationToken);
+                    await EditorialReviews.Where(x => itemIds.Contains(x.ItemId)).LoadAsync();
                 }
 
                 if (itemResponseGroup.HasFlag(ItemResponseGroup.WithSeo))
                 {
-                    await SeoInfos.Where(x => itemIds.Contains(x.ItemId)).LoadAsync(cancellationToken);
+                    await SeoInfos.Where(x => itemIds.Contains(x.ItemId)).LoadAsync();
                 }
 
 #pragma warning disable CS0618 // Variations can be used here
@@ -338,14 +338,14 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                         variationsQuery = variationsQuery.Include(x => x.SeoInfos);
                     }
 
-                    await variationsQuery.AsSplitQuery().LoadAsync(cancellationToken);
+                    await variationsQuery.AsSplitQuery().LoadAsync();
                 }
 
                 if (itemResponseGroup.HasFlag(ItemResponseGroup.ItemAssociations))
                 {
                     var associations = await Associations
                         .Where(x => itemIds.Contains(x.ItemId))
-                        .ToListAsync(cancellationToken);
+                        .ToListAsync();
 
                     var associatedProductIds = associations
                         .Where(x => x.AssociatedItemId != null)
@@ -359,7 +359,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                         .Distinct()
                         .ToList();
 
-                    await GetItemByIdsAsync(associatedProductIds, (ItemResponseGroup.ItemInfo | ItemResponseGroup.ItemAssets).ToString(), cancellationToken);
+                    await GetItemByIdsAsync(associatedProductIds, (ItemResponseGroup.ItemInfo | ItemResponseGroup.ItemAssets).ToString());
                     await GetCategoriesByIdsAsync(associatedCategoryIds, (CategoryResponseGroup.Info | CategoryResponseGroup.WithImages).ToString());
                 }
 
@@ -367,14 +367,14 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                 {
                     var referencedAssociations = await Associations
                         .Where(x => itemIds.Contains(x.AssociatedItemId))
-                        .ToListAsync(cancellationToken);
+                        .ToListAsync();
 
                     var referencedProductIds = referencedAssociations
                         .Select(x => x.ItemId)
                         .Distinct()
                         .ToList();
 
-                    await GetItemByIdsAsync(referencedProductIds, nameof(ItemResponseGroup.ItemInfo), cancellationToken);
+                    await GetItemByIdsAsync(referencedProductIds, nameof(ItemResponseGroup.ItemInfo));
                 }
 
                 // Load parents
@@ -383,7 +383,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                     .Select(x => x.ParentId)
                     .ToList();
 
-                await GetItemByIdsAsync(parentIds, responseGroup, cancellationToken);
+                await GetItemByIdsAsync(parentIds, responseGroup);
             }
 
             return result;
