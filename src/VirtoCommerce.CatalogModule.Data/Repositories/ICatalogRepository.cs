@@ -71,7 +71,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
 
         [Obsolete("Use GetConfigurationsByIdsAsync with responseGroup instead", DiagnosticId = "VC0014", UrlFormat = "https://docs.virtocommerce.com/catalog-module/")]
         Task<IList<ProductConfigurationEntity>> GetConfigurationsByIdsAsync(IList<string> ids, CancellationToken cancellationToken)
-             => throw new NotImplementedException("Use GetItemByIdsAsync with responseGroup instead");
+             => throw new NotImplementedException("Use GetConfigurationsByIdsAsync with responseGroup instead");
 
         Task<IList<ProductConfigurationEntity>> GetConfigurationsByIdsAsync(IList<string> ids, string responseGroup = null, CancellationToken cancellationToken = default)
 #pragma warning disable VC0014 // Type or member is obsolete

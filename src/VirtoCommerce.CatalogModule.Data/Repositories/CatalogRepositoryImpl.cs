@@ -58,7 +58,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         public IQueryable<ProductConfigurationOptionEntity> ProductConfigurationOptions => DbContext.Set<ProductConfigurationOptionEntity>();
         public IQueryable<AutomaticLinkQueryEntity> AutomaticLinkQueries => DbContext.Set<AutomaticLinkQueryEntity>();
 
-        public virtual async Task<IList<ProductConfigurationEntity>> GetConfigurationsByIdsAsync(IList<string> ids, string responseGroup, CancellationToken cancellationToken)
+        public virtual async Task<IList<ProductConfigurationEntity>> GetConfigurationsByIdsAsync(IList<string> ids, string responseGroup = null, CancellationToken cancellationToken = default)
         {
             var rg = EnumUtility.SafeParseFlags(responseGroup, ProductConfigurationResponseGroup.Full);
 
