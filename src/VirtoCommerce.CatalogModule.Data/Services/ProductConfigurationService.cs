@@ -71,6 +71,12 @@ public class ProductConfigurationService : CrudService<ProductConfiguration, Pro
         return configurations;
     }
 
+    protected override Task BeforeSaveChanges(IList<ProductConfiguration> models)
+    {
+        EnsureSingleDefaultOptionPerSection(models);
+        return base.BeforeSaveChanges(models);
+    }
+
     private void ResolveImageUrls(IList<ProductConfiguration> configurations)
     {
         // Walk configurations once, collecting images from (a) each option's referenced product and
@@ -119,6 +125,21 @@ public class ProductConfigurationService : CrudService<ProductConfiguration, Pro
         {
             image.RelativeUrl = !string.IsNullOrEmpty(image.RelativeUrl) ? image.RelativeUrl : image.Url;
             image.Url = _blobUrlResolver.GetAbsoluteUrl(image.Url);
+        }
+    }
+
+    private static void EnsureSingleDefaultOptionPerSection(IList<ProductConfiguration> configurations)
+    {
+        if (configurations.IsNullOrEmpty())
+        {
+            return;
+        }
+
+        foreach (var option in configurations
+                     .SelectMany(configuration => configuration?.Sections ?? [])
+                     .SelectMany(section => section?.Options?.Where(option => option is { IsDefault: true }).Skip(1) ?? []))
+        {
+            option.IsDefault = false;
         }
     }
 }
