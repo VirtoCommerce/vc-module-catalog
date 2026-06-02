@@ -214,20 +214,35 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             var catalogRepo = (ICatalogRepository)repository;
             var sourcePvIds = sourcePvToParent.Keys.ToList();
 
-            var existingPvs = await catalogRepo.PropertyValues
+            // Read id + owner via a projection so these rows are NOT pulled into the change
+            // tracker. If they were tracked and marked Deleted (repository.Remove), they would
+            // collide with the new same-PK PropertyValueEntity instances that Patch adds for the
+            // claimed owner — EF Core allows only one tracked instance per key value regardless of
+            // state, so the commit would throw InvalidOperationException.
+            var existingPvOwners = await catalogRepo.PropertyValues
                 .Where(x => sourcePvIds.Contains(x.Id))
+                .Select(x => new { x.Id, x.ItemId })
                 .ToListAsync();
 
             // Cross-owner = row exists in DB but its ItemId points at a different parent than
-            // the manifest claims. Delete those so the manifest's INSERT in the same SaveChanges
-            // batch wins (true upsert semantics — manifest ownership is authoritative).
-            var crossOwnerPvs = existingPvs.Where(existingPv =>
-                sourcePvToParent.TryGetValue(existingPv.Id, out var claimedOwner) &&
-                !string.Equals(existingPv.ItemId, claimedOwner, StringComparison.OrdinalIgnoreCase));
+            // the manifest claims. Delete those so the manifest's INSERT proceeds cleanly
+            // (true upsert semantics — manifest ownership is authoritative).
+            var crossOwnerPvIds = existingPvOwners
+                .Where(existingPv =>
+                    sourcePvToParent.TryGetValue(existingPv.Id, out var claimedOwner) &&
+                    !string.Equals(existingPv.ItemId, claimedOwner, StringComparison.OrdinalIgnoreCase))
+                .Select(x => x.Id)
+                .ToList();
 
-            foreach (var pv in crossOwnerPvs)
+            if (crossOwnerPvIds.Count > 0)
             {
-                repository.Remove(pv);
+                // ExecuteDeleteAsync issues the SQL DELETE immediately and bypasses the change
+                // tracker, so no Deleted entity lingers to conflict with the re-inserted PV.
+                // Caveat: this delete is committed on its own and will not roll back together with
+                // the surrounding import batch if a later stage fails.
+                await catalogRepo.PropertyValues
+                    .Where(x => crossOwnerPvIds.Contains(x.Id))
+                    .ExecuteDeleteAsync();
             }
         }
 
