@@ -1364,6 +1364,16 @@
           "title": "Filtreringsegenskaper",
           "description": "Konfigurasjon av fasettert filtrering per butikk. Redigeres via widgeten Filtreringsegenskaper på butikksiden"
         }
+      },
+      "BackupRestore": {
+        "BatchSize": {
+          "title": "Batchstørrelse for import/eksport",
+          "description": "Antall poster som lagres per batch under eksport og import av katalogen. Lavere verdier reduserer minnebruk; høyere verdier forbedrer ytelsen"
+        },
+        "ErrorPolicy": {
+          "title": "Feilhåndtering ved import",
+          "description": "Atferd når en batch ikke kan lagres under import: 'Stop' avbryter modulimporten, 'SkipBatch' hopper over hele den mislykkede batchen, 'SkipItem' prøver elementene ett om gangen på nytt og hopper kun over radene som feiler"
+        }
       }
     },
     "VirtoCommerce": {

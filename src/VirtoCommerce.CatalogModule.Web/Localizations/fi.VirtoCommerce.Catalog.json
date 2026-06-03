@@ -1364,6 +1364,16 @@
           "title": "Suodatusominaisuudet",
           "description": "Myymäläkohtainen fasetoidun selauksen suodatusasetus. Muokataan myymäläsivun Suodatusominaisuudet-widgetin kautta"
         }
+      },
+      "BackupRestore": {
+        "BatchSize": {
+          "title": "Tuonnin/viennin eräkoko",
+          "description": "Luettelon viennin ja tuonnin aikana erää kohden tallennettavien tietueiden määrä. Pienemmät arvot vähentävät muistinkäyttöä; suuremmat arvot parantavat suorituskykyä"
+        },
+        "ErrorPolicy": {
+          "title": "Tuonnin virhekäytäntö",
+          "description": "Toiminta, kun erän tallennus epäonnistuu tuonnin aikana: 'Stop' keskeyttää moduulin tuonnin, 'SkipBatch' ohittaa koko epäonnistuneen erän, 'SkipItem' yrittää kohteita yksitellen uudelleen ja ohittaa vain virheelliset rivit"
+        }
       }
     },
     "VirtoCommerce": {
