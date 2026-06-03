@@ -35,7 +35,7 @@ public class ProductConfigurationService : CrudService<ProductConfiguration, Pro
     {
         return ((ICatalogRepository)repository).GetConfigurationsByIdsAsync(
             ids,
-            responseGroup ?? ProductConfigurationResponseGroup.Full.ToString(),
+            responseGroup,
             CancellationToken.None);
     }
 
