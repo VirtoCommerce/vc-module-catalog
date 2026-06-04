@@ -18,6 +18,7 @@ using VirtoCommerce.Platform.Core.ExportImport;
 using VirtoCommerce.Platform.Core.Settings;
 using VirtoCommerce.Seo.Core.Models;
 
+
 namespace VirtoCommerce.CatalogModule.Data.ExportImport
 {
     public class CatalogExportImport
