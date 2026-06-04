@@ -12,6 +12,7 @@ using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Web.Controllers.Api;
 
+[ApiController]
 [Route("api/catalog/products/configurations")]
 [Authorize]
 public class CatalogModuleConfigurationsController(
@@ -22,14 +23,17 @@ public class CatalogModuleConfigurationsController(
     /// <summary>
     /// Get configuration by id.
     /// </summary>
-    /// <remarks>Gets configuration by id with full information loaded</remarks>
+    /// <remarks>Gets configuration by id with the requested response group (defaults to Full when omitted).</remarks>
     /// <param name="id">The configuration id</param>
+    /// <param name="responseGroup">Comma-separated <see cref="ProductConfigurationResponseGroup"/> flags. Omit (or pass <c>Full</c>) to load sections, options, and option-referenced product images. Pass <c>WithSections,WithOptions</c> for a lighter graph without option-referenced products.</param>
     [HttpGet]
     [Route("{id}")]
     [Authorize(ModuleConstants.Security.Permissions.ConfigurationsRead)]
-    public async Task<ActionResult<ProductConfiguration>> GetConfiguration(string id)
+    [ProducesResponseType(typeof(ProductConfiguration), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<ProductConfiguration>> GetConfiguration([FromRoute] string id, [FromQuery] string responseGroup = null)
     {
-        var configuration = await configurationService.GetNoCloneAsync(id);
+        var configuration = await configurationService.GetNoCloneAsync(id, responseGroup);
 
         if (configuration == null)
         {

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using VirtoCommerce.CatalogModule.Core.Model;
+using VirtoCommerce.CatalogModule.Core.Model.Configuration;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Data.Model;
 using VirtoCommerce.Platform.Core.Common;
@@ -57,36 +58,45 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         public IQueryable<ProductConfigurationOptionEntity> ProductConfigurationOptions => DbContext.Set<ProductConfigurationOptionEntity>();
         public IQueryable<AutomaticLinkQueryEntity> AutomaticLinkQueries => DbContext.Set<AutomaticLinkQueryEntity>();
 
-        public virtual async Task<IList<ProductConfigurationEntity>> GetConfigurationsByIdsAsync(IList<string> ids, CancellationToken cancellationToken)
+        public virtual async Task<IList<ProductConfigurationEntity>> GetConfigurationsByIdsAsync(IList<string> ids, string responseGroup = null, CancellationToken cancellationToken = default)
         {
-            var configurations = await ProductConfigurations
-                .Where(x => ids.Contains(x.Id))
-                .ToListAsync(cancellationToken);
+            var rg = EnumUtility.SafeParseFlags(responseGroup, ProductConfigurationResponseGroup.Full);
 
-            if (configurations.Count > 0)
+            // Use Include/ThenInclude for nested collections rather than three separate ToListAsync
+            // calls + relationship fixup. Fixup against the `NullCollection<T>` initializer on
+            // `section.Options` was not reliably populating the navigation, which broke the Patch
+            // upsert path (it saw an empty target.Options and treated every manifest option as
+            // Added — surfacing as 0-row DbUpdateConcurrencyException on commit).
+            // WithOptions implies WithSections — Sections must be loaded before ThenInclude can reach Options.
+            // We normalize once so callers don't need to know about the implication.
+            var includeSections = rg.HasFlag(ProductConfigurationResponseGroup.Sections) || rg.HasFlag(ProductConfigurationResponseGroup.Options);
+            var includeOptions = rg.HasFlag(ProductConfigurationResponseGroup.Options);
+
+            IQueryable<ProductConfigurationEntity> query = ProductConfigurations.Where(x => ids.Contains(x.Id));
+            if (includeSections)
+            {
+                query = includeOptions
+                    ? query.Include(x => x.Sections).ThenInclude(x => x.Options)
+                    : query.Include(x => x.Sections);
+                // AsSplitQuery only matters when a collection navigation is included.
+                query = query.AsSplitQuery();
+            }
+
+            var configurations = await query.ToListAsync(cancellationToken);
+
+            if (rg.HasFlag(ProductConfigurationResponseGroup.Products) && configurations.Count > 0)
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                var configurationIds = configurations.Select(x => x.Id).ToList();
-
-                var sections = await ProductConfigurationSections
-                    .Where(x => configurationIds.Contains(x.ConfigurationId))
-                    .ToListAsync(cancellationToken);
-
-                if (sections.Count > 0)
+                var productIds = configurations
+                    .SelectMany(c => c.Sections)
+                    .SelectMany(s => s.Options)
+                    .Where(o => !string.IsNullOrEmpty(o.ProductId))
+                    .Select(o => o.ProductId)
+                    .Distinct()
+                    .ToList();
+                if (productIds.Count > 0)
                 {
-                    cancellationToken.ThrowIfCancellationRequested();
-                    var sectionIds = sections.Select(x => x.Id).ToList();
-
-                    var options = await ProductConfigurationOptions
-                        .Where(x => sectionIds.Contains(x.SectionId))
-                        .ToListAsync(cancellationToken);
-
-                    if (options.Count > 0)
-                    {
-                        cancellationToken.ThrowIfCancellationRequested();
-                        var productIds = options.Where(x => !string.IsNullOrEmpty(x.ProductId)).Select(x => x.ProductId).ToList();
-                        await GetItemByIdsAsync(productIds, nameof(ItemResponseGroup.ItemInfo));
-                    }
+                    await GetItemByIdsAsync(productIds, nameof(ItemResponseGroup.ItemInfo));
                 }
             }
 
@@ -240,7 +250,6 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                 return Array.Empty<ItemEntity>();
             }
 
-            // Use breaking query EF performance concept https://docs.microsoft.com/en-us/ef/ef6/fundamentals/performance/perf-whitepaper#8-loading-related-entities
             var result = await Items
                 .Include(x => x.LocalizedNames)
                 .Where(x => itemIds.Contains(x.Id))
@@ -306,7 +315,8 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                 if (itemResponseGroup.HasFlag(ItemResponseGroup.Variations))
 #pragma warning restore CS0618
                 {
-                    // Call GetItemByIds for variations recursively (need to measure performance and data amount first)
+                    // Recursive variation load — measure performance for very large variation graphs before
+                    // turning this on by default. Currently opted in via the deprecated `Variations` flag only.
                     IQueryable<ItemEntity> variationsQuery = Items
                         .Where(x => itemIds.Contains(x.ParentId))
                         .Include(x => x.Images)

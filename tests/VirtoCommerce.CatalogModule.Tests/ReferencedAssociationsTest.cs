@@ -24,7 +24,7 @@ namespace VirtoCommerce.CatalogModule.Tests
             catalogRepository.Setup(r => r.Items).Returns(products);
             catalogRepository
                 .Setup(x => x.GetItemByIdsAsync(It.IsAny<IList<string>>(), It.IsAny<string>()))
-                .ReturnsAsync((IList<string> ids, ItemResponseGroup responseGroup) => products.Where(p => ids.Contains(p.Id)).ToArray());
+                .ReturnsAsync((IList<string> ids, string responseGroup) => products.Where(p => ids.Contains(p.Id)).ToArray());
             catalogRepository.Setup(r => r.Associations).Returns(associations);
 
             _associationService = new AssociationService(() => catalogRepository.Object);

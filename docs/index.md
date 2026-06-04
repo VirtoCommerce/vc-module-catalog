@@ -147,3 +147,7 @@ The indexing process starts automatically based on a pre-defined schedule. Howev
 ***See also:***
 
 [Managing Search Index](managing-search-index.md)
+
+## For developers
+
+[Catalog Domain Model — developer reference](catalog-domain-model.md): entity hierarchy, response groups, save-graph rules (what rides inside a parent's save vs. what must be saved separately), and the API ↔ service ↔ importer mapping. Read before extending the model.

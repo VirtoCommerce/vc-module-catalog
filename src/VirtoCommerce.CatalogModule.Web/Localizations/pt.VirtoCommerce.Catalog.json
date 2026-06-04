@@ -1364,6 +1364,16 @@
           "title": "Propriedades de filtragem",
           "description": "Configuração por loja dos filtros de navegação por facetas. Editável através do widget Propriedades de filtragem na página da loja"
         }
+      },
+      "BackupRestore": {
+        "BatchSize": {
+          "title": "Tamanho do lote de importação/exportação",
+          "description": "Número de registros salvos por lote durante a exportação e importação do catálogo. Valores mais baixos reduzem o uso de memória; valores mais altos melhoram o desempenho"
+        },
+        "ErrorPolicy": {
+          "title": "Política de erros de importação",
+          "description": "Comportamento quando um lote não é salvo durante a importação: 'Stop' aborta a importação do módulo, 'SkipBatch' ignora todo o lote com falha, 'SkipItem' tenta novamente os itens um a um e ignora apenas as linhas com falha"
+        }
       }
     },
     "VirtoCommerce": {

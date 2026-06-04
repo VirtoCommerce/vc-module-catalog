@@ -1364,6 +1364,16 @@
           "title": "Proprietà di filtraggio",
           "description": "Configurazione per negozio dei filtri di navigazione a faccette. Modificabile dal widget Proprietà di filtraggio nella pagina del negozio"
         }
+      },
+      "BackupRestore": {
+        "BatchSize": {
+          "title": "Dimensione batch di importazione/esportazione",
+          "description": "Numero di record salvati per batch durante l'esportazione e l'importazione del catalogo. Valori più bassi riducono l'utilizzo della memoria; valori più alti migliorano il throughput"
+        },
+        "ErrorPolicy": {
+          "title": "Criterio di errore di importazione",
+          "description": "Comportamento quando un batch non viene salvato durante l'importazione: 'Stop' interrompe l'importazione del modulo, 'SkipBatch' salta l'intero batch non riuscito, 'SkipItem' riprova gli elementi uno per uno e salta solo le righe non riuscite"
+        }
       }
     },
     "VirtoCommerce": {
