@@ -11,6 +11,7 @@ using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.ExportImport;
 using VirtoCommerce.Platform.Core.ExportImport;
+using VirtoCommerce.Platform.Core.Settings;
 using Xunit;
 
 namespace VirtoCommerce.CatalogModule.Tests.ExportImport
@@ -80,7 +81,8 @@ namespace VirtoCommerce.CatalogModule.Tests.ExportImport
                 new Mock<IMeasureService>().Object,
                 measureSearchService.Object,
                 new Mock<IPropertyGroupService>().Object,
-                propertyGroupSearchService.Object);
+                propertyGroupSearchService.Object,
+                new Mock<ISettingsManager>().Object);
         }
 
         [Fact]
