@@ -27,7 +27,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="VirtoCommerce.Platform.Modules" Version="3.1031.0-alpha.13291-vcst-5044" />
+    <PackageReference Include="VirtoCommerce.Platform.Modules" Version="3.1034.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\VirtoCommerce.CatalogModule.BulkActions\VirtoCommerce.CatalogModule.BulkActions.csproj" />

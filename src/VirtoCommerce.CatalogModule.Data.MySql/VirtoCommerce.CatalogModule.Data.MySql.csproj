@@ -10,7 +10,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="VirtoCommerce.Platform.Data.MySql" Version="3.1031.0-alpha.13291-vcst-5044" />
+    <PackageReference Include="VirtoCommerce.Platform.Data.MySql" Version="3.1034.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\VirtoCommerce.CatalogModule.Data\VirtoCommerce.CatalogModule.Data.csproj" />
