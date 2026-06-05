@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Hangfire;
 using Microsoft.AspNetCore.Authorization;
@@ -282,7 +283,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
         public ActionResult UpdateAutomaticLinks(string id)
         {
-            BackgroundJob.Enqueue<AutomaticLinksJob>(x => x.UpdateLinks(id, JobCancellationToken.Null));
+            BackgroundJob.Enqueue<AutomaticLinksJob>(x => x.UpdateLinks(id, CancellationToken.None));
             return NoContent();
         }
 
@@ -290,7 +291,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
         public ActionResult DeleteAutomaticLinks(string id)
         {
-            BackgroundJob.Enqueue<AutomaticLinksJob>(x => x.DeleteLinks(id, JobCancellationToken.Null));
+            BackgroundJob.Enqueue<AutomaticLinksJob>(x => x.DeleteLinks(id, CancellationToken.None));
             return NoContent();
         }
 
