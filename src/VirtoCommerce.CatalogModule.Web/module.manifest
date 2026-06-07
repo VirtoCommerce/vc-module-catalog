@@ -24,7 +24,7 @@
     <owner>Virto Commerce</owner>
   </owners>
   <projectUrl>https://github.com/VirtoCommerce/vc-module-catalog</projectUrl>
-  <iconUrl>Modules/$(VirtoCommerce.Catalog)/Content/logo.png</iconUrl>
+  <iconUrl>Modules/$(VirtoCommerce.Catalog)/Content/logo.svg</iconUrl>
   <requireLicenseAcceptance>false</requireLicenseAcceptance>
   <releaseNotes>Third version.</releaseNotes>
   <copyright>Copyright © 2011–2026 Virto Commerce. All rights reserved</copyright>
