@@ -1,12 +1,16 @@
-# v3.800.36
-# https://virtocommerce.atlassian.net/browse/VCST-5151
+# v3.800.38
+# https://virtocommerce.atlassian.net/browse/VCST-4492
 name: Release
 
 on:
   workflow_dispatch:
 
+# Least privilege: the reusable workflow pushes with the REPO_TOKEN PAT, so GITHUB_TOKEN needs only read.
+permissions:
+  contents: read
+
 jobs:
   release:
-    uses: VirtoCommerce/.github/.github/workflows/release.yml@v3.800.36    
+    uses: VirtoCommerce/.github/.github/workflows/release.yml@v3.800.38    
     secrets:
       envPAT: ${{ secrets.REPO_TOKEN }}

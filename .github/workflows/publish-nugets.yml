@@ -1,5 +1,5 @@
-# v3.800.36
-# https://virtocommerce.atlassian.net/browse/VCST-5151
+# v3.800.38
+# https://virtocommerce.atlassian.net/browse/VCST-4492
 name: Publish nuget
 
 on:
@@ -11,14 +11,18 @@ on:
         default: true
         type: boolean
 
+# Least-privilege default; publish-nuget overrides below.
+permissions:
+  contents: read
+
 jobs:
   test:
-    uses: VirtoCommerce/.github/.github/workflows/test-and-sonar.yml@v3.800.36    
+    uses: VirtoCommerce/.github/.github/workflows/test-and-sonar.yml@v3.800.38    
     secrets:
       sonarToken: ${{ secrets.SONAR_TOKEN }}
 
   build:
-    uses: VirtoCommerce/.github/.github/workflows/build.yml@v3.800.36    
+    uses: VirtoCommerce/.github/.github/workflows/build.yml@v3.800.38    
     with:
       uploadPackage: 'true'
       uploadDocker: 'false'
@@ -27,9 +31,13 @@ jobs:
       envPAT: ${{ secrets.REPO_TOKEN }}
 
   publish-nuget:
+    # publish-github.yml creates the release + edits the PR via the passed GITHUB_TOKEN — grant write to both.
+    permissions:
+      contents: write
+      pull-requests: write
     needs:
       [build, test]
-    uses: VirtoCommerce/.github/.github/workflows/publish-github.yml@v3.800.36
+    uses: VirtoCommerce/.github/.github/workflows/publish-github.yml@v3.800.38
     with:
       fullKey: ${{ needs.build.outputs.packageFullKey }}
       forceGithub: false
