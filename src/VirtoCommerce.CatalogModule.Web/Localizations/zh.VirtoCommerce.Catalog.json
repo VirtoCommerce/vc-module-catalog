@@ -858,6 +858,7 @@
       "option-details": {
         "title": "选择项目作为选项",
         "labels": {
+          "default": "默认",
           "quantity": "数量",
           "text": "选项文字"
         },
@@ -1362,6 +1363,16 @@
         "FilteredBrowsing": {
           "title": "筛选属性",
           "description": "按门店配置的分面浏览筛选器，可通过门店页面上的筛选属性小部件进行编辑"
+        }
+      },
+      "BackupRestore": {
+        "BatchSize": {
+          "title": "导入/导出批处理大小",
+          "description": "目录导出和导入期间每批保存的记录数。较小的值可减少内存占用；较大的值可提高吞吐量"
+        },
+        "ErrorPolicy": {
+          "title": "导入错误策略",
+          "description": "导入期间某批次保存失败时的行为：'Stop' 中止模块导入，'SkipBatch' 跳过整个失败批次，'SkipItem' 逐项重试并仅跳过失败的行"
         }
       }
     },

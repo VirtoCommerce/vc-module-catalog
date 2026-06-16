@@ -10,6 +10,8 @@ namespace VirtoCommerce.CatalogModule.Core
     [ExcludeFromCodeCoverage]
     public static class ModuleConstants
     {
+        public const string ModuleId = "VirtoCommerce.Catalog";
+
         public const string ConfigurationSectionTypeProduct = "Product";
         public const string ConfigurationSectionTypeVariation = "Variation";
         public const string ConfigurationSectionTypeText = "Text";
@@ -288,11 +290,40 @@ namespace VirtoCommerce.CatalogModule.Core
                 }
             }
 
+            public static class BackupRestore
+            {
+                public static SettingDescriptor BatchSize { get; } = new SettingDescriptor
+                {
+                    Name = "Catalog.BackupRestore.BatchSize",
+                    GroupName = "Catalog|BackupRestore",
+                    ValueType = SettingValueType.PositiveInteger,
+                    DefaultValue = 50,
+                };
+
+                public static SettingDescriptor ErrorPolicy { get; } = new SettingDescriptor
+                {
+                    Name = "Catalog.BackupRestore.ErrorPolicy",
+                    GroupName = "Catalog|BackupRestore",
+                    ValueType = SettingValueType.ShortText,
+                    DefaultValue = "SkipItem",
+                    AllowedValues = ["Stop", "SkipBatch", "SkipItem"],
+                };
+
+                public static IEnumerable<SettingDescriptor> AllSettings
+                {
+                    get
+                    {
+                        yield return BatchSize;
+                        yield return ErrorPolicy;
+                    }
+                }
+            }
+
             public static IEnumerable<SettingDescriptor> AllSettings
             {
                 get
                 {
-                    return General.AllSettings.Concat(Search.AllSettings);
+                    return General.AllSettings.Concat(Search.AllSettings).Concat(BackupRestore.AllSettings);
                 }
             }
 

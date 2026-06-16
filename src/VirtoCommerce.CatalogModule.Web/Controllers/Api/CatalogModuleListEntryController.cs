@@ -357,14 +357,13 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         private async Task<IList<ListEntryBase>> SearchAllAuthorizedListEntriesAsync(IList<CatalogListEntrySearchCriteria> authorizedCriteria, CancellationToken cancellationToken)
         {
             var result = new List<ListEntryBase>();
-            var cancellationTokenWrapper = new CancellationTokenWrapper(cancellationToken);
 
             foreach (var authorizedSearchCriteria in authorizedCriteria)
             {
                 var searchCriteria = authorizedSearchCriteria.CloneTyped();
                 searchCriteria.Skip = 0;
 
-                result.AddRange(await internalListEntrySearchService.SearchAllAsync(searchCriteria, cancellationTokenWrapper));
+                result.AddRange(await internalListEntrySearchService.SearchAllAsync(searchCriteria, cancellationToken));
             }
 
             return result;

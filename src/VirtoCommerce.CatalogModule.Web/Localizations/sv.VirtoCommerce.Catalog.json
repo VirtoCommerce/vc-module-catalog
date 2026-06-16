@@ -858,6 +858,7 @@
       "option-details": {
         "title": "Välj objekt som alternativ",
         "labels": {
+          "default": "Standard",
           "quantity": "Kvantitet",
           "text": "Text för alternativ"
         },
@@ -1362,6 +1363,16 @@
         "FilteredBrowsing": {
           "title": "Filtreringsegenskaper",
           "description": "Konfiguration av fasettsökningsfilter per butik. Redigeras via widgeten Filtreringsegenskaper på butikssidan"
+        }
+      },
+      "BackupRestore": {
+        "BatchSize": {
+          "title": "Batchstorlek för import/export",
+          "description": "Antal poster som sparas per batch vid export och import av katalogen. Lägre värden minskar minnesanvändningen; högre värden förbättrar genomströmningen"
+        },
+        "ErrorPolicy": {
+          "title": "Felpolicy för import",
+          "description": "Beteende när en batch inte kan sparas vid import: 'Stop' avbryter modulimporten, 'SkipBatch' hoppar över hela den misslyckade batchen, 'SkipItem' försöker igen med posterna en i taget och hoppar endast över de rader som misslyckas"
         }
       }
     },

@@ -425,6 +425,7 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
             modelBuilder.Entity<ProductConfigurationOptionEntity>().HasOne(x => x.Product).WithMany()
                 .HasForeignKey(x => x.ProductId).OnDelete(DeleteBehavior.NoAction);
             modelBuilder.Entity<ProductConfigurationOptionEntity>().Property(x => x.Quantity).HasDefaultValue(1);
+            modelBuilder.Entity<ProductConfigurationOptionEntity>().Property(x => x.IsDefault).HasDefaultValue(false);
 
             #endregion
 

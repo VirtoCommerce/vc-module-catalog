@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentValidation;
 using Ganss.Xss;
@@ -36,8 +37,8 @@ using VirtoCommerce.CatalogModule.Data.Search.Indexing;
 using VirtoCommerce.CatalogModule.Data.Services;
 using VirtoCommerce.CatalogModule.Data.SqlServer;
 using VirtoCommerce.CatalogModule.Data.Validation;
-using VirtoCommerce.CatalogModule.Data.YouTube;
 using VirtoCommerce.CatalogModule.Data.Vimeo;
+using VirtoCommerce.CatalogModule.Data.YouTube;
 using VirtoCommerce.CatalogModule.Web.Authorization;
 using VirtoCommerce.CoreModule.Core.Seo;
 using VirtoCommerce.ExportModule.Core.Model;
@@ -413,19 +414,11 @@ namespace VirtoCommerce.CatalogModule.Web
             // Method intentionally left empty.
         }
 
-        public Task ExportAsync(Stream outStream, ExportImportOptions options, Action<ExportImportProgressInfo> progressCallback,
-            ICancellationToken cancellationToken)
-        {
-            return _appBuilder.ApplicationServices.GetRequiredService<CatalogExportImport>().DoExportAsync(outStream, options,
-                progressCallback, cancellationToken);
-        }
+        public Task ExportAsync(Stream outStream, ExportImportOptions options, Action<ExportImportProgressInfo> progressCallback, CancellationToken cancellationToken)
+            => _appBuilder.ApplicationServices.GetRequiredService<CatalogExportImport>().DoExportAsync(outStream, options, progressCallback, cancellationToken);
 
-        public Task ImportAsync(Stream inputStream, ExportImportOptions options, Action<ExportImportProgressInfo> progressCallback,
-            ICancellationToken cancellationToken)
-        {
-            return _appBuilder.ApplicationServices.GetRequiredService<CatalogExportImport>().DoImportAsync(inputStream, options,
-                progressCallback, cancellationToken);
-        }
+        public Task ImportAsync(Stream inputStream, ExportImportOptions options, Action<ExportImportProgressInfo> progressCallback, CancellationToken cancellationToken)
+            => _appBuilder.ApplicationServices.GetRequiredService<CatalogExportImport>().DoImportAsync(inputStream, options, progressCallback, cancellationToken);
 
         private void RegisterBulkAction(string name, string contextTypeName)
         {

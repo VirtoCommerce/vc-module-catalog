@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
@@ -19,7 +21,7 @@ public class AutomaticLinkService(
 {
     protected virtual int BatchSize { get; set; } = 50;
 
-    public virtual async Task UpdateLinks(string categoryId, ICancellationToken cancellationToken)
+    public virtual async Task UpdateLinks(string categoryId, CancellationToken cancellationToken)
     {
         var query = await GetQuery(categoryId);
         if (query is null)
@@ -43,11 +45,19 @@ public class AutomaticLinkService(
         await DeleteAutomaticLinks(linksToRemove, cancellationToken);
     }
 
-    public async Task DeleteLinks(string categoryId, ICancellationToken cancellationToken)
+    [Obsolete("Use the cancellation-aware overload instead.", DiagnosticId = "VC0014", UrlFormat = "https://docs.virtocommerce.org/products/products-virto3-versions")]
+    public Task UpdateLinks(string categoryId, ICancellationToken cancellationToken)
+        => UpdateLinks(categoryId, CancellationToken.None);
+
+    public async Task DeleteLinks(string categoryId, CancellationToken cancellationToken)
     {
         var linksToRemove = await GetExistingLinks(categoryId, cancellationToken);
         await DeleteAutomaticLinks(linksToRemove, cancellationToken);
     }
+
+    [Obsolete("Use the cancellation-aware overload instead.", DiagnosticId = "VC0014", UrlFormat = "https://docs.virtocommerce.org/products/products-virto3-versions")]
+    public Task DeleteLinks(string categoryId, ICancellationToken cancellationToken)
+        => DeleteLinks(categoryId, CancellationToken.None);
 
 
     protected virtual async Task<AutomaticLinkQuery> GetQuery(string categoryId)
@@ -61,7 +71,7 @@ public class AutomaticLinkService(
         return searchResult.Results.FirstOrDefault();
     }
 
-    protected virtual Task<IList<CategoryLink>> GetExistingLinks(string categoryId, ICancellationToken cancellationToken)
+    protected virtual Task<IList<CategoryLink>> GetExistingLinks(string categoryId, CancellationToken cancellationToken)
     {
         var criteria = AbstractTypeFactory<LinkSearchCriteria>.TryCreateInstance();
         criteria.CategoryIds = [categoryId];
@@ -71,7 +81,7 @@ public class AutomaticLinkService(
         return linkSearchService.SearchAllAsync(criteria, cancellationToken);
     }
 
-    protected virtual async Task CreateLinks(Category category, AutomaticLinkQuery query, IList<CategoryLink> linksToRemove, ICancellationToken cancellationToken)
+    protected virtual async Task CreateLinks(Category category, AutomaticLinkQuery query, IList<CategoryLink> linksToRemove, CancellationToken cancellationToken)
     {
         var newProductIds = new List<string>();
 
@@ -110,7 +120,7 @@ public class AutomaticLinkService(
         }
     }
 
-    protected virtual async Task CreateLinks(Category category, IList<string> productIds, ICancellationToken cancellationToken)
+    protected virtual async Task CreateLinks(Category category, IList<string> productIds, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
         var products = await itemService.GetAsync(productIds);
@@ -134,7 +144,7 @@ public class AutomaticLinkService(
         await itemService.SaveChangesAsync(products);
     }
 
-    protected virtual async Task DeleteAutomaticLinks(IList<CategoryLink> links, ICancellationToken cancellationToken)
+    protected virtual async Task DeleteAutomaticLinks(IList<CategoryLink> links, CancellationToken cancellationToken)
     {
         foreach (var linksBatch in links.Where(x => x.IsAutomatic).Paginate(BatchSize))
         {
@@ -142,7 +152,7 @@ public class AutomaticLinkService(
         }
     }
 
-    protected virtual async Task DeleteLinksBatch(IList<CategoryLink> links, ICancellationToken cancellationToken)
+    protected virtual async Task DeleteLinksBatch(IList<CategoryLink> links, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
         var productIds = links.Select(x => x.EntryId).ToList();

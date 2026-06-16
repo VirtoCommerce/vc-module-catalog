@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -68,7 +69,14 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
 
         Task<IList<MeasureEntity>> GetMeasuresByIdsAsync(IList<string> ids);
 
-        Task<IList<ProductConfigurationEntity>> GetConfigurationsByIdsAsync(IList<string> ids, CancellationToken cancellationToken);
+        [Obsolete("Use GetConfigurationsByIdsAsync with responseGroup instead", DiagnosticId = "VC0014", UrlFormat = "https://docs.virtocommerce.com/catalog-module/")]
+        Task<IList<ProductConfigurationEntity>> GetConfigurationsByIdsAsync(IList<string> ids, CancellationToken cancellationToken)
+             => throw new NotImplementedException("Use GetConfigurationsByIdsAsync with responseGroup instead");
+
+        Task<IList<ProductConfigurationEntity>> GetConfigurationsByIdsAsync(IList<string> ids, string responseGroup = null, CancellationToken cancellationToken = default)
+#pragma warning disable VC0014 // Type or member is obsolete
+            => GetConfigurationsByIdsAsync(ids, cancellationToken);
+#pragma warning restore VC0014 // Type or member is obsolete
 
         Task<IList<AutomaticLinkQueryEntity>> GetAutomaticLinkQueriesByIdsAsync(IList<string> ids, string responseGroup);
     }

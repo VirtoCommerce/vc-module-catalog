@@ -7,7 +7,7 @@ angular.module('virtoCommerce.catalogModule')
         $scope.isValid = false;
 
         $scope.$watch("blade.currentEntity", function () {
-            $scope.isValid = $scope.formScope && $scope.formScope.$valid;
+            $scope.isValid = $scope.formScope && $scope.formScope.$valid && isDirty();
         }, true);
 
         blade.toolbarCommands = [
@@ -31,6 +31,10 @@ angular.module('virtoCommerce.catalogModule')
 
         $scope.saveChanges = function () {
             angular.copy(blade.currentEntity, blade.origEntity);
+
+            if (blade.parentBlade && angular.isFunction(blade.parentBlade.setDefaultOption)) {
+                blade.parentBlade.setDefaultOption(blade.origEntity, blade.origEntity.isDefault);
+            }
 
             $scope.bladeClose();
         };

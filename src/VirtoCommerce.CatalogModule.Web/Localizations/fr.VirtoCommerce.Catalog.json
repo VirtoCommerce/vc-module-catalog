@@ -858,6 +858,7 @@
       "option-details": {
         "title": "Sélectionner des articles comme options",
         "labels": {
+          "default": "Par défaut",
           "quantity": "Quantité",
           "text": "Texte pour l'option"
         },
@@ -1362,6 +1363,16 @@
         "FilteredBrowsing": {
           "title": "Propriétés de filtrage",
           "description": "Configuration par boutique des filtres de navigation à facettes. Modifiable via le widget Propriétés de filtrage sur la page de la boutique"
+        }
+      },
+      "BackupRestore": {
+        "BatchSize": {
+          "title": "Taille de lot d'import/export",
+          "description": "Nombre d'enregistrements enregistrés par lot lors de l'export et de l'import du catalogue. Des valeurs plus faibles réduisent l'utilisation de la mémoire ; des valeurs plus élevées améliorent le débit"
+        },
+        "ErrorPolicy": {
+          "title": "Politique d'erreur à l'import",
+          "description": "Comportement lorsqu'un lot ne peut pas être enregistré lors de l'import : 'Stop' interrompt l'import du module, 'SkipBatch' ignore l'intégralité du lot en échec, 'SkipItem' réessaie les éléments un par un et n'ignore que les lignes en échec"
         }
       }
     },

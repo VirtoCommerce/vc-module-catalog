@@ -19,6 +19,7 @@ public class ProductConfigurationOptionEntity : AuditableEntity, IDataEntity<Pro
 
     [StringLength(255)]
     public string Text { get; set; }
+    public bool IsDefault { get; set; }
 
     public virtual ProductConfigurationSectionEntity Section { get; set; }
     public virtual ItemEntity Product { get; set; }
@@ -37,6 +38,7 @@ public class ProductConfigurationOptionEntity : AuditableEntity, IDataEntity<Pro
         model.ProductId = ProductId;
         model.Quantity = Quantity;
         model.Text = Text;
+        model.IsDefault = IsDefault;
 
         if (Product != null)
         {
@@ -62,13 +64,19 @@ public class ProductConfigurationOptionEntity : AuditableEntity, IDataEntity<Pro
         ProductId = model.ProductId;
         Quantity = model.Quantity;
         Text = model.Text;
+        IsDefault = model.IsDefault;
 
         return this;
     }
 
     public virtual void Patch(ProductConfigurationOptionEntity target)
     {
+        ArgumentNullException.ThrowIfNull(target);
+
+        target.SectionId = SectionId;
+        target.ProductId = ProductId;
         target.Quantity = Quantity;
         target.Text = Text;
+        target.IsDefault = IsDefault;
     }
 }

@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128" role="img" aria-label="Catalog">
+  <title>Catalog</title>
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="92%" y2="100%">
+      <stop offset="0%" stop-color="#3FD8B4"/>
+      <stop offset="100%" stop-color="#0E9E80"/>
+    </linearGradient>
+    <filter id="lift" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="3" stdDeviation="3.5" flood-color="#064F40" flood-opacity="0.30"/>
+    </filter>
+  </defs>
+
+  <rect width="128" height="128" rx="28" fill="url(#bg)"/>
+
+  <g transform="translate(64,62)" filter="url(#lift)">
+    <!-- Open lid flaps -->
+    <polygon points="-38,-10 -4,-10 -14,-34 -48,-24" fill="#BDEFE2"/>
+    <polygon points="4,-10 38,-10 48,-24 14,-34" fill="#9FE7D5"/>
+
+    <!-- Products inside, poking above the rim -->
+    <rect x="-25" y="-30" width="18" height="26" rx="3" fill="#FFC24D"/>
+    <rect x="-8" y="-37" width="18" height="33" rx="3" fill="#5FC8F5"/>
+    <rect x="9" y="-28" width="18" height="24" rx="3" fill="#E5484D"/>
+
+    <!-- Box front -->
+    <path d="M-40,-10 L40,-10 L34,40 L-34,40 Z" fill="#ffffff"/>
+    <path d="M-40,-10 L0,5 L40,-10 M0,5 V40" fill="none" stroke="#0E9E80" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+</svg>

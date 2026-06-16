@@ -858,6 +858,7 @@
       "option-details": {
         "title": "Artikel als Optionen auswählen",
         "labels": {
+          "default": "Standard",
           "quantity": "Menge",
           "text": "Text für Option"
         },
@@ -1362,6 +1363,16 @@
         "FilteredBrowsing": {
           "title": "Filtereigenschaften",
           "description": "Konfiguration der facettierten Browsing-Filter pro Store. Bearbeitung über das Widget Filtereigenschaften auf der Store-Seite"
+        }
+      },
+      "BackupRestore": {
+        "BatchSize": {
+          "title": "Stapelgröße für Import/Export",
+          "description": "Anzahl der Datensätze, die beim Katalog-Export und -Import pro Stapel gespeichert werden. Niedrigere Werte reduzieren den Speicherverbrauch, höhere Werte verbessern den Durchsatz"
+        },
+        "ErrorPolicy": {
+          "title": "Fehlerrichtlinie beim Import",
+          "description": "Verhalten, wenn ein Stapel beim Import nicht gespeichert werden kann: 'Stop' bricht den Modulimport ab, 'SkipBatch' überspringt den gesamten fehlgeschlagenen Stapel, 'SkipItem' wiederholt die Elemente einzeln und überspringt nur die fehlerhaften Zeilen"
         }
       }
     },

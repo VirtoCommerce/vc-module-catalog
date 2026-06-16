@@ -858,6 +858,7 @@
       "option-details": {
         "title": "Wybierz elementy jako opcje",
         "labels": {
+          "default": "Domyślna",
           "quantity": "Ilość",
           "text": "Tekst dla opcji"
         },
@@ -1362,6 +1363,16 @@
         "FilteredBrowsing": {
           "title": "Właściwości filtrowania",
           "description": "Konfiguracja filtrów przeglądania fasetowego dla każdego sklepu. Edytowane za pomocą widżetu Właściwości filtrowania na stronie sklepu"
+        }
+      },
+      "BackupRestore": {
+        "BatchSize": {
+          "title": "Rozmiar partii importu/eksportu",
+          "description": "Liczba rekordów zapisywanych w jednej partii podczas eksportu i importu katalogu. Niższe wartości zmniejszają zużycie pamięci; wyższe poprawiają wydajność"
+        },
+        "ErrorPolicy": {
+          "title": "Zasady obsługi błędów importu",
+          "description": "Zachowanie, gdy zapis partii nie powiedzie się podczas importu: 'Stop' przerywa import modułu, 'SkipBatch' pomija całą nieudaną partię, 'SkipItem' ponawia elementy pojedynczo i pomija tylko błędne wiersze"
         }
       }
     },
