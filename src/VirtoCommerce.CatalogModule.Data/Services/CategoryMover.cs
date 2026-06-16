@@ -16,6 +16,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
     public class CategoryMover : ListEntryMover<Category>
     {
         private const int CategoryPageSize = 200;
+        private const int CategoryIdsChunkSize = 10;
         private const int ProductPageSize = 50;
 
         private readonly ICategoryService _categoryService;
@@ -53,6 +54,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             // per-product filter in CascadeProductsAsync makes same-catalog reparents a cheap no-op.
             var targetCatalogId = categories[0].CatalogId;
             var categoryIds = categories.Select(x => x.Id).ToArray();
+
             await CascadeProductsAsync(categoryIds, targetCatalogId);
         }
 
@@ -178,6 +180,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             {
                 byParent[parentKey] = children = new List<Category>();
             }
+
             children.Add(category);
         }
 
@@ -207,7 +210,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         private async Task CascadeProductsAsync(IList<string> categoryIds, string targetCatalogId)
         {
-            foreach (var idsChunk in categoryIds.Chunk(ProductPageSize))
+            foreach (var idsChunk in categoryIds.Chunk(CategoryIdsChunkSize))
             {
                 var skip = 0;
                 while (true)
@@ -243,6 +246,7 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     {
                         break;
                     }
+
                     skip += ProductPageSize;
                 }
             }
