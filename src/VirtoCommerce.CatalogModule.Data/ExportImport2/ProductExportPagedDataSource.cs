@@ -94,12 +94,17 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             var allImages = hasImagesObjects.SelectMany(x => x.Images).ToArray();
             foreach (var image in allImages)
             {
-                if (!image.HasExternalUrl) // Skip external links.
+                // Skip external links. HasExternalUrl is computed from RelativeUrl, but the read
+                // below streams from image.Url — guard against an absolute/foreign Url too, otherwise
+                // the FileSystem blob provider resolves it to an invalid local path and throws (VCST-5278).
+                if (image.HasExternalUrl || Uri.IsWellFormedUriString(image.Url, UriKind.Absolute))
                 {
-                    using (var stream = _blobStorageProvider.OpenRead(image.Url))
-                    {
-                        image.BinaryData = stream.ReadFully();
-                    }
+                    continue;
+                }
+
+                using (var stream = _blobStorageProvider.OpenRead(image.Url))
+                {
+                    image.BinaryData = stream.ReadFully();
                 }
             }
         }
