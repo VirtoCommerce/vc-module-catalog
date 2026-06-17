@@ -97,7 +97,12 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                 // Skip external links. HasExternalUrl is computed from RelativeUrl, but the read
                 // below streams from image.Url — guard against an absolute/foreign Url too, otherwise
                 // the FileSystem blob provider resolves it to an invalid local path and throws (VCST-5278).
-                if (image.HasExternalUrl || Uri.IsWellFormedUriString(image.Url, UriKind.Absolute))
+                // Use Uri.TryCreate (not Uri.IsWellFormedUriString) so absolute URLs containing unescaped
+                // characters (spaces, em-dashes, non-ASCII like "— копия.png") are still recognised as
+                // absolute http/https links and skipped; genuinely relative local blob paths still load.
+                if (image.HasExternalUrl
+                    || (Uri.TryCreate(image.Url, UriKind.Absolute, out var imageUri)
+                        && (imageUri.Scheme == Uri.UriSchemeHttp || imageUri.Scheme == Uri.UriSchemeHttps)))
                 {
                     continue;
                 }
