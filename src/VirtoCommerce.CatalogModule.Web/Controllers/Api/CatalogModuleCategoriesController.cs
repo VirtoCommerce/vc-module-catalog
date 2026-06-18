@@ -8,15 +8,22 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using VirtoCommerce.CatalogModule.Core;
 using VirtoCommerce.CatalogModule.Core.Extensions;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.BackgroundJobs;
+using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.CatalogModule.Web.Authorization;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.Platform.Core.PushNotifications;
+using VirtoCommerce.Platform.Core.Security;
+using VirtoCommerce.SearchModule.Core.BackgroundJobs;
+using VirtoCommerce.SearchModule.Core.Model;
 using VirtoCommerce.Seo.Core.Models;
 using Permissions = VirtoCommerce.CatalogModule.Core.ModuleConstants.Security.Permissions;
+using SearchPermissions = VirtoCommerce.SearchModule.Core.ModuleConstants.Security.Permissions;
 
 namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 {
@@ -25,7 +32,11 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
     public class CatalogModuleCategoriesController(
         ICategoryService categoryService,
         ICatalogService catalogService,
-        CatalogEntityAuthorizationService authorizationService)
+        CatalogEntityAuthorizationService authorizationService,
+        Func<ICatalogRepository> catalogRepositoryFactory,
+        IIndexingJobService indexingJobService,
+        IUserNameResolver userNameResolver,
+        IPushNotificationManager pushNotifier)
         : Controller
     {
         /// <summary>
@@ -293,6 +304,62 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         {
             BackgroundJob.Enqueue<AutomaticLinksJob>(x => x.DeleteLinks(id, CancellationToken.None));
             return NoContent();
+        }
+
+        /// <summary>
+        /// Builds search index for all products in the specified category and its subcategories.
+        /// </summary>
+        /// <param name="id">Category id.</param>
+        [HttpPost]
+        [Route("{id}/index/products")]
+        [Authorize(SearchPermissions.IndexRebuild)]
+        public async Task<ActionResult<IndexProgressPushNotification>> IndexCategoryProducts([FromRoute] string id)
+        {
+            var category = await categoryService.GetNoCloneAsync(id, nameof(CategoryResponseGroup.Info));
+            if (category == null)
+            {
+                return NotFound();
+            }
+
+            if (!await authorizationService.AuthorizeAsync(User, category, Permissions.CategoriesRead))
+            {
+                return Forbid();
+            }
+
+            using var repository = catalogRepositoryFactory();
+
+            var childCategoryIds = await repository.GetAllChildrenCategoriesIdsAsync([id]);
+            var allCategoryIds = childCategoryIds.Concat([id]).ToList();
+
+            var directProductIds = await repository.Items
+                .Where(i => i.ParentId == null && allCategoryIds.Contains(i.CategoryId))
+                .Select(i => i.Id)
+                .ToListAsync();
+
+            var linkedProductIds = await repository.CategoryItemRelations
+                .Where(r => allCategoryIds.Contains(r.CategoryId))
+                .Join(repository.Items.Where(i => i.ParentId == null),
+                    r => r.ItemId,
+                    i => i.Id,
+                    (r, i) => r.ItemId)
+                .Distinct()
+                .ToListAsync();
+
+            var allProductIds = directProductIds.Union(linkedProductIds, StringComparer.OrdinalIgnoreCase).ToList();
+
+            var currentUserName = userNameResolver.GetCurrentUserName();
+            var notification = indexingJobService.Enqueue(currentUserName,
+            [
+                new IndexingOptions
+                {
+                    DocumentType = KnownDocumentTypes.Product,
+                    DocumentIds = allProductIds,
+                }
+            ]);
+
+            pushNotifier.Send(notification);
+
+            return Ok(notification);
         }
 
         private async Task<bool> CategoryExistsAsync(Category category)
