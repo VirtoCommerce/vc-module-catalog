@@ -328,24 +328,8 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 
             using var repository = catalogRepositoryFactory();
 
-            var childCategoryIds = await repository.GetAllChildrenCategoriesIdsAsync([id]);
-            var allCategoryIds = childCategoryIds.Concat([id]).ToList();
-
-            var directProductIds = await repository.Items
-                .Where(i => i.ParentId == null && allCategoryIds.Contains(i.CategoryId))
-                .Select(i => i.Id)
-                .ToListAsync();
-
-            var linkedProductIds = await repository.CategoryItemRelations
-                .Where(r => allCategoryIds.Contains(r.CategoryId))
-                .Join(repository.Items.Where(i => i.ParentId == null),
-                    r => r.ItemId,
-                    i => i.Id,
-                    (r, i) => r.ItemId)
-                .Distinct()
-                .ToListAsync();
-
-            var allProductIds = directProductIds.Union(linkedProductIds, StringComparer.OrdinalIgnoreCase).ToList();
+            var allCategoryIds = await GetAllCategoryIdsAsync(repository, id);
+            var allProductIds = await GetProductIdsAsync(repository, allCategoryIds);
 
             var currentUserName = userNameResolver.GetCurrentUserName();
             var notification = indexingJobService.Enqueue(currentUserName,
@@ -358,8 +342,57 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             ]);
 
             pushNotifier.Send(notification);
-
             return Ok(notification);
+        }
+
+        private static async Task<List<string>> GetAllCategoryIdsAsync(ICatalogRepository repository, string rootCategoryId)
+        {
+            var childCategoryIds = await repository.GetAllChildrenCategoriesIdsAsync([rootCategoryId]);
+            var visited = new HashSet<string>(childCategoryIds, StringComparer.OrdinalIgnoreCase) { rootCategoryId };
+            var categoriesToExpand = visited.ToList();
+
+            while (categoriesToExpand.Count > 0)
+            {
+                var virtualCategoryTargetIds = await repository.CategoryLinks
+                    .Where(x => categoriesToExpand.Contains(x.SourceCategoryId) && x.TargetCategoryId != null)
+                    .Select(x => x.TargetCategoryId)
+                    .Distinct()
+                    .ToListAsync();
+
+                var newCategoryTargetIds = virtualCategoryTargetIds.Where(visited.Add).ToList();
+                if (newCategoryTargetIds.Count == 0)
+                {
+                    break;
+                }
+
+                var newChildCategoryIds = await repository.GetAllChildrenCategoriesIdsAsync(newCategoryTargetIds);
+                foreach (var id in newChildCategoryIds)
+                {
+                    visited.Add(id);
+                }
+
+                categoriesToExpand = newCategoryTargetIds;
+            }
+
+            return visited.ToList();
+        }
+
+        private static async Task<List<string>> GetProductIdsAsync(ICatalogRepository repository, List<string> categoryIds)
+        {
+            var mainProducts = repository.Items.Where(i => i.ParentId == null);
+
+            var directIds = await mainProducts
+                .Where(i => categoryIds.Contains(i.CategoryId))
+                .Select(i => i.Id)
+                .ToListAsync();
+
+            var linkedIds = await repository.CategoryItemRelations
+                .Where(r => categoryIds.Contains(r.CategoryId) && mainProducts.Any(i => i.Id == r.ItemId))
+                .Select(r => r.ItemId)
+                .Distinct()
+                .ToListAsync();
+
+            return directIds.Union(linkedIds, StringComparer.OrdinalIgnoreCase).ToList();
         }
 
         private async Task<bool> CategoryExistsAsync(Category category)

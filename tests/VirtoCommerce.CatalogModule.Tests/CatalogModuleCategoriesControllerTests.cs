@@ -257,6 +257,132 @@ namespace VirtoCommerce.CatalogModule.Tests
             Assert.Empty(captured);
         }
 
+        [Fact]
+        public async Task IndexCategoryProducts_VirtualCategory_FindsProductsFromTargetPhysicalCategory()
+        {
+            // Arrange
+            const string virtCatId = "virt-cat";
+            const string physCatId = "phys-cat";
+
+            var items = new List<ItemEntity>
+            {
+                new() { Id = "p1", CategoryId = physCatId, ParentId = null },
+                new() { Id = "p2", CategoryId = physCatId, ParentId = null },
+            };
+            var categoryLinks = new List<CategoryRelationEntity>
+            {
+                new() { SourceCategoryId = virtCatId, TargetCategoryId = physCatId },
+            };
+
+            SetupCategory(virtCatId);
+            SetupAuthorizationSuccess();
+            SetupRepository(virtCatId, childIds: [], items: items, relations: [], categoryLinks: categoryLinks);
+
+            _repositoryMock
+                .Setup(x => x.GetAllChildrenCategoriesIdsAsync(It.Is<IList<string>>(ids => ids.Contains(physCatId))))
+                .ReturnsAsync([]);
+
+            SetupEnqueue();
+
+            var controller = CreateController();
+
+            // Act
+            var result = await controller.IndexCategoryProducts(virtCatId);
+
+            // Assert
+            Assert.IsType<OkObjectResult>(result.Result);
+            var captured = CaptureEnqueuedIds();
+            Assert.Equal(2, captured.Count);
+            Assert.Contains("p1", captured);
+            Assert.Contains("p2", captured);
+        }
+
+        [Fact]
+        public async Task IndexCategoryProducts_VirtualCategoryWithChildren_IncludesSubcategoryProducts()
+        {
+            // Arrange
+            const string virtCatId = "virt-cat";
+            const string physCatId = "phys-cat";
+            const string childCatId = "child-cat";
+
+            var items = new List<ItemEntity>
+            {
+                new() { Id = "p1", CategoryId = physCatId, ParentId = null },
+                new() { Id = "p2", CategoryId = childCatId, ParentId = null },
+            };
+            var categoryLinks = new List<CategoryRelationEntity>
+            {
+                new() { SourceCategoryId = virtCatId, TargetCategoryId = physCatId },
+            };
+
+            SetupCategory(virtCatId);
+            SetupAuthorizationSuccess();
+            SetupRepository(virtCatId, childIds: [], items: items, relations: [], categoryLinks: categoryLinks);
+
+            _repositoryMock
+                .Setup(x => x.GetAllChildrenCategoriesIdsAsync(It.Is<IList<string>>(ids => ids.Contains(physCatId))))
+                .ReturnsAsync([childCatId]);
+
+            SetupEnqueue();
+
+            var controller = CreateController();
+
+            // Act
+            var result = await controller.IndexCategoryProducts(virtCatId);
+
+            // Assert
+            Assert.IsType<OkObjectResult>(result.Result);
+            var captured = CaptureEnqueuedIds();
+            Assert.Equal(2, captured.Count);
+            Assert.Contains("p1", captured);
+            Assert.Contains("p2", captured);
+        }
+
+        [Fact]
+        public async Task IndexCategoryProducts_ChainedVirtualCategories_FollowsMultipleHops()
+        {
+            // Arrange
+            const string virtCatAId = "virt-cat-a";
+            const string virtCatBId = "virt-cat-b";
+            const string physCatCId = "phys-cat-c";
+
+            var items = new List<ItemEntity>
+            {
+                new() { Id = "p1", CategoryId = physCatCId, ParentId = null },
+                new() { Id = "p2", CategoryId = physCatCId, ParentId = null },
+            };
+            var categoryLinks = new List<CategoryRelationEntity>
+            {
+                new() { SourceCategoryId = virtCatAId, TargetCategoryId = virtCatBId },
+                new() { SourceCategoryId = virtCatBId, TargetCategoryId = physCatCId },
+            };
+
+            SetupCategory(virtCatAId);
+            SetupAuthorizationSuccess();
+            SetupRepository(virtCatAId, childIds: [], items: items, relations: [], categoryLinks: categoryLinks);
+
+            _repositoryMock
+                .Setup(x => x.GetAllChildrenCategoriesIdsAsync(It.Is<IList<string>>(ids => ids.Contains(virtCatBId))))
+                .ReturnsAsync([]);
+            _repositoryMock
+                .Setup(x => x.GetAllChildrenCategoriesIdsAsync(It.Is<IList<string>>(ids => ids.Contains(physCatCId))))
+                .ReturnsAsync([]);
+
+            SetupEnqueue();
+
+            var controller = CreateController();
+
+            // Act
+            var result = await controller.IndexCategoryProducts(virtCatAId);
+
+            // Assert
+            Assert.IsType<OkObjectResult>(result.Result);
+            var captured = CaptureEnqueuedIds();
+            Assert.Equal(2, captured.Count);
+            Assert.Contains("p1", captured);
+            Assert.Contains("p2", captured);
+        }
+
         private void SetupCategory(string id)
         {
             _categoryServiceMock
@@ -264,7 +390,12 @@ namespace VirtoCommerce.CatalogModule.Tests
                 .ReturnsAsync([new Category { Id = id }]);
         }
 
-        private void SetupRepository(string categoryId, IList<string> childIds, IList<ItemEntity> items, IList<CategoryItemRelationEntity> relations)
+        private void SetupRepository(
+            string categoryId,
+            IList<string> childIds,
+            IList<ItemEntity> items,
+            IList<CategoryItemRelationEntity> relations,
+            IList<CategoryRelationEntity> categoryLinks = null)
         {
             _repositoryMock
                 .Setup(x => x.GetAllChildrenCategoriesIdsAsync(It.Is<IList<string>>(ids => ids.Contains(categoryId))))
@@ -277,6 +408,10 @@ namespace VirtoCommerce.CatalogModule.Tests
             _repositoryMock
                 .Setup(x => x.CategoryItemRelations)
                 .Returns(relations.BuildMock());
+
+            _repositoryMock
+                .Setup(x => x.CategoryLinks)
+                .Returns((categoryLinks ?? []).BuildMock());
         }
 
         private void SetupEnqueue()
