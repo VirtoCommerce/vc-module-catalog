@@ -8,13 +8,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using VirtoCommerce.CatalogModule.Core;
 using VirtoCommerce.CatalogModule.Core.Extensions;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.BackgroundJobs;
-using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.CatalogModule.Web.Authorization;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.PushNotifications;
@@ -33,7 +31,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         ICategoryService categoryService,
         ICatalogService catalogService,
         CatalogEntityAuthorizationService authorizationService,
-        Func<ICatalogRepository> catalogRepositoryFactory,
+        ICategoryIndexingService categoryIndexingService,
         IIndexingJobService indexingJobService,
         IUserNameResolver userNameResolver,
         IPushNotificationManager pushNotifier)
@@ -326,10 +324,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 return Forbid();
             }
 
-            using var repository = catalogRepositoryFactory();
-
-            var allCategoryIds = await GetAllCategoryIdsAsync(repository, id);
-            var allProductIds = await GetProductIdsAsync(repository, allCategoryIds);
+            var allProductIds = await categoryIndexingService.GetProductIdsForIndexAsync(id);
 
             var currentUserName = userNameResolver.GetCurrentUserName();
             var notification = indexingJobService.Enqueue(currentUserName,
@@ -343,56 +338,6 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 
             pushNotifier.Send(notification);
             return Ok(notification);
-        }
-
-        private static async Task<List<string>> GetAllCategoryIdsAsync(ICatalogRepository repository, string rootCategoryId)
-        {
-            var childCategoryIds = await repository.GetAllChildrenCategoriesIdsAsync([rootCategoryId]);
-            var visited = new HashSet<string>(childCategoryIds, StringComparer.OrdinalIgnoreCase) { rootCategoryId };
-            var categoriesToExpand = visited.ToList();
-
-            while (categoriesToExpand.Count > 0)
-            {
-                var virtualCategoryTargetIds = await repository.CategoryLinks
-                    .Where(x => categoriesToExpand.Contains(x.SourceCategoryId) && x.TargetCategoryId != null)
-                    .Select(x => x.TargetCategoryId)
-                    .Distinct()
-                    .ToListAsync();
-
-                var newCategoryTargetIds = virtualCategoryTargetIds.Where(visited.Add).ToList();
-                if (newCategoryTargetIds.Count == 0)
-                {
-                    break;
-                }
-
-                var newChildCategoryIds = await repository.GetAllChildrenCategoriesIdsAsync(newCategoryTargetIds);
-                foreach (var id in newChildCategoryIds)
-                {
-                    visited.Add(id);
-                }
-
-                categoriesToExpand = newCategoryTargetIds;
-            }
-
-            return visited.ToList();
-        }
-
-        private static async Task<List<string>> GetProductIdsAsync(ICatalogRepository repository, List<string> categoryIds)
-        {
-            var mainProducts = repository.Items.Where(i => i.ParentId == null);
-
-            var directIds = await mainProducts
-                .Where(i => categoryIds.Contains(i.CategoryId))
-                .Select(i => i.Id)
-                .ToListAsync();
-
-            var linkedIds = await repository.CategoryItemRelations
-                .Where(r => categoryIds.Contains(r.CategoryId) && mainProducts.Any(i => i.Id == r.ItemId))
-                .Select(r => r.ItemId)
-                .Distinct()
-                .ToListAsync();
-
-            return directIds.Union(linkedIds, StringComparer.OrdinalIgnoreCase).ToList();
         }
 
         private async Task<bool> CategoryExistsAsync(Category category)
