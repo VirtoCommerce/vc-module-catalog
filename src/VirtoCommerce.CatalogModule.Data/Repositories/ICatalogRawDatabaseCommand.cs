@@ -25,9 +25,6 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
         /// <param name="dbContext"></param>
         /// <param name="categoryIds"></param>
         /// <returns>The array of Category Id</returns>
-        [Obsolete("Use GetChildCategoriesAsync instead.", DiagnosticId = "VC0011", UrlFormat = "https://docs.virtocommerce.org/products/products-virto3-versions")]
-
-        Task<IList<string>> GetAllChildrenCategoriesIdsAsync(CatalogDbContext dbContext, IList<string> categoryIds);
 
         /// <summary>
         /// Returns child categories for specific array of parent category ids.

@@ -22,16 +22,6 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
         private readonly IProductSearchService _productsSearchService;
         private readonly IMeasureService _measureService;
 
-        [Obsolete("Use ProductDocumentBuilder(ISettingsManager settingsManager, IPropertySearchService propertySearchService, IItemService itemService, IProductSearchService productsSearchService, IMeasureService measureService)", DiagnosticId = "VC0010", UrlFormat = "https://docs.virtocommerce.org/platform/user-guide/versions/virto3-products-versions/")]
-        public ProductDocumentBuilder(
-            ISettingsManager settingsManager,
-            IPropertySearchService propertySearchService,
-            IItemService itemService,
-            IProductSearchService productsSearchService)
-            : this(settingsManager, propertySearchService, itemService, productsSearchService, null)
-        {
-        }
-
         public ProductDocumentBuilder(
             ISettingsManager settingsManager,
             IPropertySearchService propertySearchService,
