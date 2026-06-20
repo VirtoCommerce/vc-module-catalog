@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using VirtoCommerce.CatalogModule.Core.Model;
+using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Services;
 
@@ -8,7 +9,8 @@ namespace VirtoCommerce.CatalogModule2.Data.Services
 {
     public class CategoryMover2 : CategoryMover
     {
-        public CategoryMover2(ICategoryService categoryService) : base(categoryService)
+        public CategoryMover2(ICategoryService categoryService, ICategorySearchService categorySearchService, IProductSearchService productSearchService, IItemService itemService)
+            : base(categoryService, categorySearchService, productSearchService, itemService)
         {
         }
         public override Task ConfirmMoveAsync(IEnumerable<Category> entities)
