@@ -340,9 +340,6 @@ namespace VirtoCommerce.CatalogModule.Core
 #pragma warning restore S3218
         }
 
-        [Obsolete("Use VirtoCommerce.CatalogModule.Core.Outlines.OutlineString.NameDelimiter", DiagnosticId = "VC0011", UrlFormat = "https://docs.virtocommerce.org/products/products-virto3-versions")]
-        public const string OutlineDelimiter = OutlineString.NameDelimiter;
-
         public const string OperationLogVariationMarker = "MainProductId:";
         public const int MaxSEOTitleLength = 70;
     }

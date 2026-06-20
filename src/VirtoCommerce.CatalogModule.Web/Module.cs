@@ -55,7 +55,6 @@ using VirtoCommerce.Platform.Data.Extensions;
 using VirtoCommerce.Platform.Data.MySql.Extensions;
 using VirtoCommerce.Platform.Data.PostgreSql.Extensions;
 using VirtoCommerce.Platform.Data.SqlServer.Extensions;
-using VirtoCommerce.Platform.Modules;
 using VirtoCommerce.Platform.Security.Authorization;
 using VirtoCommerce.SearchModule.Core.Model;
 using VirtoCommerce.SearchModule.Core.Services;
@@ -66,13 +65,15 @@ using ISeoResolver = VirtoCommerce.Seo.Core.Services.ISeoResolver;
 
 namespace VirtoCommerce.CatalogModule.Web
 {
-    public class Module : IModule, IHasConfiguration, IExportSupport, IImportSupport
+    public class Module : IModule, IHasConfiguration, IHasModuleService, IExportSupport, IImportSupport
     {
         private IApplicationBuilder _appBuilder;
 
         public ManifestModuleInfo ModuleInfo { get; set; }
 
         public IConfiguration Configuration { get; set; }
+
+        public IModuleService ModuleService { get; set; }
 
         // optional modules
         private const string BulkActionsModuleId = "VirtoCommerce.BulkActionsModule";
@@ -173,9 +174,6 @@ namespace VirtoCommerce.CatalogModule.Web
 
             serviceCollection.AddTransient<ISeoResolver, CatalogSeoResolver>();
             serviceCollection.AddTransient<ISeoResolver, BrandSeoResolver>();
-#pragma warning disable VC0010 // Type or member is obsolete
-            serviceCollection.AddTransient<ISeoBySlugResolver, CatalogSeoBySlugResolver>();
-#pragma warning restore VC0010 // Type or member is obsolete
             // Register CatalogSeoResolver as concrete type to be able to use it in BrandSeoResolver
             serviceCollection.AddTransient<CatalogSeoResolver>();
 
@@ -277,7 +275,7 @@ namespace VirtoCommerce.CatalogModule.Web
 
             #region BulkActions
 
-            if (ModuleBootstrapper.Instance.IsInstalled(BulkActionsModuleId))
+            if (ModuleService.IsInstalled(BulkActionsModuleId))
             {
                 serviceCollection.AddTransient<IBulkPropertyUpdateManager, BulkPropertyUpdateManager>();
                 serviceCollection.AddTransient<IDataSourceFactory, DataSourceFactory>();
@@ -364,7 +362,7 @@ namespace VirtoCommerce.CatalogModule.Web
 
             #region Register types for generic Export
 
-            if (ModuleBootstrapper.Instance.IsInstalled(GenericExportModuleId))
+            if (ModuleService.IsInstalled(GenericExportModuleId))
             {
                 var registrar = appBuilder.ApplicationServices.GetService<IKnownExportTypesRegistrar>();
                 registrar.RegisterType(
@@ -397,7 +395,7 @@ namespace VirtoCommerce.CatalogModule.Web
 
             #region BulkActions
 
-            if (ModuleBootstrapper.Instance.IsInstalled(BulkActionsModuleId))
+            if (ModuleService.IsInstalled(BulkActionsModuleId))
             {
                 AbstractTypeFactory<BulkActionContext>.RegisterType<CategoryChangeBulkActionContext>();
                 AbstractTypeFactory<BulkActionContext>.RegisterType<PropertiesUpdateBulkActionContext>();
