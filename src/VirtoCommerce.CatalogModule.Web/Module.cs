@@ -24,6 +24,8 @@ using VirtoCommerce.CatalogModule.Core.Model.OutlinePart;
 using VirtoCommerce.CatalogModule.Core.Options;
 using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CatalogModule.Core.Search.Indexed;
+using VirtoCommerce.CatalogModule.Core.Search.Sorting;
+using VirtoCommerce.CatalogModule.Core.Search.Sorting.Resolvers;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Authorization;
 using VirtoCommerce.CatalogModule.Data.ExportImport;
@@ -34,6 +36,7 @@ using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.CatalogModule.Data.Search;
 using VirtoCommerce.CatalogModule.Data.Search.BrowseFilters;
 using VirtoCommerce.CatalogModule.Data.Search.Indexing;
+using VirtoCommerce.CatalogModule.Data.Search.Sorting;
 using VirtoCommerce.CatalogModule.Data.Services;
 using VirtoCommerce.CatalogModule.Data.SqlServer;
 using VirtoCommerce.CatalogModule.Data.Validation;
@@ -295,6 +298,18 @@ namespace VirtoCommerce.CatalogModule.Web
             serviceCollection.AddSingleton<IPropertyValueSanitizer, PropertyValueSanitizer>();
 
             serviceCollection.AddTransient<IBrandSettingService, BrandSettingService>();
+
+            // Product search orderings ("sort by"): built-in resolvers + registry + store-level override service + sortable-fields provider.
+            serviceCollection.AddSingleton<IProductSearchOrderResolver, FeaturedProductSearchOrderResolver>();
+            serviceCollection.AddSingleton<IProductSearchOrderResolver, NameAscendingProductSearchOrderResolver>();
+            serviceCollection.AddSingleton<IProductSearchOrderResolver, NameDescendingProductSearchOrderResolver>();
+            serviceCollection.AddSingleton<IProductSearchOrderResolver, PriceAscendingProductSearchOrderResolver>();
+            serviceCollection.AddSingleton<IProductSearchOrderResolver, PriceDescendingProductSearchOrderResolver>();
+            serviceCollection.AddSingleton<IProductSearchOrderResolver, CreatedDateDescendingProductSearchOrderResolver>();
+            serviceCollection.AddSingleton<IProductSearchOrderResolver, CreatedDateAscendingProductSearchOrderResolver>();
+            serviceCollection.AddSingleton<IProductSearchOrderResolverRegistry, ProductSearchOrderResolverRegistry>();
+            serviceCollection.AddTransient<IProductSearchOrderService, ProductSearchOrderService>();
+            serviceCollection.AddTransient<IProductSortableFieldService, ProductSortableFieldService>();
 
             serviceCollection.AddTransient<IAutomaticLinkQueryService, AutomaticLinkQueryService>();
             serviceCollection.AddTransient<IAutomaticLinkQuerySearchService, AutomaticLinkQuerySearchService>();

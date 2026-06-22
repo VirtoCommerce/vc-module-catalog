@@ -454,6 +454,13 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
                     template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/widgets/aggregationPropertiesWidget.tpl.html'
                 }, 'storeDetail');
 
+                // Search configuration (sorting + facets) in store details
+                widgetService.registerWidget({
+                    controller: 'virtoCommerce.catalogModule.searchConfigurationWidgetController',
+                    template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/widgets/searchConfigurationWidget.tpl.html',
+                    isVisible: function (blade) { return !blade.isNew; }
+                }, 'storeDetail');
+
                 // predefine search filters for catalog search
                 predefinedSearchFilters.register(1477584000000, 'catalogSearchFiltersDate', [
                     { name: 'catalog.blades.categories-items-list.labels.filter-new' },

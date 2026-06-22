@@ -1,0 +1,13 @@
+<div class="blade-content">
+  <div class="blade-inner">
+    <div class="inner-block">
+      <ul class="list __items">
+        <li class="list-item" ng-repeat="item in blade.menuItems" ng-click="item.action()">
+          <div class="list-t">
+            <i class="{{ item.icon }}"></i>&nbsp;<span>{{ item.name | translate }}</span>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
