@@ -15,6 +15,11 @@ angular.module('virtoCommerce.catalogModule')
 
         blade.languages = (blade.store && blade.store.languages) || [];
 
+        // Localized-name rows: show a couple by default, reveal the rest on demand.
+        blade.defaultVisibleLanguages = 2;
+        blade.showAllLanguages = false;
+        blade.toggleLanguages = function () { blade.showAllLanguages = !blade.showAllLanguages; };
+
         // Gate flags coming from the backend (resolver-provided). New custom orderings are fully editable.
         blade.canEditDisplay = blade.entity.allowOverride !== false;
         blade.canEditExpression = blade.entity.isExpressionEditable !== false;
@@ -75,10 +80,14 @@ angular.module('virtoCommerce.catalogModule')
         };
 
         function updateExpression() {
-            var parts = (blade.entity.clauses || [])
-                .filter(function (c) { return c.field; })
-                .map(function (c) { return c.field + ':' + (c.isDescending ? 'desc' : 'asc'); });
-            blade.entity.sortExpression = parts.join(';');
+            var clauses = (blade.entity.clauses || []).filter(function (c) { return c.field; });
+            blade.entity.sortExpression = clauses
+                .map(function (c) { return c.field + ':' + (c.isDescending ? 'desc' : 'asc'); })
+                .join(';');
+            // Tokens for the colored "Resolved expression" preview (field vs. direction).
+            blade.previewTokens = clauses.map(function (c) {
+                return { field: c.field, dir: c.isDescending ? 'desc' : 'asc' };
+            });
         }
 
         function isDirty() {

@@ -63,14 +63,16 @@
           "expression": "Resolved expression"
         },
         "placeholders": {
-          "localized-name": "Enter sort name"
+          "localized-name-suffix": "name"
         },
         "help": {
           "code": "Stable key used by the API & storefront URL (?sort=<code>).",
           "clauses": "Ordered list of clauses applied in sequence (tie-breakers). Drag to reorder."
         },
         "commands": {
-          "add-clause": "Add clause"
+          "add-clause": "Add clause",
+          "show-more-languages": "Show more languages",
+          "show-fewer-languages": "Show fewer languages"
         }
       },
       "catalogs-list": {
