@@ -23,7 +23,7 @@ namespace VirtoCommerce.CatalogModule.Tests
         private readonly Mock<ICategoryService> _categoryServiceMock = new();
         private readonly Mock<ICatalogService> _catalogServiceMock = new();
         private readonly Mock<IAuthorizationService> _authorizationServiceMock = new();
-        private readonly Mock<ICategoryIndexingService> _categoryIndexingServiceMock = new();
+        private readonly Mock<ICategoryProductResolver> _categoryProductResolverMock = new();
         private readonly Mock<IIndexingJobService> _indexingJobServiceMock = new();
         private readonly Mock<IUserNameResolver> _userNameResolverMock = new();
         private readonly Mock<IPushNotificationManager> _pushNotifierMock = new();
@@ -36,7 +36,7 @@ namespace VirtoCommerce.CatalogModule.Tests
                 _categoryServiceMock.Object,
                 _catalogServiceMock.Object,
                 authService,
-                _categoryIndexingServiceMock.Object,
+                _categoryProductResolverMock.Object,
                 _indexingJobServiceMock.Object,
                 _userNameResolverMock.Object,
                 _pushNotifierMock.Object);
@@ -112,8 +112,8 @@ namespace VirtoCommerce.CatalogModule.Tests
 
             SetupAuthorizationSuccess();
 
-            _categoryIndexingServiceMock
-                .Setup(x => x.GetProductIdsForIndexAsync(categoryId))
+            _categoryProductResolverMock
+                .Setup(x => x.GetCategoryProductIds(categoryId))
                 .ReturnsAsync(productIds);
 
             _userNameResolverMock.Setup(x => x.GetCurrentUserName()).Returns("testuser");
@@ -149,8 +149,8 @@ namespace VirtoCommerce.CatalogModule.Tests
 
             SetupAuthorizationSuccess();
 
-            _categoryIndexingServiceMock
-                .Setup(x => x.GetProductIdsForIndexAsync(categoryId))
+            _categoryProductResolverMock
+                .Setup(x => x.GetCategoryProductIds(categoryId))
                 .ReturnsAsync([]);
 
             _userNameResolverMock.Setup(x => x.GetCurrentUserName()).Returns("testuser");

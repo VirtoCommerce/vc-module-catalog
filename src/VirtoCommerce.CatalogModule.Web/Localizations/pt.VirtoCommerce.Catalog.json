@@ -1128,9 +1128,9 @@
         "title": "Criar links automáticos",
         "message": "{{number}} links automáticos serão criados no trabalho em segundo plano. Tem certeza de que deseja criá-los?"
       },
-      "build-products-index": {
-        "title": "Construir índice de produtos",
-        "message": "Isso reconstruirá o índice de busca para todos os produtos nesta categoria e suas subcategorias. Tem certeza de que deseja continuar?"
+      "reindex-products": {
+        "title": "Reindexar todos os produtos",
+        "message": "Isso reindexará todos os produtos nesta categoria e suas subcategorias. Tem certeza de que deseja continuar?"
       },
       "automatic-links-delete": {
         "title": "Excluir links automáticos",
@@ -1221,7 +1221,7 @@
       }
     },
     "commands": {
-      "build-products-index": "Construir índice de produtos",
+      "reindex-products": "Reindexar todos os produtos",
       "copy-id": "Copiar ID",
       "copy-sku": "Copiar SKU",
       "clear-all": "Limpar tudo",

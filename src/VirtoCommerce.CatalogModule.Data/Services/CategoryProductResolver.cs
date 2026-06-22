@@ -8,9 +8,9 @@ using VirtoCommerce.CatalogModule.Data.Repositories;
 
 namespace VirtoCommerce.CatalogModule.Data.Services
 {
-    public class CategoryIndexingService(Func<ICatalogRepository> repositoryFactory) : ICategoryIndexingService
+    public class CategoryProductResolver(Func<ICatalogRepository> repositoryFactory) : ICategoryProductResolver
     {
-        public async Task<IList<string>> GetProductIdsForIndexAsync(string categoryId)
+        public async Task<IList<string>> GetCategoryProductIds(string categoryId)
         {
             using var repository = repositoryFactory();
             var allCategoryIds = await GetAllCategoryIdsAsync(repository, categoryId);

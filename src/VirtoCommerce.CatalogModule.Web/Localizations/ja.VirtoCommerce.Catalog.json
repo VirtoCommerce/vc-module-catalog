@@ -1128,9 +1128,9 @@
         "title": "自動リンクを作成",
         "message": "{{number}}個の自動リンクがバックグラウンドジョブで作成されます。作成しますか？"
       },
-      "build-products-index": {
-        "title": "製品インデックスを構築",
-        "message": "このカテゴリとそのサブカテゴリのすべての製品の検索インデックスを再構築します。続行してもよろしいですか？"
+      "reindex-products": {
+        "title": "すべての製品を再インデックス",
+        "message": "このカテゴリとそのサブカテゴリのすべての製品を再インデックスします。続行してもよろしいですか？"
       },
       "automatic-links-delete": {
         "title": "自動リンクを削除",
@@ -1221,7 +1221,7 @@
       }
     },
     "commands": {
-      "build-products-index": "製品インデックスを構築",
+      "reindex-products": "すべての製品を再インデックス",
       "copy-id": "IDをコピー",
       "copy-sku": "SKUをコピー",
       "clear-all": "すべてクリア",

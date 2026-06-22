@@ -755,7 +755,7 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
                     var dialogService = $injector.get('platformWebApp.dialogService');
 
                     toolbarService.register({
-                        name: 'catalog.commands.build-products-index',
+                        name: 'catalog.commands.reindex-products',
                         icon: 'fa fa-recycle',
                         index: 2,
                         hide: function (blade) { return blade.documentType !== 'Category'; },
@@ -780,7 +780,7 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
                                 }
                             };
                             dialogService.showDialog(dialog,
-                                'Modules/$(VirtoCommerce.Catalog)/Scripts/dialogs/build-products-index-dialog.tpl.html',
+                                'Modules/$(VirtoCommerce.Catalog)/Scripts/dialogs/reindex-products-dialog.tpl.html',
                                 'platformWebApp.confirmDialogController');
                         },
                         canExecuteMethod: function () { return true; },

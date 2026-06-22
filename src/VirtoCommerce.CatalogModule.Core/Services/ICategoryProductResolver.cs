@@ -3,8 +3,8 @@ using System.Threading.Tasks;
 
 namespace VirtoCommerce.CatalogModule.Core.Services
 {
-    public interface ICategoryIndexingService
+    public interface ICategoryProductResolver
     {
-        Task<IList<string>> GetProductIdsForIndexAsync(string categoryId);
+        Task<IList<string>> GetCategoryProductIds(string categoryId);
     }
 }

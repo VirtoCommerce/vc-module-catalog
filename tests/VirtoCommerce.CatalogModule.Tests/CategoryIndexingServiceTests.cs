@@ -10,13 +10,13 @@ using Xunit;
 namespace VirtoCommerce.CatalogModule.Tests
 {
     [Trait("Category", "CI")]
-    public class CategoryIndexingServiceTests
+    public class CategoryProductResolverTests
     {
         private readonly Mock<ICatalogRepository> _repositoryMock = new();
 
-        private CategoryIndexingService CreateService()
+        private CategoryProductResolver CreateService()
         {
-            return new CategoryIndexingService(() => _repositoryMock.Object);
+            return new CategoryProductResolver(() => _repositoryMock.Object);
         }
 
         private void SetupRepository(
@@ -35,7 +35,7 @@ namespace VirtoCommerce.CatalogModule.Tests
         }
 
         [Fact]
-        public async Task GetProductIdsForIndexAsync_DirectProductsOnly_ExcludesVariations()
+        public async Task GetCategoryProductIds_DirectProductsOnly_ExcludesVariations()
         {
             // Arrange
             const string categoryId = "cat1";
@@ -50,7 +50,7 @@ namespace VirtoCommerce.CatalogModule.Tests
             var service = CreateService();
 
             // Act
-            var result = await service.GetProductIdsForIndexAsync(categoryId);
+            var result = await service.GetCategoryProductIds(categoryId);
 
             // Assert
             Assert.Equal(2, result.Count);
@@ -60,7 +60,7 @@ namespace VirtoCommerce.CatalogModule.Tests
         }
 
         [Fact]
-        public async Task GetProductIdsForIndexAsync_LinkedProductsOnly_ExcludesVariations()
+        public async Task GetCategoryProductIds_LinkedProductsOnly_ExcludesVariations()
         {
             // Arrange
             const string categoryId = "cat1";
@@ -81,7 +81,7 @@ namespace VirtoCommerce.CatalogModule.Tests
             var service = CreateService();
 
             // Act
-            var result = await service.GetProductIdsForIndexAsync(categoryId);
+            var result = await service.GetCategoryProductIds(categoryId);
 
             // Assert
             Assert.Equal(2, result.Count);
@@ -91,7 +91,7 @@ namespace VirtoCommerce.CatalogModule.Tests
         }
 
         [Fact]
-        public async Task GetProductIdsForIndexAsync_DirectAndLinked_DeduplicatesOverlappingIds()
+        public async Task GetCategoryProductIds_DirectAndLinked_DeduplicatesOverlappingIds()
         {
             // Arrange
             const string categoryId = "cat1";
@@ -110,7 +110,7 @@ namespace VirtoCommerce.CatalogModule.Tests
             var service = CreateService();
 
             // Act
-            var result = await service.GetProductIdsForIndexAsync(categoryId);
+            var result = await service.GetCategoryProductIds(categoryId);
 
             // Assert
             Assert.Equal(2, result.Count); // p1 deduplicated, p2 included
@@ -119,7 +119,7 @@ namespace VirtoCommerce.CatalogModule.Tests
         }
 
         [Fact]
-        public async Task GetProductIdsForIndexAsync_WithSubcategories_IncludesProductsFromAllCategories()
+        public async Task GetCategoryProductIds_WithSubcategories_IncludesProductsFromAllCategories()
         {
             // Arrange
             const string rootId = "root";
@@ -134,7 +134,7 @@ namespace VirtoCommerce.CatalogModule.Tests
             var service = CreateService();
 
             // Act
-            var result = await service.GetProductIdsForIndexAsync(rootId);
+            var result = await service.GetCategoryProductIds(rootId);
 
             // Assert
             Assert.Equal(2, result.Count);
@@ -143,7 +143,7 @@ namespace VirtoCommerce.CatalogModule.Tests
         }
 
         [Fact]
-        public async Task GetProductIdsForIndexAsync_EmptyCategory_ReturnsEmpty()
+        public async Task GetCategoryProductIds_EmptyCategory_ReturnsEmpty()
         {
             // Arrange
             const string categoryId = "cat-empty";
@@ -152,14 +152,14 @@ namespace VirtoCommerce.CatalogModule.Tests
             var service = CreateService();
 
             // Act
-            var result = await service.GetProductIdsForIndexAsync(categoryId);
+            var result = await service.GetCategoryProductIds(categoryId);
 
             // Assert
             Assert.Empty(result);
         }
 
         [Fact]
-        public async Task GetProductIdsForIndexAsync_VirtualCategory_FindsProductsFromTargetPhysicalCategory()
+        public async Task GetCategoryProductIds_VirtualCategory_FindsProductsFromTargetPhysicalCategory()
         {
             // Arrange
             const string virtCatId = "virt-cat";
@@ -183,7 +183,7 @@ namespace VirtoCommerce.CatalogModule.Tests
             var service = CreateService();
 
             // Act
-            var result = await service.GetProductIdsForIndexAsync(virtCatId);
+            var result = await service.GetCategoryProductIds(virtCatId);
 
             // Assert
             Assert.Equal(2, result.Count);
@@ -192,7 +192,7 @@ namespace VirtoCommerce.CatalogModule.Tests
         }
 
         [Fact]
-        public async Task GetProductIdsForIndexAsync_VirtualCategoryWithChildren_IncludesSubcategoryProducts()
+        public async Task GetCategoryProductIds_VirtualCategoryWithChildren_IncludesSubcategoryProducts()
         {
             // Arrange
             const string virtCatId = "virt-cat";
@@ -217,7 +217,7 @@ namespace VirtoCommerce.CatalogModule.Tests
             var service = CreateService();
 
             // Act
-            var result = await service.GetProductIdsForIndexAsync(virtCatId);
+            var result = await service.GetCategoryProductIds(virtCatId);
 
             // Assert
             Assert.Equal(2, result.Count);
@@ -226,7 +226,7 @@ namespace VirtoCommerce.CatalogModule.Tests
         }
 
         [Fact]
-        public async Task GetProductIdsForIndexAsync_ChainedVirtualCategories_FollowsMultipleHops()
+        public async Task GetCategoryProductIds_ChainedVirtualCategories_FollowsMultipleHops()
         {
             // Arrange
             const string virtCatAId = "virt-cat-a";
@@ -255,7 +255,7 @@ namespace VirtoCommerce.CatalogModule.Tests
             var service = CreateService();
 
             // Act
-            var result = await service.GetProductIdsForIndexAsync(virtCatAId);
+            var result = await service.GetCategoryProductIds(virtCatAId);
 
             // Assert
             Assert.Equal(2, result.Count);

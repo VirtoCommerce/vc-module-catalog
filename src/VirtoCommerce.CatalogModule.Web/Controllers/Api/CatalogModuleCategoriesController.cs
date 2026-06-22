@@ -31,7 +31,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         ICategoryService categoryService,
         ICatalogService catalogService,
         CatalogEntityAuthorizationService authorizationService,
-        ICategoryIndexingService categoryIndexingService,
+        ICategoryProductResolver categoryProductResolver,
         IIndexingJobService indexingJobService,
         IUserNameResolver userNameResolver,
         IPushNotificationManager pushNotifier)
@@ -324,7 +324,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
                 return Forbid();
             }
 
-            var allProductIds = await categoryIndexingService.GetProductIdsForIndexAsync(id);
+            var allProductIds = await categoryProductResolver.GetCategoryProductIds(id);
 
             var currentUserName = userNameResolver.GetCurrentUserName();
             var notification = indexingJobService.Enqueue(currentUserName,
