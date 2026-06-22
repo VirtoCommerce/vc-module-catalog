@@ -1128,6 +1128,10 @@
         "title": "Crea collegamenti automatici",
         "message": "{{number}} collegamenti automatici verranno creati nel processo in background. Sei sicuro di volerli creare?"
       },
+      "build-products-index": {
+        "title": "Costruisci indice prodotti",
+        "message": "Verrà ricostruito l'indice di ricerca per tutti i prodotti di questa categoria e delle sue sottocategorie. Sei sicuro di voler continuare?"
+      },
       "automatic-links-delete": {
         "title": "Elimina collegamenti automatici",
         "message": "{{number}} collegamenti automatici esistenti verranno eliminati nell'attività in background. Sei sicuro di volerli eliminare?"
@@ -1217,6 +1221,7 @@
       }
     },
     "commands": {
+      "build-products-index": "Costruisci indice prodotti",
       "copy-id": "Copia ID",
       "copy-sku": "Copia SKU",
       "clear-all": "Cancella tutto",

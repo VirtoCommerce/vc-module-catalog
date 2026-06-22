@@ -1128,6 +1128,10 @@
         "title": "创建自动链接",
         "message": "将会在后台作业中创建 {{number}} 个自动链接。您确定要创建它们吗？"
       },
+      "build-products-index": {
+        "title": "构建产品索引",
+        "message": "这将为该类别及其子类别中的所有产品重建搜索索引。您确定要继续吗？"
+      },
       "automatic-links-delete": {
         "title": "删除自动链接",
         "message": "后台作业将删除 {{number}} 个现有自动链接。确定要删除它们吗？"
@@ -1217,6 +1221,7 @@
       }
     },
     "commands": {
+      "build-products-index": "构建产品索引",
       "copy-id": "复制 ID",
       "copy-sku": "复制SKU",
       "clear-all": "清除所有",

@@ -1128,6 +1128,10 @@
         "title": "Automatische Links erstellen",
         "message": "{{number}} automatische Links werden im Hintergrundauftrag erstellt. Sind Sie sicher, dass Sie sie erstellen möchten?"
       },
+      "build-products-index": {
+        "title": "Produktindex erstellen",
+        "message": "Hiermit wird der Suchindex für alle Produkte in dieser Kategorie und ihren Unterkategorien neu erstellt. Sind Sie sicher, dass Sie fortfahren möchten?"
+      },
       "automatic-links-delete": {
         "title": "Automatische Links löschen",
         "message": "{{number}} bestehende automatische Links werden im Hintergrundauftrag gelöscht. Sind Sie sicher, dass Sie sie löschen möchten?"
@@ -1217,6 +1221,7 @@
       }
     },
     "commands": {
+      "build-products-index": "Produktindex erstellen",
       "copy-id": "ID kopieren",
       "copy-sku": "SKU kopieren",
       "clear-all": "Alles löschen",

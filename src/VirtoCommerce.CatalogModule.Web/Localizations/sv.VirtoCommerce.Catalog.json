@@ -1128,6 +1128,10 @@
         "title": "Skapa automatiska länkar",
         "message": "{{number}} automatiska länkar kommer att skapas i bakgrundsjobbet. Är du säker på att du vill skapa dem?"
       },
+      "build-products-index": {
+        "title": "Bygg produktindex",
+        "message": "Detta kommer att återskapa sökindexet för alla produkter i den här kategorin och dess underkategorier. Är du säker på att du vill fortsätta?"
+      },
       "automatic-links-delete": {
         "title": "Ta bort automatiska länkar",
         "message": "{{number}} befintliga automatiska länkar kommer att tas bort i bakgrundsjobbet. Är du säker på att du vill ta bort dem?"
@@ -1217,6 +1221,7 @@
       }
     },
     "commands": {
+      "build-products-index": "Bygg produktindex",
       "copy-id": "Kopiera ID",
       "copy-sku": "Kopiera SKU",
       "clear-all": "Rensa allt",

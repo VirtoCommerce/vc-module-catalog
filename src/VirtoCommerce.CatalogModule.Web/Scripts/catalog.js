@@ -750,6 +750,44 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
 
                 dynamicTemplateService.ensureTemplateLoaded('Modules/$(VirtoCommerce.Catalog)/Scripts/directives/itemSearch.tpl.html');
 
+                if ($injector.modules['virtoCommerce.searchModule']) {
+                    var categories = $injector.get('virtoCommerce.catalogModule.categories');
+                    var dialogService = $injector.get('platformWebApp.dialogService');
+
+                    toolbarService.register({
+                        name: 'catalog.commands.build-products-index',
+                        icon: 'fa fa-recycle',
+                        index: 2,
+                        hide: function (blade) { return blade.documentType !== 'Category'; },
+                        executeMethod: function (blade) {
+                            var dialog = {
+                                id: 'confirmBuildProductsIndex',
+                                callback: function (confirmed) {
+                                    if (confirmed) {
+                                        categories.indexProducts({ id: blade.currentEntityId }, {}, function (data) {
+                                            var newBlade = {
+                                                id: 'indexProgress',
+                                                notification: data,
+                                                parentRefresh: blade.parentRefresh,
+                                                controller: 'virtoCommerce.searchModule.indexProgressController',
+                                                template: 'Modules/$(VirtoCommerce.Search)/Scripts/blades/index-progress.tpl.html'
+                                            };
+                                            bladeNavigationService.showBlade(newBlade, blade.parentBlade || blade);
+                                        }, function (error) {
+                                            bladeNavigationService.setError('HTTP ' + error.status, blade);
+                                        });
+                                    }
+                                }
+                            };
+                            dialogService.showDialog(dialog,
+                                'Modules/$(VirtoCommerce.Catalog)/Scripts/dialogs/build-products-index-dialog.tpl.html',
+                                'platformWebApp.confirmDialogController');
+                        },
+                        canExecuteMethod: function () { return true; },
+                        permission: 'search:index:rebuild'
+                    }, 'virtoCommerce.searchModule.indexDetailController');
+                }
+
                 metaFormsService.registerMetaFields('measureDetails', [
                     {
                         name: 'name',
