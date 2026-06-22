@@ -6,19 +6,18 @@
 
       <div class="table-wrapper" ng-if="blade.currentEntities.length">
         <ul class="list __items" ui-sortable="sortableOptions" ng-model="blade.currentEntities">
-          <li class="list-item" ng-repeat="item in blade.currentEntities" ng-click="blade.edit(item)" ng-class="{ '__inactive': !item.isVisible }">
+          <li class="list-item" ng-repeat="item in blade.currentEntities" ng-click="blade.edit(item)" ng-class="{ '__inactive': !item.isVisible }" style="padding-left: 36px;">
             <div class="list-t">
-              <span class="move-handle"><i class="fa fa-bars fa-gray"></i></span>
-              <span>&nbsp;{{ item.name }}</span>
-              <span class="badge" ng-if="item.isDefault" style="margin-left:8px;">{{ 'catalog.blades.sort-ordering-list.badges.default' | translate }}</span>
-              <span class="badge" ng-if="!item.isVisible" style="margin-left:8px;">{{ 'catalog.blades.sort-ordering-list.badges.hidden' | translate }}</span>
-              <span class="badge" ng-if="item.isCustom" style="margin-left:8px;">{{ 'catalog.blades.sort-ordering-list.badges.custom' | translate }}</span>
-              <span class="badge" ng-if="!item.isExpressionEditable" style="margin-left:8px;">{{ 'catalog.blades.sort-ordering-list.badges.readonly' | translate }}</span>
+              <span>{{ item.name }}</span>
+              <span class="label" ng-if="item.isDefault" style="margin-left:8px; padding:1px 8px; border:1px solid #b7e0c4; border-radius:20px; background-color:#e6f4ea; color:#3a9d5d; font-size:11px; font-weight:600; text-shadow:none; vertical-align:middle;">{{ 'catalog.blades.sort-ordering-list.badges.default' | translate }}</span>
+              <span class="label inverse" ng-if="!item.isVisible" style="margin-left:8px; padding:1px 8px; border:1px solid #999; border-radius:20px; color:#fff; background-color:#999; font-size:11px; text-shadow:none; vertical-align:middle;">{{ 'catalog.blades.sort-ordering-list.badges.hidden' | translate }}</span>
+              <span class="label" ng-if="item.isCustom" style="margin-left:8px; padding:1px 8px; border:1px solid #999; border-radius:20px; color:#999; font-size:11px; text-shadow:none; vertical-align:middle;">{{ 'catalog.blades.sort-ordering-list.badges.custom' | translate }}</span>
+              <span class="label" ng-if="!item.isExpressionEditable" style="margin-left:8px; padding:1px 8px; border:1px solid #999; border-radius:20px; color:#999; font-size:11px; text-shadow:none; vertical-align:middle;">{{ 'catalog.blades.sort-ordering-list.badges.readonly' | translate }}</span>
               <a href="" ng-if="item.isCustom" ng-click="blade.deleteEntity(item, $event)" class="form-edit">
                 <span class="form-ico fa fa-remove"></span>
               </a>
             </div>
-            <div class="list-descr"><code>{{ item.sortExpression }}</code></div>
+            <div class="list-descr"><code style="color:#8a99a8; background:transparent; border:none; padding:0; text-shadow:none;">{{ item.sortExpression }}</code></div>
           </li>
         </ul>
       </div>
