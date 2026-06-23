@@ -155,67 +155,6 @@ namespace VirtoCommerce.CatalogModule.Data.Services
             return categoryResponseGroup.HasFlag(flag);
         }
 
-        [Obsolete("Use GetAllRelatedCategories(IList<string> ids)", DiagnosticId = "VC0010", UrlFormat = "https://docs.virtocommerce.org/platform/user-guide/versions/virto3-products-versions/")]
-        protected virtual Task<IDictionary<string, Category>> PreloadCategoryBranchAsync(string categoryId)
-        {
-            if (categoryId == null)
-            {
-                return Task.FromResult<IDictionary<string, Category>>(new Dictionary<string, Category>());
-            }
-
-            var cacheKey = CacheKey.With(GetType(), nameof(PreloadCategoryBranchAsync), categoryId);
-
-            return _platformMemoryCache.GetOrCreateExclusiveAsync(cacheKey, async cacheOptions =>
-            {
-                var entities = await SearchCategoriesHierarchyAsync(categoryId);
-
-                IDictionary<string, Category> result = entities
-                    .Select(x => x.ToModel(AbstractTypeFactory<Category>.TryCreateInstance()))
-                    .ToDictionary(x => x.Id, _ignoreCase);
-
-                // Prepare catalog cache tokens
-                foreach (var entity in entities)
-                {
-                    ConfigureCacheOptions(cacheOptions, entity.Id, entity);
-                }
-
-                // Find linked category ids to recursively load them
-                var linkedCategoryIds = entities
-                    .SelectMany(x => x.OutgoingLinks.Select(y => y.TargetCategoryId))
-                    .Where(x => x != null)
-                    .Distinct()
-                    .Except(result.Keys)
-                    .ToList();
-
-                foreach (var linkedCategoryId in linkedCategoryIds)
-                {
-                    // Recursive call
-                    var linkedCategory = await PreloadCategoryBranchAsync(linkedCategoryId);
-
-                    // Union two category sets (parents and linked)
-                    foreach (var (key, value) in linkedCategory)
-                    {
-                        result.TryAdd(key, value);
-                    }
-                }
-
-                ResolveImageUrls(result.Values);
-                await LoadDependencies(result.Values, result);
-                ApplyInheritanceRules(result.Values);
-
-                return result;
-            });
-        }
-
-        [Obsolete("Use GetOrLoadEntities(IList<string> ids)", DiagnosticId = "VC0010", UrlFormat = "https://docs.virtocommerce.org/platform/user-guide/versions/virto3-products-versions/")]
-        protected virtual async Task<IList<CategoryEntity>> SearchCategoriesHierarchyAsync(string categoryId)
-        {
-            using var repository = _repositoryFactory();
-            repository.DisableChangesTracking();
-
-            return await LoadEntities(repository, [categoryId], nameof(CategoryResponseGroup.Full));
-        }
-
         protected virtual void ResolveImageUrls(ICollection<Category> categories)
         {
             var allImages = new { categories }.GetFlatObjectsListWithInterface<IHasImages>().Where(x => x.Images != null).SelectMany(x => x.Images);
