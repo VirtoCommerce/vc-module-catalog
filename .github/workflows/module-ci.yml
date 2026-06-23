@@ -330,6 +330,9 @@ jobs:
       contents: read
       packages: read
     steps:
+      - name: Install VirtoCommerce.GlobalTool
+        uses: VirtoCommerce/vc-github-actions/setup-vcbuild@master
+        
       - name: Swagger validation
         uses: VirtoCommerce/vc-github-actions/docker-env@VCST-5246 #master
         with:
