@@ -306,7 +306,7 @@ jobs:
     if: ${{ ((github.ref == 'refs/heads/dev') && (github.event_name == 'push')) ||
         (github.event_name == 'workflow_dispatch') || ((github.base_ref == 'dev') && (github.event_name == 'pull_request')) }}
     needs: ci
-    uses: VirtoCommerce/.github/.github/workflows/pytest-tests.yml@v3.800.38
+    uses: VirtoCommerce/.github/.github/workflows/pytest-tests.yml@VCST-5246 #v3.800.38
     with:
       installModules: 'false'
       installCustomModule: 'true'
