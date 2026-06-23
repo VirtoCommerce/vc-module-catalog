@@ -28,7 +28,7 @@ angular.module('virtoCommerce.catalogModule')
     }
 
     blade.menuItems = [
-        { name: 'catalog.blades.search-configuration.menu.sorting', icon: 'fas fa-sort-amount-down', action: openSorting },
-        { name: 'catalog.blades.search-configuration.menu.facets', icon: 'fab fa-buffer', action: openFacets }
+        { name: 'catalog.blades.search-configuration.menu.facets', icon: 'fab fa-buffer', action: openFacets },
+        { name: 'catalog.blades.search-configuration.menu.sorting', icon: 'fas fa-sort-amount-down', action: openSorting }
     ];
 }]);
