@@ -17,7 +17,7 @@ public class ProductSearchOrderContext
     public string CategoryId { get; set; }
 
     /// <summary>
-    /// Current category outline when available.
+    /// Current category outline when available (e.g. <c>catalogId/parentCategoryId/categoryId</c>).
     /// </summary>
     public string Outline { get; set; }
 
