@@ -254,20 +254,6 @@ jobs:
             Add-Content -Path $env:GITHUB_OUTPUT -Value "url="
           }
 
-      - name: Swagger validation
-        uses: VirtoCommerce/vc-github-actions/docker-env@master
-        if: ${{ github.ref == 'refs/heads/dev' || (github.event_name == 'pull_request' && github.base_ref == 'dev') }}
-        with:
-          githubUser: ${{ github.actor }}
-          githubToken: ${{ env.GITHUB_TOKEN }}
-          installSampleData: 'false'
-          installModules: 'false'
-          installCustomModule: 'true'
-          customModuleId: ${{ steps.artifact_ver.outputs.moduleId }}
-          customModuleUrl: ${{ steps.artifactUrl.outputs.download_url }}
-          requiredModulesListUrl: ${{ steps.extract_required_modules_list_url_from_pr.outputs.url }}
-          platformImage: ghcr.io/virtocommerce/platform
-
       - name: Setup Git Credentials
         if: ${{ (github.ref == 'refs/heads/dev' && github.event_name != 'workflow_dispatch') || github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main' }}
         uses: VirtoCommerce/vc-github-actions/setup-git-credentials-github@master
@@ -335,6 +321,28 @@ jobs:
       envPAT: ${{ secrets.REPO_TOKEN }}
       testSecretEnvFile: ${{ secrets.VC_TESTING_MODULE_ENV_FILE }}
       sendgridApiKey: ${{ secrets.SENDGRID_APIKEY_4E2E_AUTOTESTS }}
+
+  swagger-validation:
+    if: ${{ github.ref == 'refs/heads/dev' || (github.event_name == 'pull_request' && github.base_ref == 'dev') }}
+    needs: ci
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      packages: read
+    steps:
+      - name: Swagger validation
+        uses: VirtoCommerce/vc-github-actions/docker-env@VCST-5246 #master
+        with:
+          appInsightsInstrumentationKey: ${{ secrets.E2E_APPINSIGHTSINSTRUMENTATIONKEY }}
+          githubUser: ${{ github.actor }}
+          githubToken: ${{ secrets.REPO_TOKEN }}
+          installSampleData: 'false'
+          installModules: 'false'
+          installCustomModule: 'true'
+          customModuleId: ${{ needs.ci.outputs.moduleId }}
+          customModuleUrl: ${{ needs.ci.outputs.artifactUrl }}
+          requiredModulesListUrl: ${{ needs.ci.outputs.requiredModulesListUrl }}
+          platformImage: ghcr.io/virtocommerce/platform
 
   deploy-cloud:
     if: ${{ (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev')
