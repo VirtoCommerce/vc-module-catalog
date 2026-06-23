@@ -36,6 +36,12 @@ public class ProductSearchOrderService : IProductSearchOrderService
         _logger = logger;
     }
 
+    // Eagerly resolves EVERY ordering's expression+clauses (calls each resolver's GetSortExpression). This is needed
+    // by the admin UI, which renders each ordering's clauses/expression. The storefront over-fetches here — its
+    // GraphQL surface (sort_definitions: id/name/isDefault/selected) needs no expression, and only the *selected*
+    // ordering's expression is applied to the search — but resolving all is kept for simplicity since one shared
+    // method serves both callers. This is fine as long as GetSortExpression stays cheap (it runs for all orderings on
+    // every product search); a computed/expensive resolver should guard its heavy path on `context.Sort == Code`.
     public Task<IList<ProductSearchOrdering>> GetOrderingsAsync(ProductSearchOrderContext context)
     {
         ArgumentNullException.ThrowIfNull(context);
