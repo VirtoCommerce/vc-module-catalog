@@ -323,7 +323,8 @@ jobs:
       sendgridApiKey: ${{ secrets.SENDGRID_APIKEY_4E2E_AUTOTESTS }}
 
   swagger-validation:
-    # if: ${{ github.ref == 'refs/heads/dev' || (github.event_name == 'pull_request' && github.base_ref == 'dev') }}
+    if: ${{ ((github.ref == 'refs/heads/dev') && (github.event_name == 'push')) ||
+        (github.event_name == 'workflow_dispatch') || ((github.base_ref == 'dev') && (github.event_name == 'pull_request')) }}
     needs: ci
     runs-on: ubuntu-24.04
     permissions:
