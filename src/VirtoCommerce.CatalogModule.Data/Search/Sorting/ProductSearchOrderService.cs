@@ -94,7 +94,7 @@ public class ProductSearchOrderService : IProductSearchOrderService
 
         foreach (var entry in entries.Where(x => !string.IsNullOrWhiteSpace(x?.Code) && !usedCodes.Contains(x.Code)))
         {
-            if (entry.IsCustom && entry.Clauses != null && entry.Clauses.Any(c => !string.IsNullOrWhiteSpace(c?.Field)))
+            if (entry.IsCustom && HasUsableClause(entry.Clauses))
             {
                 result.Add(BuildEffectiveForCustom(entry, ++maxOrder));
                 usedCodes.Add(entry.Code);
@@ -224,7 +224,7 @@ public class ProductSearchOrderService : IProductSearchOrderService
             IsCustom = false,
             AllowOverride = info.AllowOverride,
             IsExpressionEditable = info.IsExpressionEditable,
-            LocalizedNames = CloneLocalizedNames(entry?.LocalizedNames),
+            LocalizedNames = NormalizeLocalizedNames(entry?.LocalizedNames),
         };
 
         ApplyDisplayFields(ordering, info, entry);
@@ -250,7 +250,7 @@ public class ProductSearchOrderService : IProductSearchOrderService
     {
         if (info.IsExpressionEditable && entry?.Clauses != null && entry.Clauses.Count > 0)
         {
-            ordering.Clauses = CloneClauses(entry.Clauses);
+            ordering.Clauses = NormalizeClauses(entry.Clauses);
             ordering.SortExpression = ordering.Clauses.ToSortExpression();
         }
         else
@@ -263,13 +263,13 @@ public class ProductSearchOrderService : IProductSearchOrderService
 
     private static ProductSearchOrdering BuildEffectiveForCustom(ProductSearchOrderingEntry entry, int fallbackOrder)
     {
-        var clauses = CloneClauses(entry.Clauses);
+        var clauses = NormalizeClauses(entry.Clauses);
 
         return new ProductSearchOrdering
         {
             Code = entry.Code,
             Name = entry.Name,
-            LocalizedNames = CloneLocalizedNames(entry.LocalizedNames),
+            LocalizedNames = NormalizeLocalizedNames(entry.LocalizedNames),
             Order = entry.Order ?? fallbackOrder,
             IsVisible = entry.IsVisible ?? true,
             IsExpressionEditable = true,
@@ -380,8 +380,7 @@ public class ProductSearchOrderService : IProductSearchOrderService
             }
 
             // Custom orderings (no backing resolver) must define at least one clause.
-            if (_registry.GetResolver(ordering.Code) == null &&
-                (ordering.Clauses == null || !ordering.Clauses.Any(c => !string.IsNullOrWhiteSpace(c?.Field))))
+            if (_registry.GetResolver(ordering.Code) == null && !HasUsableClause(ordering.Clauses))
             {
                 throw new InvalidOperationException($"Sort ordering '{ordering.Code}' must define at least one clause.");
             }
@@ -415,12 +414,9 @@ public class ProductSearchOrderService : IProductSearchOrderService
             .ToList() ?? [];
     }
 
-    private static List<SortClause> CloneClauses(IEnumerable<SortClause> clauses)
+    private static bool HasUsableClause(IEnumerable<SortClause> clauses)
     {
-        return clauses?
-            .Where(x => !string.IsNullOrWhiteSpace(x?.Field))
-            .Select(x => new SortClause { Field = x.Field, IsDescending = x.IsDescending })
-            .ToList() ?? [];
+        return clauses != null && clauses.Any(c => !string.IsNullOrWhiteSpace(c?.Field));
     }
 
     private static Dictionary<string, string> NormalizeLocalizedNames(IDictionary<string, string> localizedNames)
@@ -429,12 +425,5 @@ public class ProductSearchOrderService : IProductSearchOrderService
             .Where(x => !string.IsNullOrWhiteSpace(x.Key) && !string.IsNullOrWhiteSpace(x.Value))
             .ToDictionary(x => x.Key, x => x.Value, StringComparer.OrdinalIgnoreCase)
             ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-    }
-
-    private static Dictionary<string, string> CloneLocalizedNames(IDictionary<string, string> localizedNames)
-    {
-        return localizedNames != null
-            ? new Dictionary<string, string>(localizedNames, StringComparer.OrdinalIgnoreCase)
-            : new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
     }
 }
