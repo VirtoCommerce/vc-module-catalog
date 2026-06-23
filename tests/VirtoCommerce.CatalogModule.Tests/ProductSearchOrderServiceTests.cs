@@ -288,8 +288,8 @@ namespace VirtoCommerce.CatalogModule.Tests
             CultureName = "en-US",
         };
 
-        private static IProductSearchOrderResolverRegistry CreateRegistry() =>
-            new ProductSearchOrderResolverRegistry(BuiltInResolvers(), NullLogger<ProductSearchOrderResolverRegistry>.Instance);
+        private static ProductSearchOrderResolverRegistry CreateRegistry() =>
+            new(BuiltInResolvers(), NullLogger<ProductSearchOrderResolverRegistry>.Instance);
 
         private static IEnumerable<IProductSearchOrderResolver> BuiltInResolvers() =>
         [
@@ -304,8 +304,8 @@ namespace VirtoCommerce.CatalogModule.Tests
 
         // Service stubbed at the stored-entries boundary (GetStoredEntriesAsync is protected virtual), so the
         // merge/compose logic can be tested without an IStoreService/settings round-trip.
-        private static ProductSearchOrderService CreateService(IList<ProductSearchOrderingEntry> storedEntries) =>
-            new StubbedProductSearchOrderService(CreateRegistry(), storedEntries);
+        private static StubbedProductSearchOrderService CreateService(IList<ProductSearchOrderingEntry> storedEntries) =>
+            new(CreateRegistry(), storedEntries);
 
         // Validation runs before the store is loaded, so a no-op store service is enough.
         private static ProductSearchOrderService CreateValidationOnlyService() =>
@@ -344,7 +344,7 @@ namespace VirtoCommerce.CatalogModule.Tests
             return mock;
         }
 
-        private static IList<ProductSearchOrderingEntry> ReadPersistedEntries(Store store)
+        private static List<ProductSearchOrderingEntry> ReadPersistedEntries(Store store)
         {
             var value = store.Settings.Single(x => x.Name == SortDefinitions.Name).Value as string;
             return string.IsNullOrEmpty(value)
