@@ -32,13 +32,9 @@ public class ProductSortableFieldService : IProductSortableFieldService
         var result = new List<ProductSortableField>();
         var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
-        foreach (var field in _virtualFields)
-        {
-            if (seen.Add(field.Name))
-            {
-                result.Add(field);
-            }
-        }
+        // Logical tokens first; they take precedence over any same-named index field (their names are statically distinct).
+        result.AddRange(_virtualFields);
+        seen.UnionWith(_virtualFields.Select(x => x.Name));
 
         // Compose the product index schema across every registered schema builder (the same set the indexer uses to
         // create the index), then offer single-valued filterable fields. Excludes internal "__" system fields.
@@ -49,7 +45,8 @@ public class ProductSortableFieldService : IProductSortableFieldService
                      .Where(x => !x.Name.StartsWith("__", StringComparison.Ordinal))
                      .OrderBy(x => x.Name, StringComparer.OrdinalIgnoreCase))
         {
-            if (seen.Add(field.Name))
+            var isNew = seen.Add(field.Name);
+            if (isNew)
             {
                 result.Add(new ProductSortableField { Name = field.Name, DataType = field.ValueType.ToString() });
             }

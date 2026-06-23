@@ -14,4 +14,19 @@ public static class ProductSearchOrderCodes
     public const string PriceDescending = "price-descending";
     public const string CreatedDateDescending = "createddate-descending";
     public const string CreatedDateAscending = "createddate-ascending";
+
+    /// <summary>
+    /// Default display positions for the built-in orderings. Admins can re-order freely; these are only the
+    /// out-of-the-box positions surfaced when there is no stored override.
+    /// </summary>
+    public static class DefaultOrder
+    {
+        public const int Featured = 0;
+        public const int NameAscending = 1;
+        public const int NameDescending = 2;
+        public const int PriceAscending = 3;
+        public const int PriceDescending = 4;
+        public const int CreatedDateDescending = 5;
+        public const int CreatedDateAscending = 6;
+    }
 }

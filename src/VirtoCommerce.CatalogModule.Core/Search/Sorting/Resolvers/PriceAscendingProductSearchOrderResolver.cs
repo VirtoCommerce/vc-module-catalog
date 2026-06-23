@@ -5,7 +5,7 @@ public class PriceAscendingProductSearchOrderResolver : AbstractExpressionProduc
 {
     public override string Code => ProductSearchOrderCodes.PriceAscending;
 
-    public override ProductSearchOrderInfo Info { get; } = new() { Name = "Price, low to high", Order = 3 };
+    public override ProductSearchOrderInfo Info { get; } = new() { Name = "Price, low to high", Order = ProductSearchOrderCodes.DefaultOrder.PriceAscending };
 
     protected override string DefaultExpression => "price:asc";
 }

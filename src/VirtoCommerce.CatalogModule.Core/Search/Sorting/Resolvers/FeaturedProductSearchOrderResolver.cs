@@ -9,7 +9,7 @@ public class FeaturedProductSearchOrderResolver : AbstractExpressionProductSearc
 {
     public override string Code => ProductSearchOrderCodes.Featured;
 
-    public override ProductSearchOrderInfo Info { get; } = new() { Name = "Featured", Order = 0 };
+    public override ProductSearchOrderInfo Info { get; } = new() { Name = "Featured", Order = ProductSearchOrderCodes.DefaultOrder.Featured };
 
     protected override string DefaultExpression => "__score:desc;priority:desc;id:asc";
 }

@@ -9,7 +9,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Sorting;
 public class ProductSearchOrderResolverRegistry : IProductSearchOrderResolverRegistry
 {
     private readonly IReadOnlyCollection<IProductSearchOrderResolver> _resolvers;
-    private readonly IDictionary<string, IProductSearchOrderResolver> _resolversByCode;
+    private readonly Dictionary<string, IProductSearchOrderResolver> _resolversByCode;
 
     public ProductSearchOrderResolverRegistry(
         IEnumerable<IProductSearchOrderResolver> resolvers,
@@ -19,7 +19,8 @@ public class ProductSearchOrderResolverRegistry : IProductSearchOrderResolverReg
 
         foreach (var resolver in resolvers.Where(x => !string.IsNullOrWhiteSpace(x?.Code)))
         {
-            if (!byCode.TryAdd(resolver.Code, resolver))
+            var added = byCode.TryAdd(resolver.Code, resolver);
+            if (!added)
             {
                 // Collision must never crash sorting/search: keep the first registration, log the shadowed one.
                 logger.LogWarning(

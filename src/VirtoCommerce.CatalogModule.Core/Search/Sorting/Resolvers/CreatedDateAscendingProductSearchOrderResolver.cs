@@ -5,7 +5,7 @@ public class CreatedDateAscendingProductSearchOrderResolver : AbstractExpression
 {
     public override string Code => ProductSearchOrderCodes.CreatedDateAscending;
 
-    public override ProductSearchOrderInfo Info { get; } = new() { Name = "Date, old to new", Order = 6 };
+    public override ProductSearchOrderInfo Info { get; } = new() { Name = "Date, old to new", Order = ProductSearchOrderCodes.DefaultOrder.CreatedDateAscending };
 
     protected override string DefaultExpression => "createddate:asc";
 }

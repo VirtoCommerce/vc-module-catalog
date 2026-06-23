@@ -36,10 +36,15 @@ public class ProductSearchOrderService : IProductSearchOrderService
         _logger = logger;
     }
 
-    public async Task<IList<ProductSearchOrdering>> GetOrderingsAsync(ProductSearchOrderContext context)
+    public Task<IList<ProductSearchOrdering>> GetOrderingsAsync(ProductSearchOrderContext context)
     {
         ArgumentNullException.ThrowIfNull(context);
 
+        return GetOrderingsInternalAsync(context);
+    }
+
+    private async Task<IList<ProductSearchOrdering>> GetOrderingsInternalAsync(ProductSearchOrderContext context)
+    {
         var entries = await GetStoredEntriesAsync(context.StoreId);
         var entriesByCode = entries
             .Where(x => !string.IsNullOrWhiteSpace(x?.Code))
@@ -50,15 +55,43 @@ public class ProductSearchOrderService : IProductSearchOrderService
         var usedCodes = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
         // 1. Built-in / module-contributed orderings (the registry is the source of truth for what exists).
+        AddResolverOrderings(result, usedCodes, entriesByCode, context);
+
+        // 2. Admin-authored custom orderings (stored entries with no backing resolver). Orphan deltas are ignored.
+        AddCustomOrderings(result, usedCodes, entries);
+
+        var ordered = result
+            .OrderBy(x => x.Order)
+            .ThenBy(x => x.Name, StringComparer.OrdinalIgnoreCase)
+            .ToList();
+
+        // Default = first visible ordering (no separate IsDefault flag; the top of the list surfaces on empty sort).
+        MarkDefault(ordered);
+
+        return ordered;
+    }
+
+    private void AddResolverOrderings(
+        List<ProductSearchOrdering> result,
+        HashSet<string> usedCodes,
+        Dictionary<string, ProductSearchOrderingEntry> entriesByCode,
+        ProductSearchOrderContext context)
+    {
         foreach (var resolver in _registry.GetAllResolvers())
         {
             entriesByCode.TryGetValue(resolver.Code, out var entry);
             result.Add(BuildEffectiveForResolver(resolver, entry, context));
             usedCodes.Add(resolver.Code);
         }
+    }
 
-        // 2. Admin-authored custom orderings (stored entries with no backing resolver). Orphan deltas are ignored.
+    private static void AddCustomOrderings(
+        List<ProductSearchOrdering> result,
+        HashSet<string> usedCodes,
+        IList<ProductSearchOrderingEntry> entries)
+    {
         var maxOrder = result.Count > 0 ? result.Max(x => x.Order) : 0;
+
         foreach (var entry in entries.Where(x => !string.IsNullOrWhiteSpace(x?.Code) && !usedCodes.Contains(x.Code)))
         {
             if (entry.IsCustom && entry.Clauses != null && entry.Clauses.Any(c => !string.IsNullOrWhiteSpace(c?.Field)))
@@ -67,20 +100,15 @@ public class ProductSearchOrderService : IProductSearchOrderService
                 usedCodes.Add(entry.Code);
             }
         }
+    }
 
-        var ordered = result
-            .OrderBy(x => x.Order)
-            .ThenBy(x => x.Name, StringComparer.OrdinalIgnoreCase)
-            .ToList();
-
-        // Default = first visible ordering (no separate IsDefault flag; the top of the list surfaces on empty sort).
+    private static void MarkDefault(List<ProductSearchOrdering> ordered)
+    {
         var defaultOrdering = ordered.FirstOrDefault(x => x.IsVisible);
         if (defaultOrdering != null)
         {
             defaultOrdering.IsDefault = true;
         }
-
-        return ordered;
     }
 
     public async Task<string> GetSortExpressionAsync(ProductSearchOrderContext context, string sort)
@@ -114,14 +142,15 @@ public class ProductSearchOrderService : IProductSearchOrderService
             if (resolver == null)
             {
                 // No backing resolver -> persist the full admin-authored definition.
+                // Empty collections are persisted as null so the JSON stays sparse (NullValueHandling.Ignore).
                 entries.Add(new ProductSearchOrderingEntry
                 {
                     Code = ordering.Code,
                     Order = ordering.Order,
                     IsVisible = ordering.IsVisible,
                     Name = ordering.Name,
-                    LocalizedNames = NormalizeLocalizedNames(ordering.LocalizedNames),
-                    Clauses = NormalizeClauses(ordering.Clauses),
+                    LocalizedNames = NormalizeLocalizedNames(ordering.LocalizedNames) is { Count: > 0 } names ? names : null,
+                    Clauses = NormalizeClauses(ordering.Clauses) is { Count: > 0 } clauses ? clauses : null,
                     IsCustom = true,
                 });
             }
@@ -163,7 +192,7 @@ public class ProductSearchOrderService : IProductSearchOrderService
         return Deserialize(serialized);
     }
 
-    private IList<ProductSearchOrderingEntry> Deserialize(string value)
+    private List<ProductSearchOrderingEntry> Deserialize(string value)
     {
         if (string.IsNullOrWhiteSpace(value))
         {
@@ -198,11 +227,27 @@ public class ProductSearchOrderService : IProductSearchOrderService
             LocalizedNames = CloneLocalizedNames(entry?.LocalizedNames),
         };
 
+        ApplyDisplayFields(ordering, info, entry);
+        ApplyClauses(ordering, resolver, info, entry, context);
+
+        return ordering;
+    }
+
+    private static void ApplyDisplayFields(ProductSearchOrdering ordering, ProductSearchOrderInfo info, ProductSearchOrderingEntry entry)
+    {
         var canOverride = info.AllowOverride && entry != null;
         ordering.Name = canOverride && !string.IsNullOrEmpty(entry.Name) ? entry.Name : info.Name;
         ordering.Order = canOverride && entry.Order.HasValue ? entry.Order.Value : info.Order;
         ordering.IsVisible = canOverride && entry.IsVisible.HasValue ? entry.IsVisible.Value : info.IsVisible;
+    }
 
+    private static void ApplyClauses(
+        ProductSearchOrdering ordering,
+        IProductSearchOrderResolver resolver,
+        ProductSearchOrderInfo info,
+        ProductSearchOrderingEntry entry,
+        ProductSearchOrderContext context)
+    {
         if (info.IsExpressionEditable && entry?.Clauses != null && entry.Clauses.Count > 0)
         {
             ordering.Clauses = CloneClauses(entry.Clauses);
@@ -214,8 +259,6 @@ public class ProductSearchOrderService : IProductSearchOrderService
             ordering.SortExpression = expression;
             ordering.Clauses = ParseClauses(expression);
         }
-
-        return ordering;
     }
 
     private static ProductSearchOrdering BuildEffectiveForCustom(ProductSearchOrderingEntry entry, int fallbackOrder)
@@ -244,50 +287,80 @@ public class ProductSearchOrderService : IProductSearchOrderService
     {
         var info = resolver.Info ?? new ProductSearchOrderInfo();
         var entry = new ProductSearchOrderingEntry { Code = resolver.Code };
-        var hasDelta = false;
 
-        if (info.AllowOverride)
+        // Evaluate every delta (no short-circuit) so each changed field is captured, then keep the entry only if something changed.
+        var hasDisplayDelta = ApplyDisplayDelta(entry, info, ordering);
+        var hasLocalizedDelta = ApplyLocalizedNamesDelta(entry, ordering);
+        var hasClausesDelta = ApplyClausesDelta(entry, info, ordering, resolver, context);
+
+        return hasDisplayDelta || hasLocalizedDelta || hasClausesDelta ? entry : null;
+    }
+
+    private static bool ApplyDisplayDelta(ProductSearchOrderingEntry entry, ProductSearchOrderInfo info, ProductSearchOrdering ordering)
+    {
+        if (!info.AllowOverride)
         {
-            if (ordering.Order != info.Order)
-            {
-                entry.Order = ordering.Order;
-                hasDelta = true;
-            }
-
-            if (ordering.IsVisible != info.IsVisible)
-            {
-                entry.IsVisible = ordering.IsVisible;
-                hasDelta = true;
-            }
-
-            if (!string.IsNullOrEmpty(ordering.Name) && !string.Equals(ordering.Name, info.Name, StringComparison.Ordinal))
-            {
-                entry.Name = ordering.Name;
-                hasDelta = true;
-            }
+            return false;
         }
 
-        var localizedNames = NormalizeLocalizedNames(ordering.LocalizedNames);
-        if (localizedNames != null)
+        var hasDelta = false;
+
+        if (ordering.Order != info.Order)
         {
-            entry.LocalizedNames = localizedNames;
+            entry.Order = ordering.Order;
             hasDelta = true;
         }
 
-        if (info.IsExpressionEditable)
+        if (ordering.IsVisible != info.IsVisible)
         {
-            var clauses = NormalizeClauses(ordering.Clauses);
-            var expression = clauses.ToSortExpression();
-            var defaultExpression = resolver.GetSortExpression(context);
-
-            if (!string.IsNullOrEmpty(expression) && !string.Equals(expression, defaultExpression, StringComparison.OrdinalIgnoreCase))
-            {
-                entry.Clauses = clauses;
-                hasDelta = true;
-            }
+            entry.IsVisible = ordering.IsVisible;
+            hasDelta = true;
         }
 
-        return hasDelta ? entry : null;
+        if (!string.IsNullOrEmpty(ordering.Name) && !string.Equals(ordering.Name, info.Name, StringComparison.Ordinal))
+        {
+            entry.Name = ordering.Name;
+            hasDelta = true;
+        }
+
+        return hasDelta;
+    }
+
+    private static bool ApplyLocalizedNamesDelta(ProductSearchOrderingEntry entry, ProductSearchOrdering ordering)
+    {
+        var localizedNames = NormalizeLocalizedNames(ordering.LocalizedNames);
+        if (localizedNames.Count == 0)
+        {
+            return false;
+        }
+
+        entry.LocalizedNames = localizedNames;
+        return true;
+    }
+
+    private static bool ApplyClausesDelta(
+        ProductSearchOrderingEntry entry,
+        ProductSearchOrderInfo info,
+        ProductSearchOrdering ordering,
+        IProductSearchOrderResolver resolver,
+        ProductSearchOrderContext context)
+    {
+        if (!info.IsExpressionEditable)
+        {
+            return false;
+        }
+
+        var clauses = NormalizeClauses(ordering.Clauses);
+        var expression = clauses.ToSortExpression();
+        var defaultExpression = resolver.GetSortExpression(context);
+
+        if (string.IsNullOrEmpty(expression) || string.Equals(expression, defaultExpression, StringComparison.OrdinalIgnoreCase))
+        {
+            return false;
+        }
+
+        entry.Clauses = clauses;
+        return true;
     }
 
     private void Validate(IList<ProductSearchOrdering> orderings)
@@ -315,7 +388,7 @@ public class ProductSearchOrderService : IProductSearchOrderService
         }
     }
 
-    private static IList<SortClause> ParseClauses(string expression)
+    private static List<SortClause> ParseClauses(string expression)
     {
         var clauses = new List<SortClause>();
 
@@ -334,17 +407,15 @@ public class ProductSearchOrderService : IProductSearchOrderService
         return clauses;
     }
 
-    private static IList<SortClause> NormalizeClauses(IEnumerable<SortClause> clauses)
+    private static List<SortClause> NormalizeClauses(IEnumerable<SortClause> clauses)
     {
-        var result = clauses?
+        return clauses?
             .Where(x => !string.IsNullOrWhiteSpace(x?.Field))
             .Select(x => new SortClause { Field = x.Field.Trim(), IsDescending = x.IsDescending })
-            .ToList();
-
-        return result is { Count: > 0 } ? result : null;
+            .ToList() ?? [];
     }
 
-    private static IList<SortClause> CloneClauses(IEnumerable<SortClause> clauses)
+    private static List<SortClause> CloneClauses(IEnumerable<SortClause> clauses)
     {
         return clauses?
             .Where(x => !string.IsNullOrWhiteSpace(x?.Field))
@@ -352,16 +423,15 @@ public class ProductSearchOrderService : IProductSearchOrderService
             .ToList() ?? [];
     }
 
-    private static IDictionary<string, string> NormalizeLocalizedNames(IDictionary<string, string> localizedNames)
+    private static Dictionary<string, string> NormalizeLocalizedNames(IDictionary<string, string> localizedNames)
     {
-        var result = localizedNames?
+        return localizedNames?
             .Where(x => !string.IsNullOrWhiteSpace(x.Key) && !string.IsNullOrWhiteSpace(x.Value))
-            .ToDictionary(x => x.Key, x => x.Value, StringComparer.OrdinalIgnoreCase);
-
-        return result is { Count: > 0 } ? result : null;
+            .ToDictionary(x => x.Key, x => x.Value, StringComparer.OrdinalIgnoreCase)
+            ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
     }
 
-    private static IDictionary<string, string> CloneLocalizedNames(IDictionary<string, string> localizedNames)
+    private static Dictionary<string, string> CloneLocalizedNames(IDictionary<string, string> localizedNames)
     {
         return localizedNames != null
             ? new Dictionary<string, string>(localizedNames, StringComparer.OrdinalIgnoreCase)

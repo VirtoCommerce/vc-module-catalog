@@ -26,9 +26,15 @@ angular.module('virtoCommerce.catalogModule')
 
         // Order reflects list position; default = the first visible ordering.
         function recalculate() {
-            _.each(blade.currentEntities, function (item, index) { item.order = index; });
-            var firstVisible = _.find(blade.currentEntities, function (x) { return x.isVisible; });
-            _.each(blade.currentEntities, function (x) { x.isDefault = (x === firstVisible); });
+            _.each(blade.currentEntities, function (item, index) {
+                item.order = index;
+            });
+            var firstVisible = _.find(blade.currentEntities, function (x) {
+                return x.isVisible;
+            });
+            _.each(blade.currentEntities, function (x) {
+                x.isDefault = (x === firstVisible);
+            });
         }
 
         blade.edit = function (node) {
@@ -144,7 +150,10 @@ angular.module('virtoCommerce.catalogModule')
             },
             {
                 name: 'platform.commands.refresh', icon: 'fa fa-refresh',
-                executeMethod: function () { closeChildren(); initializeBlade(); },
+                executeMethod: function () {
+                    closeChildren();
+                    initializeBlade();
+                },
                 canExecuteMethod: function () { return true; }
             }
         ];

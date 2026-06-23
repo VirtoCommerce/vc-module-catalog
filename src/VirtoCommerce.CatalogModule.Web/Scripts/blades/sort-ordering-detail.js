@@ -18,7 +18,9 @@ angular.module('virtoCommerce.catalogModule')
         // Localized-name rows: show a couple by default, reveal the rest on demand.
         blade.defaultVisibleLanguages = 2;
         blade.showAllLanguages = false;
-        blade.toggleLanguages = function () { blade.showAllLanguages = !blade.showAllLanguages; };
+        blade.toggleLanguages = function () {
+            blade.showAllLanguages = !blade.showAllLanguages;
+        };
 
         // Gate flags coming from the backend (resolver-provided). New custom orderings are fully editable.
         blade.canEditDisplay = blade.entity.allowOverride !== false;
@@ -32,7 +34,9 @@ angular.module('virtoCommerce.catalogModule')
         updateExpression();
 
         function buildFieldOptions() {
-            var names = _.map(blade.sortableFields || [], function (f) { return f.name; });
+            var names = _.map(blade.sortableFields || [], function (f) {
+                return f.name;
+            });
             // Preserve any clause field that is not in the discovered list (e.g. a built-in's "id" tie-breaker).
             _.each(blade.entity.clauses, function (c) {
                 if (c.field && names.indexOf(c.field) < 0) {
@@ -80,9 +84,13 @@ angular.module('virtoCommerce.catalogModule')
         };
 
         function updateExpression() {
-            var clauses = (blade.entity.clauses || []).filter(function (c) { return c.field; });
+            var clauses = (blade.entity.clauses || []).filter(function (c) {
+                return c.field;
+            });
             blade.entity.sortExpression = clauses
-                .map(function (c) { return c.field + ':' + (c.isDescending ? 'desc' : 'asc'); })
+                .map(function (c) {
+                    return [c.field, c.isDescending ? 'desc' : 'asc'].join(':');
+                })
                 .join(';');
             // Tokens for the colored "Resolved expression" preview (field vs. direction).
             blade.previewTokens = clauses.map(function (c) {
@@ -105,7 +113,9 @@ angular.module('virtoCommerce.catalogModule')
             if (duplicate) {
                 return false;
             }
-            if (blade.entity.isCustom && !_.some(blade.entity.clauses, function (c) { return c.field; })) {
+            if (blade.entity.isCustom && !_.some(blade.entity.clauses, function (c) {
+                return c.field;
+            })) {
                 return false;
             }
             return true;
@@ -134,7 +144,11 @@ angular.module('virtoCommerce.catalogModule')
             },
             {
                 name: 'platform.commands.reset', icon: 'fa fa-undo',
-                executeMethod: function () { blade.entity = angular.copy(original); buildFieldOptions(); updateExpression(); },
+                executeMethod: function () {
+                    blade.entity = angular.copy(original);
+                    buildFieldOptions();
+                    updateExpression();
+                },
                 canExecuteMethod: isDirty
             }
         ];

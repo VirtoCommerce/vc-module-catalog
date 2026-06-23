@@ -5,7 +5,7 @@ public class NameAscendingProductSearchOrderResolver : AbstractExpressionProduct
 {
     public override string Code => ProductSearchOrderCodes.NameAscending;
 
-    public override ProductSearchOrderInfo Info { get; } = new() { Name = "Alphabetically, A-Z", Order = 1 };
+    public override ProductSearchOrderInfo Info { get; } = new() { Name = "Alphabetically, A-Z", Order = ProductSearchOrderCodes.DefaultOrder.NameAscending };
 
     protected override string DefaultExpression => "name:asc";
 }
