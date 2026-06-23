@@ -134,36 +134,10 @@ public class ProductSearchOrderService : IProductSearchOrderService
         }
 
         var context = new ProductSearchOrderContext { StoreId = storeId };
-        var entries = new List<ProductSearchOrderingEntry>();
-
-        foreach (var ordering in orderings)
-        {
-            var resolver = _registry.GetResolver(ordering.Code);
-            if (resolver == null)
-            {
-                // No backing resolver -> persist the full admin-authored definition.
-                // Empty collections are persisted as null so the JSON stays sparse (NullValueHandling.Ignore).
-                entries.Add(new ProductSearchOrderingEntry
-                {
-                    Code = ordering.Code,
-                    Order = ordering.Order,
-                    IsVisible = ordering.IsVisible,
-                    Name = ordering.Name,
-                    LocalizedNames = NormalizeLocalizedNames(ordering.LocalizedNames) is { Count: > 0 } names ? names : null,
-                    Clauses = NormalizeClauses(ordering.Clauses) is { Count: > 0 } clauses ? clauses : null,
-                    IsCustom = true,
-                });
-            }
-            else
-            {
-                // Backing resolver -> persist only the fields that differ from the code default.
-                var delta = BuildDelta(resolver, ordering, context);
-                if (delta != null)
-                {
-                    entries.Add(delta);
-                }
-            }
-        }
+        var entries = orderings
+            .Select(ordering => BuildEntry(ordering, context))
+            .Where(entry => entry != null)
+            .ToList();
 
         var serialized = entries.Count > 0 ? JsonConvert.SerializeObject(entries, _jsonSettings) : null;
 
@@ -178,6 +152,31 @@ public class ProductSearchOrderService : IProductSearchOrderService
         await _storeService.SaveChangesAsync([store]);
     }
 
+    private ProductSearchOrderingEntry BuildEntry(ProductSearchOrdering ordering, ProductSearchOrderContext context)
+    {
+        // Backing resolver -> persist only the fields that differ from the code default (may be null = no change);
+        // otherwise persist the full admin-authored definition.
+        var resolver = _registry.GetResolver(ordering.Code);
+
+        return resolver != null
+            ? BuildDelta(resolver, ordering, context)
+            : BuildCustomEntry(ordering);
+    }
+
+    private static ProductSearchOrderingEntry BuildCustomEntry(ProductSearchOrdering ordering)
+    {
+        // Empty collections are persisted as null so the JSON stays sparse (NullValueHandling.Ignore).
+        return new ProductSearchOrderingEntry
+        {
+            Code = ordering.Code,
+            Order = ordering.Order,
+            IsVisible = ordering.IsVisible,
+            Name = ordering.Name,
+            LocalizedNames = NormalizeLocalizedNames(ordering.LocalizedNames) is { Count: > 0 } names ? names : null,
+            Clauses = NormalizeClauses(ordering.Clauses) is { Count: > 0 } clauses ? clauses : null,
+            IsCustom = true,
+        };
+    }
 
     protected virtual async Task<IList<ProductSearchOrderingEntry>> GetStoredEntriesAsync(string storeId)
     {

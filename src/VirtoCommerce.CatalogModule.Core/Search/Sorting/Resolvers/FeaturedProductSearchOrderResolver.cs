@@ -7,9 +7,9 @@ namespace VirtoCommerce.CatalogModule.Core.Search.Sorting.Resolvers;
 /// </summary>
 public class FeaturedProductSearchOrderResolver : AbstractExpressionProductSearchOrderResolver
 {
-    public override string Code => ProductSearchOrderCodes.Featured;
+    public override string Code => ProductSearchOrderings.Featured;
 
-    public override ProductSearchOrderInfo Info { get; } = new() { Name = "Featured", Order = ProductSearchOrderCodes.DefaultOrder.Featured };
+    public override ProductSearchOrderInfo Info { get; } = new() { Name = "Featured", Order = ProductSearchOrderings.FeaturedOrder };
 
     protected override string DefaultExpression => "__score:desc;priority:desc;id:asc";
 }
