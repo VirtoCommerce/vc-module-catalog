@@ -302,25 +302,25 @@ jobs:
         env:
           STEPS_PUSH_BUILD_INFO_TO_JIRA_OUTPUTS_RESPONSE: ${{ steps.push_build_info_to_jira.outputs.response }}
 
-  # auto-tests:
-  #   if: ${{ ((github.ref == 'refs/heads/dev') && (github.event_name == 'push')) ||
-  #       (github.event_name == 'workflow_dispatch') || ((github.base_ref == 'dev') && (github.event_name == 'pull_request')) }}
-  #   needs: ci
-  #   uses: VirtoCommerce/.github/.github/workflows/pytest-tests.yml@v3.800.38
-  #   with:
-  #     installModules: 'false'
-  #     installCustomModule: 'true'
-  #     customModuleId:  ${{ needs.ci.outputs.moduleId }}
-  #     customModuleUrl:  ${{ needs.ci.outputs.artifactUrl }}
-  #     requiredModulesListUrl: ${{ needs.ci.outputs.requiredModulesListUrl }}
-  #     vctestingRepoBranch: 'dev'
-  #     frontendZipUrl: 'latest'
-  #     testSuites: 'graphql,restapi,e2e'   
-  #   secrets:
-  #     appInsightsInstrumentationKey: ${{ secrets.E2E_APPINSIGHTSINSTRUMENTATIONKEY }}
-  #     envPAT: ${{ secrets.REPO_TOKEN }}
-  #     testSecretEnvFile: ${{ secrets.VC_TESTING_MODULE_ENV_FILE }}
-  #     sendgridApiKey: ${{ secrets.SENDGRID_APIKEY_4E2E_AUTOTESTS }}
+  auto-tests:
+    if: ${{ ((github.ref == 'refs/heads/dev') && (github.event_name == 'push')) ||
+        (github.event_name == 'workflow_dispatch') || ((github.base_ref == 'dev') && (github.event_name == 'pull_request')) }}
+    needs: ci
+    uses: VirtoCommerce/.github/.github/workflows/pytest-tests.yml@v3.800.38
+    with:
+      installModules: 'false'
+      installCustomModule: 'true'
+      customModuleId:  ${{ needs.ci.outputs.moduleId }}
+      customModuleUrl:  ${{ needs.ci.outputs.artifactUrl }}
+      requiredModulesListUrl: ${{ needs.ci.outputs.requiredModulesListUrl }}
+      vctestingRepoBranch: 'dev'
+      frontendZipUrl: 'latest'
+      testSuites: 'graphql,restapi,e2e'   
+    secrets:
+      appInsightsInstrumentationKey: ${{ secrets.E2E_APPINSIGHTSINSTRUMENTATIONKEY }}
+      envPAT: ${{ secrets.REPO_TOKEN }}
+      testSecretEnvFile: ${{ secrets.VC_TESTING_MODULE_ENV_FILE }}
+      sendgridApiKey: ${{ secrets.SENDGRID_APIKEY_4E2E_AUTOTESTS }}
 
   swagger-validation:
     # if: ${{ github.ref == 'refs/heads/dev' || (github.event_name == 'pull_request' && github.base_ref == 'dev') }}
@@ -347,21 +347,21 @@ jobs:
           requiredModulesListUrl: ${{ needs.ci.outputs.requiredModulesListUrl }}
           platformImage: ghcr.io/virtocommerce/platform
 
-  # deploy-cloud:
-  #   if: ${{ (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev')
-  #     && github.event_name == 'push'
-  #     && needs.ci.outputs.deployment-folder-exists == 'true'}}
-  #   needs: ci
-  #   # deploy-cloud.yml writes deployment status via GITHUB_TOKEN; rest uses inherited PATs.
-  #   permissions:
-  #     contents: read
-  #     deployments: write
-  #   uses: VirtoCommerce/.github/.github/workflows/deploy-cloud.yml@v3.800.38
-  #   with:
-  #     releaseSource: module
-  #     moduleId: ${{ needs.ci.outputs.moduleId }}
-  #     moduleVer: ${{ needs.ci.outputs.version }}
-  #     moduleBlob: ${{ needs.ci.outputs.blobId }}
-  #     jiraKeys: ${{ needs.ci.outputs.jira-keys }}
-  #     matrix: '{"include":${{ needs.ci.outputs.matrix }}}'
-  #   secrets: inherit # zizmor: ignore[secrets-inherit] deploy-cloud.yml@v3.800.38 reads undeclared org secrets; explicit passing needs a new release + tag bump
+  deploy-cloud:
+    if: ${{ (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev')
+      && github.event_name == 'push'
+      && needs.ci.outputs.deployment-folder-exists == 'true'}}
+    needs: ci
+    # deploy-cloud.yml writes deployment status via GITHUB_TOKEN; rest uses inherited PATs.
+    permissions:
+      contents: read
+      deployments: write
+    uses: VirtoCommerce/.github/.github/workflows/deploy-cloud.yml@v3.800.38
+    with:
+      releaseSource: module
+      moduleId: ${{ needs.ci.outputs.moduleId }}
+      moduleVer: ${{ needs.ci.outputs.version }}
+      moduleBlob: ${{ needs.ci.outputs.blobId }}
+      jiraKeys: ${{ needs.ci.outputs.jira-keys }}
+      matrix: '{"include":${{ needs.ci.outputs.matrix }}}'
+    secrets: inherit # zizmor: ignore[secrets-inherit] deploy-cloud.yml@v3.800.38 reads undeclared org secrets; explicit passing needs a new release + tag bump
