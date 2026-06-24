@@ -172,7 +172,7 @@ namespace VirtoCommerce.CatalogModule.Tests
             };
             var categoryLinks = new List<CategoryRelationEntity>
             {
-                new() { SourceCategoryId = virtCatId, TargetCategoryId = physCatId },
+                new() { SourceCategoryId = physCatId, TargetCategoryId = virtCatId },
             };
 
             SetupRepository(virtCatId, childIds: [], items: items, relations: [], categoryLinks: categoryLinks);
@@ -206,7 +206,7 @@ namespace VirtoCommerce.CatalogModule.Tests
             };
             var categoryLinks = new List<CategoryRelationEntity>
             {
-                new() { SourceCategoryId = virtCatId, TargetCategoryId = physCatId },
+                new() { SourceCategoryId = physCatId, TargetCategoryId = virtCatId },
             };
 
             SetupRepository(virtCatId, childIds: [], items: items, relations: [], categoryLinks: categoryLinks);
@@ -240,8 +240,8 @@ namespace VirtoCommerce.CatalogModule.Tests
             };
             var categoryLinks = new List<CategoryRelationEntity>
             {
-                new() { SourceCategoryId = virtCatAId, TargetCategoryId = virtCatBId },
-                new() { SourceCategoryId = virtCatBId, TargetCategoryId = physCatCId },
+                new() { SourceCategoryId = virtCatBId, TargetCategoryId = virtCatAId },
+                new() { SourceCategoryId = physCatCId, TargetCategoryId = virtCatBId },
             };
 
             SetupRepository(virtCatAId, childIds: [], items: items, relations: [], categoryLinks: categoryLinks);

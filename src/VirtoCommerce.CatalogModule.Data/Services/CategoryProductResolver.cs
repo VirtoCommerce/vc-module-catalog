@@ -26,25 +26,25 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
             while (categoriesToExpand.Count > 0)
             {
-                var virtualCategoryTargetIds = await repository.CategoryLinks
-                    .Where(x => categoriesToExpand.Contains(x.SourceCategoryId) && x.TargetCategoryId != null)
-                    .Select(x => x.TargetCategoryId)
+                var linkedPhysicalCategoryIds = await repository.CategoryLinks
+                    .Where(x => categoriesToExpand.Contains(x.TargetCategoryId) && x.SourceCategoryId != null)
+                    .Select(x => x.SourceCategoryId)
                     .Distinct()
                     .ToListAsync();
 
-                var newCategoryTargetIds = virtualCategoryTargetIds.Where(visited.Add).ToList();
-                if (newCategoryTargetIds.Count == 0)
+                var newLinkedCategoryIds = linkedPhysicalCategoryIds.Where(visited.Add).ToList();
+                if (newLinkedCategoryIds.Count == 0)
                 {
                     break;
                 }
 
-                var newChildCategoryIds = await repository.GetAllChildrenCategoriesIdsAsync(newCategoryTargetIds);
+                var newChildCategoryIds = await repository.GetAllChildrenCategoriesIdsAsync(newLinkedCategoryIds);
                 foreach (var id in newChildCategoryIds)
                 {
                     visited.Add(id);
                 }
 
-                categoriesToExpand = newCategoryTargetIds;
+                categoriesToExpand = newLinkedCategoryIds;
             }
 
             return visited.ToList();
