@@ -18,13 +18,6 @@ public interface IProductSearchOrderService
     Task<IList<ProductSearchOrdering>> GetOrderingsAsync(ProductSearchOrderContext context);
 
     /// <summary>
-    /// Resolves the incoming <paramref name="sort"/> token into a logical sort expression:
-    /// empty -> the store's default ordering; a known resolver code -> that ordering's effective expression;
-    /// otherwise the value is treated as a raw expression and returned unchanged (back-compat passthrough).
-    /// </summary>
-    Task<string> GetSortExpressionAsync(ProductSearchOrderContext context, string sort);
-
-    /// <summary>
     /// Persists the admin-edited orderings for a store as a sparse delta (plus full entries for custom orderings).
     /// Validates codes are unique and non-empty before saving.
     /// </summary>

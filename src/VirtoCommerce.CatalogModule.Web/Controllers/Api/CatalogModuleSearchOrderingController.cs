@@ -27,7 +27,7 @@ public class CatalogModuleSearchOrderingController : Controller
     /// Effective sort orderings for a store (built-in resolvers merged with admin overrides; includes hidden ones).
     /// </summary>
     [HttpGet("store/{storeId}")]
-    [Authorize(ModuleConstants.Security.Permissions.Read)]
+    [Authorize(ModuleConstants.Security.Permissions.CatalogBrowseFiltersRead)]
     public async Task<ActionResult<IList<ProductSearchOrdering>>> GetOrderings([FromRoute] string storeId)
     {
         var orderings = await _productSearchOrderService.GetOrderingsAsync(new ProductSearchOrderContext { StoreId = storeId });
@@ -38,7 +38,7 @@ public class CatalogModuleSearchOrderingController : Controller
     /// Fields the admin can pick in a sort clause, derived from the product index schema.
     /// </summary>
     [HttpGet("store/{storeId}/fields")]
-    [Authorize(ModuleConstants.Security.Permissions.Read)]
+    [Authorize(ModuleConstants.Security.Permissions.CatalogBrowseFiltersRead)]
     public async Task<ActionResult<IList<ProductSortableField>>> GetSortableFields([FromRoute] string storeId)
     {
         var fields = await _productSortableFieldService.GetSortableFieldsAsync(storeId);
@@ -47,7 +47,7 @@ public class CatalogModuleSearchOrderingController : Controller
 
     [HttpPut("store/{storeId}")]
     [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
-    [Authorize(ModuleConstants.Security.Permissions.Update)]
+    [Authorize(ModuleConstants.Security.Permissions.CatalogBrowseFiltersUpdate)]
     public async Task<ActionResult> SaveOrderings([FromRoute] string storeId, [FromBody] ProductSearchOrdering[] orderings)
     {
         await _productSearchOrderService.SaveOrderingsAsync(storeId, orderings);

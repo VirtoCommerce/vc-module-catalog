@@ -3,7 +3,7 @@ angular.module('virtoCommerce.catalogModule')
     ['$scope', 'platformWebApp.bladeNavigationService', 'virtoCommerce.catalogModule.sortOrderings',
     function ($scope, bladeNavigationService, sortOrderings) {
         var blade = $scope.blade;
-        blade.updatePermission = 'store:update';
+        blade.updatePermission = 'catalog:BrowseFilters:Update';
         blade.headIcon = 'fas fa-sort-amount-down';
 
         function initializeBlade() {
@@ -124,7 +124,7 @@ angular.module('virtoCommerce.catalogModule')
 
         blade.onClose = function (closeCallback) {
             bladeNavigationService.showConfirmationIfNeeded(isDirty(), true, blade, $scope.saveChanges, closeCallback,
-                "Save changes", "The sort orderings have been modified. Do you want to save the changes?");
+                "catalog.dialogs.sort-ordering-save.title", "catalog.dialogs.sort-ordering-save.message");
         };
 
         blade.toolbarCommands = [

@@ -1028,6 +1028,14 @@
       }
     },
     "dialogs": {
+      "sort-ordering-save": {
+        "title": "Save changes",
+        "message": "The sort orderings have been modified. Do you want to save the changes?"
+      },
+      "sort-ordering-apply": {
+        "title": "Apply changes",
+        "message": "The ordering has been modified. Apply the changes?"
+      },
       "catalog-save": {
         "title": "Save changes",
         "message": "This catalog has been modified. Do you want to save the changes?"

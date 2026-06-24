@@ -5,7 +5,7 @@ angular.module('virtoCommerce.catalogModule')
         var blade = $scope.blade;
         blade.isLoading = false;
         blade.headIcon = 'fas fa-sort-amount-down';
-        blade.updatePermission = 'store:update';
+        blade.updatePermission = 'catalog:BrowseFilters:Update';
 
         blade.entity = angular.copy(blade.ordering);
         blade.entity.localizedNames = blade.entity.localizedNames || {};
@@ -133,7 +133,7 @@ angular.module('virtoCommerce.catalogModule')
 
         blade.onClose = function (closeCallback) {
             bladeNavigationService.showConfirmationIfNeeded(isDirty() && isValid(), true, blade, $scope.saveChanges, closeCallback,
-                "Save changes", "The ordering has been modified. Apply the changes?");
+                "catalog.dialogs.sort-ordering-apply.title", "catalog.dialogs.sort-ordering-apply.message");
         };
 
         blade.toolbarCommands = [

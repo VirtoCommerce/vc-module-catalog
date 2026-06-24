@@ -117,15 +117,6 @@ public class ProductSearchOrderService : IProductSearchOrderService
         }
     }
 
-    public async Task<string> GetSortExpressionAsync(ProductSearchOrderContext context, string sort)
-    {
-        var orderings = await GetOrderingsAsync(context);
-        var selected = orderings.FindSelected(sort);
-
-        // Known ordering -> its effective expression; raw/unknown token -> passthrough to the engine.
-        return selected?.SortExpression ?? sort;
-    }
-
     public async Task SaveOrderingsAsync(string storeId, IList<ProductSearchOrdering> orderings)
     {
         ArgumentException.ThrowIfNullOrEmpty(storeId);
@@ -382,6 +373,11 @@ public class ProductSearchOrderService : IProductSearchOrderService
             if (!seenCodes.Add(ordering.Code))
             {
                 throw new InvalidOperationException($"Duplicate sort ordering code '{ordering.Code}'.");
+            }
+
+            if (string.IsNullOrWhiteSpace(ordering.Name))
+            {
+                throw new InvalidOperationException($"Sort ordering '{ordering.Code}' must have a name.");
             }
 
             // Custom orderings (no backing resolver) must define at least one clause.

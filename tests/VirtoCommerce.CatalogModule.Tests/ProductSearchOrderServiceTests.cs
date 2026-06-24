@@ -144,14 +144,14 @@ namespace VirtoCommerce.CatalogModule.Tests
             result.First().Code.Should().Be(ProductSearchOrderings.Featured);
         }
 
-        // ---- GetSortExpressionAsync ----
+        // ---- Sort expression resolution (GetOrderingsAsync + FindSelected, the path x-catalog applies) ----
 
         [Fact]
-        public async Task GetSortExpression_EmptySort_ReturnsDefaultExpression()
+        public async Task ResolveExpression_EmptySort_ReturnsDefaultExpression()
         {
             var service = CreateService([]);
 
-            var expression = await service.GetSortExpressionAsync(Context(), "");
+            var expression = await ResolveExpression(service, "");
 
             expression.Should().Be("__score:desc;priority:desc;id:asc");
         }
@@ -160,23 +160,72 @@ namespace VirtoCommerce.CatalogModule.Tests
         [InlineData("price-ascending", "price:asc")]
         [InlineData("PRICE-ASCENDING", "price:asc")] // code match is case-insensitive
         [InlineData("name-descending", "name:desc")]
-        public async Task GetSortExpression_KnownCode_ReturnsThatExpression(string sort, string expected)
+        public async Task ResolveExpression_KnownCode_ReturnsThatExpression(string sort, string expected)
         {
             var service = CreateService([]);
 
-            var expression = await service.GetSortExpressionAsync(Context(), sort);
+            var expression = await ResolveExpression(service, sort);
 
             expression.Should().Be(expected);
         }
 
         [Fact]
-        public async Task GetSortExpression_RawOrUnknownToken_PassesThrough()
+        public async Task ResolveExpression_RawOrUnknownToken_PassesThrough()
         {
             var service = CreateService([]);
 
-            var expression = await service.GetSortExpressionAsync(Context(), "rating:desc");
+            var expression = await ResolveExpression(service, "rating:desc");
 
             expression.Should().Be("rating:desc");
+        }
+
+        // ---- Gate flags (AllowOverride / IsExpressionEditable) — the no-migration "kill switch" ----
+
+        [Fact]
+        public async Task GetOrderings_AllowOverrideFalse_IgnoresStoredDisplayDelta()
+        {
+            // A resolver with AllowOverride=false keeps its code-provided name/order/visibility even when the
+            // store has stored overrides for them.
+            var service = CreateService(
+                [new FixedDisplayResolver()],
+                [new ProductSearchOrderingEntry { Code = FixedDisplayResolver.ResolverCode, Name = "Hacked", Order = 99, IsVisible = false }]);
+
+            var ordering = (await service.GetOrderingsAsync(Context())).Single(x => x.Code == FixedDisplayResolver.ResolverCode);
+
+            ordering.Name.Should().Be("Fixed");
+            ordering.Order.Should().Be(50);
+            ordering.IsVisible.Should().BeTrue();
+        }
+
+        [Fact]
+        public async Task GetOrderings_ExpressionNotEditable_IgnoresStoredClauses()
+        {
+            // A resolver with IsExpressionEditable=false keeps its code expression, ignoring stored clauses.
+            var service = CreateService(
+                [new FixedExpressionResolver()],
+                [new ProductSearchOrderingEntry { Code = FixedExpressionResolver.ResolverCode, Clauses = [new SortClause { Field = "name", IsDescending = true }] }]);
+
+            var ordering = (await service.GetOrderingsAsync(Context())).Single(x => x.Code == FixedExpressionResolver.ResolverCode);
+
+            ordering.SortExpression.Should().Be("priority:desc");
+        }
+
+        [Fact]
+        public async Task SaveOrderings_AllowOverrideFalse_DoesNotPersistDisplayDelta()
+        {
+            var store = CreateStoreWithSetting();
+            var registry = new ProductSearchOrderResolverRegistry([new FixedDisplayResolver()], NullLogger<ProductSearchOrderResolverRegistry>.Instance);
+            var service = new ProductSearchOrderService(registry, CreateStoreServiceMock(store).Object, NullLogger<ProductSearchOrderService>.Instance);
+
+            var orderings = await service.GetOrderingsAsync(Context());
+            var ordering = orderings.Single(x => x.Code == FixedDisplayResolver.ResolverCode);
+            ordering.IsVisible = false;
+            ordering.Order = 99;
+
+            await service.SaveOrderingsAsync(StoreId, orderings);
+
+            // AllowOverride=false -> the display change is not a delta -> nothing persisted.
+            (store.Settings.Single(x => x.Name == SortDefinitions.Name).Value as string).Should().BeNullOrEmpty();
         }
 
         // ---- SaveOrderingsAsync: delta-only persistence ----
@@ -245,8 +294,8 @@ namespace VirtoCommerce.CatalogModule.Tests
 
             var orderings = new List<ProductSearchOrdering>
             {
-                new() { Code = "dup", IsCustom = true, Clauses = [new SortClause { Field = "name" }] },
-                new() { Code = "DUP", IsCustom = true, Clauses = [new SortClause { Field = "name" }] }, // case-insensitive dup
+                new() { Code = "dup", Name = "Dup", IsCustom = true, Clauses = [new SortClause { Field = "name" }] },
+                new() { Code = "DUP", Name = "Dup", IsCustom = true, Clauses = [new SortClause { Field = "name" }] }, // case-insensitive dup
             };
 
             await FluentActions.Awaiting(() => service.SaveOrderingsAsync(StoreId, orderings))
@@ -260,7 +309,7 @@ namespace VirtoCommerce.CatalogModule.Tests
 
             var orderings = new List<ProductSearchOrdering>
             {
-                new() { Code = "no-clause", IsCustom = true, Clauses = [] },
+                new() { Code = "no-clause", Name = "No clause", IsCustom = true, Clauses = [] },
             };
 
             await FluentActions.Awaiting(() => service.SaveOrderingsAsync(StoreId, orderings))
@@ -276,6 +325,46 @@ namespace VirtoCommerce.CatalogModule.Tests
 
             await FluentActions.Awaiting(() => service.SaveOrderingsAsync(StoreId, orderings))
                 .Should().ThrowAsync<InvalidOperationException>();
+        }
+
+        [Fact]
+        public async Task SaveOrderings_EmptyName_Throws()
+        {
+            var service = CreateValidationOnlyService();
+
+            var orderings = new List<ProductSearchOrdering>
+            {
+                new() { Code = "no-name", IsCustom = true, Clauses = [new SortClause { Field = "name" }] },
+            };
+
+            await FluentActions.Awaiting(() => service.SaveOrderingsAsync(StoreId, orderings))
+                .Should().ThrowAsync<InvalidOperationException>();
+        }
+
+        [Fact]
+        public async Task SaveOrderings_CustomOrdering_PersistsFullEntry()
+        {
+            var store = CreateStoreWithSetting();
+            var service = new ProductSearchOrderService(CreateRegistry(), CreateStoreServiceMock(store).Object,
+                NullLogger<ProductSearchOrderService>.Instance);
+
+            var orderings = new List<ProductSearchOrdering>
+            {
+                new()
+                {
+                    Code = "my-custom",
+                    Name = "My Custom",
+                    IsCustom = true,
+                    Clauses = [new SortClause { Field = "availability", IsDescending = true }],
+                },
+            };
+
+            await service.SaveOrderingsAsync(StoreId, orderings);
+
+            var entry = ReadPersistedEntries(store).Single(x => x.Code == "my-custom");
+            entry.IsCustom.Should().BeTrue();
+            entry.Name.Should().Be("My Custom");
+            entry.Clauses.Should().ContainSingle().Which.Field.Should().Be("availability");
         }
 
         // ---- helpers ----
@@ -307,6 +396,18 @@ namespace VirtoCommerce.CatalogModule.Tests
         private static StubbedProductSearchOrderService CreateService(IList<ProductSearchOrderingEntry> storedEntries) =>
             new(CreateRegistry(), storedEntries);
 
+        private static StubbedProductSearchOrderService CreateService(
+            IEnumerable<IProductSearchOrderResolver> resolvers,
+            IList<ProductSearchOrderingEntry> storedEntries) =>
+            new(new ProductSearchOrderResolverRegistry(resolvers, NullLogger<ProductSearchOrderResolverRegistry>.Instance), storedEntries);
+
+        // Mirrors how x-catalog resolves the applied expression: the selected ordering's expression, else passthrough.
+        private static async Task<string> ResolveExpression(IProductSearchOrderService service, string sort)
+        {
+            var orderings = await service.GetOrderingsAsync(Context());
+            return orderings.FindSelected(sort)?.SortExpression ?? sort;
+        }
+
         // Validation runs before the store is loaded, so a no-op store service is enough.
         private static ProductSearchOrderService CreateValidationOnlyService() =>
             new ProductSearchOrderService(CreateRegistry(), Mock.Of<IStoreService>(), NullLogger<ProductSearchOrderService>.Instance);
@@ -323,6 +424,24 @@ namespace VirtoCommerce.CatalogModule.Tests
 
             protected override Task<IList<ProductSearchOrderingEntry>> GetStoredEntriesAsync(string storeId) =>
                 Task.FromResult(_entries);
+        }
+
+        // AllowOverride=false: the admin cannot change name/order/visibility (code values win).
+        private sealed class FixedDisplayResolver : IProductSearchOrderResolver
+        {
+            public const string ResolverCode = "fixed-display";
+            public string Code => ResolverCode;
+            public ProductSearchOrderInfo Info { get; } = new() { Name = "Fixed", Order = 50, AllowOverride = false };
+            public string GetSortExpression(ProductSearchOrderContext context) => "name:asc";
+        }
+
+        // IsExpressionEditable=false: the admin cannot change the clauses (resolver expression wins).
+        private sealed class FixedExpressionResolver : IProductSearchOrderResolver
+        {
+            public const string ResolverCode = "fixed-expression";
+            public string Code => ResolverCode;
+            public ProductSearchOrderInfo Info { get; } = new() { Name = "Computed", Order = 51, IsExpressionEditable = false };
+            public string GetSortExpression(ProductSearchOrderContext context) => "priority:desc";
         }
 
         private static Store CreateStoreWithSetting(string value = null) => new()
