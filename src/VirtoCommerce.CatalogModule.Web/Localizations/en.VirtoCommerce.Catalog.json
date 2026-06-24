@@ -40,7 +40,7 @@
           "facets": "Facets"
         }
       },
-      "sort-ordering-list": {
+      "product-sorting-list": {
         "title": "Sorting",
         "subtitle": "Define how products are ordered when customers browse categories or search",
         "hint": "Drag to reorder how options appear in the storefront sort dropdown. The first visible option is the default.",
@@ -52,7 +52,7 @@
           "readonly": "READ-ONLY"
         }
       },
-      "sort-ordering-detail": {
+      "product-sorting-detail": {
         "title-new": "New sort ordering",
         "labels": {
           "visible": "Visible",
@@ -1028,11 +1028,11 @@
       }
     },
     "dialogs": {
-      "sort-ordering-save": {
+      "product-sorting-save": {
         "title": "Save changes",
         "message": "The sort orderings have been modified. Do you want to save the changes?"
       },
-      "sort-ordering-apply": {
+      "product-sorting-apply": {
         "title": "Apply changes",
         "message": "The ordering has been modified. Apply the changes?"
       },
@@ -1407,6 +1407,10 @@
             "title": "Event-based indexing for catalog entities",
             "description": "Enable/disable automatic background indexing of catalog entities whenever they are changed"
           }
+        },
+        "ProductSortings": {
+          "title": "Product sorting",
+          "description": "Per-store product sorting (\"sort by\") options. Edit through the Search configuration widget on the store page"
         }
       },
       "ProductConfigurationMaximumFiles": {

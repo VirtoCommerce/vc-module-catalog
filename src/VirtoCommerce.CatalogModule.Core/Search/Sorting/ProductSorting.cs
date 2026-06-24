@@ -3,10 +3,10 @@ using System.Collections.Generic;
 namespace VirtoCommerce.CatalogModule.Core.Search.Sorting;
 
 /// <summary>
-/// An effective, composed sort ordering: the code default merged with the store-level admin override.
+/// An effective, composed sort sorting: the code default merged with the store-level admin override.
 /// This is the projection returned to the admin UI and (filtered to visible) to the storefront via GraphQL.
 /// </summary>
-public class ProductSearchOrdering
+public class ProductSorting
 {
     /// <summary>
     /// Stable key used in the API and storefront URL (<c>?sort=&lt;code&gt;</c>).
@@ -31,22 +31,22 @@ public class ProductSearchOrdering
     public bool IsVisible { get; set; } = true;
 
     /// <summary>
-    /// True for the ordering applied when the incoming sort is empty (the first visible ordering by <see cref="Order"/>). Computed.
+    /// True for the sorting applied when the incoming sort is empty (the first visible sorting by <see cref="Order"/>). Computed.
     /// </summary>
     public bool IsDefault { get; set; }
 
     /// <summary>
-    /// Whether the clause editor is editable for this ordering (mirrors the resolver flag; always true for custom orderings).
+    /// Whether the clause editor is editable for this sorting (mirrors the resolver flag; always true for custom sortings).
     /// </summary>
     public bool IsExpressionEditable { get; set; } = true;
 
     /// <summary>
-    /// Whether the admin may override name/order/visibility (mirrors the resolver flag; always true for custom orderings).
+    /// Whether the admin may override name/order/visibility (mirrors the resolver flag; always true for custom sortings).
     /// </summary>
     public bool AllowOverride { get; set; } = true;
 
     /// <summary>
-    /// True when this ordering was authored entirely in the admin UI (no backing code resolver). Only custom orderings can be deleted.
+    /// True when this sorting was authored entirely in the admin UI (no backing code resolver). Only custom sortings can be deleted.
     /// </summary>
     public bool IsCustom { get; set; }
 
@@ -56,7 +56,7 @@ public class ProductSearchOrdering
     public IList<SortClause> Clauses { get; set; } = [];
 
     /// <summary>
-    /// Effective logical sort expression (e.g. <c>price:desc</c>). For clause-based orderings this equals the serialized
+    /// Effective logical sort expression (e.g. <c>price:desc</c>). For clause-based sortings this equals the serialized
     /// <see cref="Clauses"/>; for computed resolvers it is the resolver output.
     /// </summary>
     public string SortExpression { get; set; }

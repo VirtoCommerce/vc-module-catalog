@@ -5,9 +5,9 @@ using Xunit;
 
 namespace VirtoCommerce.CatalogModule.Tests
 {
-    public class ProductSearchOrderingExtensionsTests
+    public class ProductSortingExtensionsTests
     {
-        private static List<ProductSearchOrdering> Sample() =>
+        private static List<ProductSorting> Sample() =>
         [
             new() { Code = "featured", IsDefault = true, IsVisible = true },
             new() { Code = "name-ascending", IsVisible = true },
@@ -45,7 +45,7 @@ namespace VirtoCommerce.CatalogModule.Tests
         [Fact]
         public void FindSelected_EmptySort_NoDefaultFlag_FallsBackToFirstVisible()
         {
-            var list = new List<ProductSearchOrdering>
+            var list = new List<ProductSorting>
             {
                 new() { Code = "hidden", IsVisible = false },
                 new() { Code = "visible", IsVisible = true },

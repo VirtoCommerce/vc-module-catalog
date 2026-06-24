@@ -1,0 +1,33 @@
+<div class="blade-content __medium-wide">
+  <div class="blade-inner">
+    <div class="inner-block">
+      <div class="sub-t __border">{{ 'catalog.blades.product-sorting-list.subtitle' | translate }}</div>
+      <p class="note">{{ 'catalog.blades.product-sorting-list.hint' | translate }}</p>
+
+      <div class="table-wrapper" ng-if="blade.currentEntities.length">
+        <ul class="list __items" ui-sortable="sortableOptions" ng-model="blade.currentEntities">
+          <li class="list-item" ng-repeat="item in blade.currentEntities" ng-click="blade.edit(item)" ng-class="{ '__inactive': !item.isVisible }">
+            <div class="product-sorting__row">
+              <span class="product-sorting__handle"><i class="fa fa-bars"></i></span>
+              <div class="product-sorting__body">
+                <div class="list-t">
+                  <span>{{ item.name }}</span>
+                  <span class="product-sorting-badge __default" ng-if="item.isDefault">{{ 'catalog.blades.product-sorting-list.badges.default' | translate }}</span>
+                  <span class="product-sorting-badge __hidden" ng-if="!item.isVisible">{{ 'catalog.blades.product-sorting-list.badges.hidden' | translate }}</span>
+                  <span class="product-sorting-badge __muted" ng-if="item.isCustom">{{ 'catalog.blades.product-sorting-list.badges.custom' | translate }}</span>
+                  <span class="product-sorting-badge __muted" ng-if="!item.isExpressionEditable">{{ 'catalog.blades.product-sorting-list.badges.readonly' | translate }}</span>
+                  <a href="" ng-if="item.isCustom" ng-click="blade.deleteEntity(item, $event)" class="form-edit">
+                    <span class="form-ico fa fa-remove"></span>
+                  </a>
+                </div>
+                <div class="list-descr"><code class="product-sorting__expr">{{ item.sortExpression }}</code></div>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <p class="text" ng-if="!blade.currentEntities.length">{{ 'catalog.blades.product-sorting-list.empty' | translate }}</p>
+    </div>
+  </div>
+</div>

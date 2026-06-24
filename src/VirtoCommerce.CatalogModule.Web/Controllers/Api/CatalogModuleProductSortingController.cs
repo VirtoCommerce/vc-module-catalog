@@ -9,29 +9,29 @@ using VirtoCommerce.CatalogModule.Core.Search.Sorting;
 namespace VirtoCommerce.CatalogModule.Web.Controllers.Api;
 
 [Authorize]
-[Route("api/catalog/sort-orderings")]
-public class CatalogModuleSearchOrderingController : Controller
+[Route("api/catalog/sort-sortings")]
+public class CatalogModuleProductSortingController : Controller
 {
-    private readonly IProductSearchOrderService _productSearchOrderService;
+    private readonly IProductSortingService _productSortingService;
     private readonly IProductSortableFieldService _productSortableFieldService;
 
-    public CatalogModuleSearchOrderingController(
-        IProductSearchOrderService productSearchOrderService,
+    public CatalogModuleProductSortingController(
+        IProductSortingService productSortingService,
         IProductSortableFieldService productSortableFieldService)
     {
-        _productSearchOrderService = productSearchOrderService;
+        _productSortingService = productSortingService;
         _productSortableFieldService = productSortableFieldService;
     }
 
     /// <summary>
-    /// Effective sort orderings for a store (built-in resolvers merged with admin overrides; includes hidden ones).
+    /// Effective sort sortings for a store (built-in resolvers merged with admin overrides; includes hidden ones).
     /// </summary>
     [HttpGet("store/{storeId}")]
     [Authorize(ModuleConstants.Security.Permissions.CatalogBrowseFiltersRead)]
-    public async Task<ActionResult<IList<ProductSearchOrdering>>> GetOrderings([FromRoute] string storeId)
+    public async Task<ActionResult<IList<ProductSorting>>> GetOrderings([FromRoute] string storeId)
     {
-        var orderings = await _productSearchOrderService.GetOrderingsAsync(new ProductSearchOrderContext { StoreId = storeId });
-        return Ok(orderings);
+        var sortings = await _productSortingService.GetSortingsAsync(new ProductSortingContext { StoreId = storeId });
+        return Ok(sortings);
     }
 
     /// <summary>
@@ -48,9 +48,9 @@ public class CatalogModuleSearchOrderingController : Controller
     [HttpPut("store/{storeId}")]
     [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
     [Authorize(ModuleConstants.Security.Permissions.CatalogBrowseFiltersUpdate)]
-    public async Task<ActionResult> SaveOrderings([FromRoute] string storeId, [FromBody] ProductSearchOrdering[] orderings)
+    public async Task<ActionResult> SaveOrderings([FromRoute] string storeId, [FromBody] ProductSorting[] sortings)
     {
-        await _productSearchOrderService.SaveOrderingsAsync(storeId, orderings);
+        await _productSortingService.SaveSortingsAsync(storeId, sortings);
         return NoContent();
     }
 }

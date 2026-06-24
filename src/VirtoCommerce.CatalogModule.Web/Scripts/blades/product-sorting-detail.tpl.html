@@ -1,0 +1,85 @@
+<div class="blade-content __medium-wide">
+  <div class="blade-inner">
+    <div class="inner-block">
+      <form class="form" name="formScope">
+        <fieldset>
+
+          <div class="form-group">
+            <label class="form-label">{{ 'catalog.blades.product-sorting-detail.labels.visible' | translate }}</label>
+            <div class="form-input">
+              <label class="form-label __switch">
+                <input type="checkbox" ng-model="blade.entity.isVisible" ng-disabled="!blade.canEditDisplay">
+                <span class="switch"></span>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label required">{{ 'catalog.blades.product-sorting-detail.labels.name' | translate }}</label>
+            <div class="form-input">
+              <input class="form-control" type="text" ng-model="blade.entity.name" ng-change="blade.onNameChanged()" ng-disabled="!blade.canEditDisplay" required>
+            </div>
+          </div>
+
+          <div class="form-group" ng-if="blade.languages.length">
+            <label class="form-label">{{ 'catalog.blades.product-sorting-detail.labels.localized-name' | translate }}</label>
+            <div class="form-input product-sorting-localized">
+              <input class="form-control" type="text"
+                     ng-repeat="lang in blade.languages | limitTo : (blade.showAllLanguages ? blade.languages.length : blade.defaultVisibleLanguages)"
+                     ng-model="blade.entity.localizedNames[lang]"
+                     placeholder="{{ lang }} {{ 'catalog.blades.product-sorting-detail.placeholders.localized-name-suffix' | translate }}">
+            </div>
+            <a href="" class="product-sorting-langs-toggle" ng-if="blade.languages.length > blade.defaultVisibleLanguages" ng-click="blade.toggleLanguages()">
+              {{ (blade.showAllLanguages ? 'catalog.blades.product-sorting-detail.commands.show-fewer-languages' : 'catalog.blades.product-sorting-detail.commands.show-more-languages') | translate }}
+            </a>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label required">{{ 'catalog.blades.product-sorting-detail.labels.code' | translate }}</label>
+            <div class="form-input">
+              <input class="form-control" type="text" ng-model="blade.entity.code" ng-change="blade.onCodeChanged()" ng-disabled="!blade.canEditCode" required>
+            </div>
+            <div class="form-help product-sorting-hint">{{ 'catalog.blades.product-sorting-detail.help.code' | translate }}</div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">{{ 'catalog.blades.product-sorting-detail.labels.clauses' | translate }}</label>
+            <p class="note">{{ 'catalog.blades.product-sorting-detail.help.clauses' | translate }}</p>
+            <ul class="list __items" ui-sortable="sortableOptions" ng-model="blade.entity.clauses">
+              <li class="list-item product-sorting-clause" ng-repeat="clause in blade.entity.clauses">
+                <div class="product-sorting-clause__row">
+                  <span class="product-sorting__handle" ng-if="blade.canEditExpression"><i class="fa fa-bars"></i></span>
+                  <select class="form-control product-sorting-clause__field" ng-model="clause.field" ng-change="blade.onClauseFieldChanged()"
+                          ng-disabled="!blade.canEditExpression"
+                          ng-options="name as name for name in blade.fieldOptions">
+                  </select>
+                  <div class="product-sorting-dir">
+                    <button type="button" class="product-sorting-dir__btn" ng-class="{ '__active': clause.isDescending }"
+                            ng-click="blade.setDirection(clause, true)" ng-disabled="!blade.canEditExpression">DESC</button>
+                    <button type="button" class="product-sorting-dir__btn" ng-class="{ '__active': !clause.isDescending }"
+                            ng-click="blade.setDirection(clause, false)" ng-disabled="!blade.canEditExpression">ASC</button>
+                  </div>
+                  <a href="" ng-if="blade.canEditExpression" ng-click="blade.removeClause($index)" class="form-edit">
+                    <span class="form-ico fa fa-remove"></span>
+                  </a>
+                </div>
+              </li>
+            </ul>
+            <a href="" ng-if="blade.canEditExpression" ng-click="blade.addClause()">
+              <i class="fa fa-plus"></i>&nbsp;{{ 'catalog.blades.product-sorting-detail.commands.add-clause' | translate }}
+            </a>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">{{ 'catalog.blades.product-sorting-detail.labels.expression' | translate }}</label>
+            <div class="form-input product-sorting-expression">
+              <span ng-repeat="t in blade.previewTokens"><span class="product-sorting-expression__field">{{ t.field }}</span>:<span class="product-sorting-expression__dir">{{ t.dir }}</span><span ng-if="!$last">;</span></span>
+              <span ng-if="!blade.previewTokens.length" class="product-sorting-expression__empty">&mdash;</span>
+            </div>
+          </div>
+
+        </fieldset>
+      </form>
+    </div>
+  </div>
+</div>

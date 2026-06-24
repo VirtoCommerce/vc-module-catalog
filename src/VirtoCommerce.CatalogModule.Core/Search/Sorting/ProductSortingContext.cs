@@ -1,11 +1,11 @@
 namespace VirtoCommerce.CatalogModule.Core.Search.Sorting;
 
 /// <summary>
-/// Request-time context handed to resolvers and the ordering service. Carries the query parameters a resolver
+/// Request-time context handed to resolvers and the sorting service. Carries the query parameters a resolver
 /// may need to compute a context-dependent expression (e.g. per-category "featured"). Built-in resolvers
 /// that return a static expression simply ignore it.
 /// </summary>
-public class ProductSearchOrderContext
+public class ProductSortingContext
 {
     public string StoreId { get; set; }
 
@@ -31,7 +31,7 @@ public class ProductSearchOrderContext
     public string Sort { get; set; }
 
     // The current search-operation inputs, so a (complex) resolver can react to the user's query — e.g. pick a
-    // different ordering when a particular filter is applied. Built-in expression resolvers ignore them.
+    // different sorting when a particular filter is applied. Built-in expression resolvers ignore them.
 
     /// <summary>Search keyword/phrase of the current request.</summary>
     public string Keyword { get; set; }

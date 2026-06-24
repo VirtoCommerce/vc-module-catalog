@@ -297,16 +297,16 @@ namespace VirtoCommerce.CatalogModule.Web
 
             serviceCollection.AddTransient<IBrandSettingService, BrandSettingService>();
 
-            // Product search orderings ("sort by"): built-in resolvers + registry + store-level override service + sortable-fields provider.
-            serviceCollection.AddSingleton<IProductSearchOrderResolver, FeaturedProductSearchOrderResolver>();
-            serviceCollection.AddSingleton<IProductSearchOrderResolver, NameAscendingProductSearchOrderResolver>();
-            serviceCollection.AddSingleton<IProductSearchOrderResolver, NameDescendingProductSearchOrderResolver>();
-            serviceCollection.AddSingleton<IProductSearchOrderResolver, PriceAscendingProductSearchOrderResolver>();
-            serviceCollection.AddSingleton<IProductSearchOrderResolver, PriceDescendingProductSearchOrderResolver>();
-            serviceCollection.AddSingleton<IProductSearchOrderResolver, CreatedDateDescendingProductSearchOrderResolver>();
-            serviceCollection.AddSingleton<IProductSearchOrderResolver, CreatedDateAscendingProductSearchOrderResolver>();
-            serviceCollection.AddSingleton<IProductSearchOrderResolverRegistry, ProductSearchOrderResolverRegistry>();
-            serviceCollection.AddTransient<IProductSearchOrderService, ProductSearchOrderService>();
+            // Product search sortings ("sort by"): built-in resolvers + registry + store-level override service + sortable-fields provider.
+            serviceCollection.AddSingleton<IProductSortingResolver, FeaturedProductSortingResolver>();
+            serviceCollection.AddSingleton<IProductSortingResolver, NameAscendingProductSortingResolver>();
+            serviceCollection.AddSingleton<IProductSortingResolver, NameDescendingProductSortingResolver>();
+            serviceCollection.AddSingleton<IProductSortingResolver, PriceAscendingProductSortingResolver>();
+            serviceCollection.AddSingleton<IProductSortingResolver, PriceDescendingProductSortingResolver>();
+            serviceCollection.AddSingleton<IProductSortingResolver, CreatedDateDescendingProductSortingResolver>();
+            serviceCollection.AddSingleton<IProductSortingResolver, CreatedDateAscendingProductSortingResolver>();
+            serviceCollection.AddSingleton<IProductSortingResolverRegistry, ProductSortingResolverRegistry>();
+            serviceCollection.AddTransient<IProductSortingService, ProductSortingService>();
             serviceCollection.AddTransient<IProductSortableFieldService, ProductSortableFieldService>();
 
             serviceCollection.AddTransient<IAutomaticLinkQueryService, AutomaticLinkQueryService>();

@@ -13,7 +13,7 @@ using static VirtoCommerce.CatalogModule.Core.ModuleConstants.Settings.Search;
 
 namespace VirtoCommerce.CatalogModule.Data.Search.Sorting;
 
-public class ProductSearchOrderService : IProductSearchOrderService
+public class ProductSortingService : IProductSortingService
 {
     private static readonly JsonSerializerSettings _jsonSettings = new()
     {
@@ -22,34 +22,34 @@ public class ProductSearchOrderService : IProductSearchOrderService
         Formatting = Formatting.None,
     };
 
-    private readonly IProductSearchOrderResolverRegistry _registry;
+    private readonly IProductSortingResolverRegistry _registry;
     private readonly IStoreService _storeService;
-    private readonly ILogger<ProductSearchOrderService> _logger;
+    private readonly ILogger<ProductSortingService> _logger;
 
-    public ProductSearchOrderService(
-        IProductSearchOrderResolverRegistry registry,
+    public ProductSortingService(
+        IProductSortingResolverRegistry registry,
         IStoreService storeService,
-        ILogger<ProductSearchOrderService> logger)
+        ILogger<ProductSortingService> logger)
     {
         _registry = registry;
         _storeService = storeService;
         _logger = logger;
     }
 
-    // Eagerly resolves EVERY ordering's expression+clauses (calls each resolver's GetSortExpression). This is needed
-    // by the admin UI, which renders each ordering's clauses/expression. The storefront over-fetches here — its
+    // Eagerly resolves EVERY sorting's expression+clauses (calls each resolver's GetSortExpression). This is needed
+    // by the admin UI, which renders each sorting's clauses/expression. The storefront over-fetches here — its
     // GraphQL surface (sort_definitions: id/name/isDefault/selected) needs no expression, and only the *selected*
-    // ordering's expression is applied to the search — but resolving all is kept for simplicity since one shared
-    // method serves both callers. This is fine as long as GetSortExpression stays cheap (it runs for all orderings on
+    // sorting's expression is applied to the search — but resolving all is kept for simplicity since one shared
+    // method serves both callers. This is fine as long as GetSortExpression stays cheap (it runs for all sortings on
     // every product search); a computed/expensive resolver should guard its heavy path on `context.Sort == Code`.
-    public Task<IList<ProductSearchOrdering>> GetOrderingsAsync(ProductSearchOrderContext context)
+    public Task<IList<ProductSorting>> GetSortingsAsync(ProductSortingContext context)
     {
         ArgumentNullException.ThrowIfNull(context);
 
         return GetOrderingsInternalAsync(context);
     }
 
-    private async Task<IList<ProductSearchOrdering>> GetOrderingsInternalAsync(ProductSearchOrderContext context)
+    private async Task<IList<ProductSorting>> GetOrderingsInternalAsync(ProductSortingContext context)
     {
         var entries = await GetStoredEntriesAsync(context.StoreId);
         var entriesByCode = entries
@@ -57,31 +57,31 @@ public class ProductSearchOrderService : IProductSearchOrderService
             .GroupBy(x => x.Code, StringComparer.OrdinalIgnoreCase)
             .ToDictionary(x => x.Key, x => x.First(), StringComparer.OrdinalIgnoreCase);
 
-        var result = new List<ProductSearchOrdering>();
+        var result = new List<ProductSorting>();
         var usedCodes = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
-        // 1. Built-in / module-contributed orderings (the registry is the source of truth for what exists).
-        AddResolverOrderings(result, usedCodes, entriesByCode, context);
+        // 1. Built-in / module-contributed sortings (the registry is the source of truth for what exists).
+        AddResolverSortings(result, usedCodes, entriesByCode, context);
 
-        // 2. Admin-authored custom orderings (stored entries with no backing resolver). Orphan deltas are ignored.
-        AddCustomOrderings(result, usedCodes, entries);
+        // 2. Admin-authored custom sortings (stored entries with no backing resolver). Orphan deltas are ignored.
+        AddCustomSortings(result, usedCodes, entries);
 
         var ordered = result
             .OrderBy(x => x.Order)
             .ThenBy(x => x.Name, StringComparer.OrdinalIgnoreCase)
             .ToList();
 
-        // Default = first visible ordering (no separate IsDefault flag; the top of the list surfaces on empty sort).
+        // Default = first visible sorting (no separate IsDefault flag; the top of the list surfaces on empty sort).
         MarkDefault(ordered);
 
         return ordered;
     }
 
-    private void AddResolverOrderings(
-        List<ProductSearchOrdering> result,
+    private void AddResolverSortings(
+        List<ProductSorting> result,
         HashSet<string> usedCodes,
-        Dictionary<string, ProductSearchOrderingEntry> entriesByCode,
-        ProductSearchOrderContext context)
+        Dictionary<string, ProductSortingEntry> entriesByCode,
+        ProductSortingContext context)
     {
         foreach (var resolver in _registry.GetAllResolvers())
         {
@@ -91,10 +91,10 @@ public class ProductSearchOrderService : IProductSearchOrderService
         }
     }
 
-    private static void AddCustomOrderings(
-        List<ProductSearchOrdering> result,
+    private static void AddCustomSortings(
+        List<ProductSorting> result,
         HashSet<string> usedCodes,
-        IList<ProductSearchOrderingEntry> entries)
+        IList<ProductSortingEntry> entries)
     {
         var maxOrder = result.Count > 0 ? result.Max(x => x.Order) : 0;
 
@@ -108,21 +108,21 @@ public class ProductSearchOrderService : IProductSearchOrderService
         }
     }
 
-    private static void MarkDefault(List<ProductSearchOrdering> ordered)
+    private static void MarkDefault(List<ProductSorting> ordered)
     {
-        var defaultOrdering = ordered.FirstOrDefault(x => x.IsVisible);
-        if (defaultOrdering != null)
+        var defaultSorting = ordered.FirstOrDefault(x => x.IsVisible);
+        if (defaultSorting != null)
         {
-            defaultOrdering.IsDefault = true;
+            defaultSorting.IsDefault = true;
         }
     }
 
-    public async Task SaveOrderingsAsync(string storeId, IList<ProductSearchOrdering> orderings)
+    public async Task SaveSortingsAsync(string storeId, IList<ProductSorting> sortings)
     {
         ArgumentException.ThrowIfNullOrEmpty(storeId);
-        orderings ??= [];
+        sortings ??= [];
 
-        Validate(orderings);
+        Validate(sortings);
 
         var store = await _storeService.GetByIdAsync(storeId);
         if (store == null)
@@ -130,18 +130,18 @@ public class ProductSearchOrderService : IProductSearchOrderService
             return;
         }
 
-        var context = new ProductSearchOrderContext { StoreId = storeId };
-        var entries = orderings
-            .Select(ordering => BuildEntry(ordering, context))
+        var context = new ProductSortingContext { StoreId = storeId };
+        var entries = sortings
+            .Select(sorting => BuildEntry(sorting, context))
             .Where(entry => entry != null)
             .ToList();
 
         var serialized = entries.Count > 0 ? JsonConvert.SerializeObject(entries, _jsonSettings) : null;
 
-        var setting = store.Settings.FirstOrDefault(x => x.Name.EqualsIgnoreCase(SortDefinitions.Name));
+        var setting = store.Settings.FirstOrDefault(x => x.Name.EqualsIgnoreCase(ProductSortings.Name));
         if (setting == null)
         {
-            setting = new ObjectSettingEntry(SortDefinitions);
+            setting = new ObjectSettingEntry(ProductSortings);
             store.Settings.Add(setting);
         }
         setting.Value = serialized;
@@ -149,33 +149,33 @@ public class ProductSearchOrderService : IProductSearchOrderService
         await _storeService.SaveChangesAsync([store]);
     }
 
-    private ProductSearchOrderingEntry BuildEntry(ProductSearchOrdering ordering, ProductSearchOrderContext context)
+    private ProductSortingEntry BuildEntry(ProductSorting sorting, ProductSortingContext context)
     {
         // Backing resolver -> persist only the fields that differ from the code default (may be null = no change);
         // otherwise persist the full admin-authored definition.
-        var resolver = _registry.GetResolver(ordering.Code);
+        var resolver = _registry.GetResolver(sorting.Code);
 
         return resolver != null
-            ? BuildDelta(resolver, ordering, context)
-            : BuildCustomEntry(ordering);
+            ? BuildDelta(resolver, sorting, context)
+            : BuildCustomEntry(sorting);
     }
 
-    private static ProductSearchOrderingEntry BuildCustomEntry(ProductSearchOrdering ordering)
+    private static ProductSortingEntry BuildCustomEntry(ProductSorting sorting)
     {
         // Empty collections are persisted as null so the JSON stays sparse (NullValueHandling.Ignore).
-        return new ProductSearchOrderingEntry
+        return new ProductSortingEntry
         {
-            Code = ordering.Code,
-            Order = ordering.Order,
-            IsVisible = ordering.IsVisible,
-            Name = ordering.Name,
-            LocalizedNames = NormalizeLocalizedNames(ordering.LocalizedNames) is { Count: > 0 } names ? names : null,
-            Clauses = NormalizeClauses(ordering.Clauses) is { Count: > 0 } clauses ? clauses : null,
+            Code = sorting.Code,
+            Order = sorting.Order,
+            IsVisible = sorting.IsVisible,
+            Name = sorting.Name,
+            LocalizedNames = NormalizeLocalizedNames(sorting.LocalizedNames) is { Count: > 0 } names ? names : null,
+            Clauses = NormalizeClauses(sorting.Clauses) is { Count: > 0 } clauses ? clauses : null,
             IsCustom = true,
         };
     }
 
-    protected virtual async Task<IList<ProductSearchOrderingEntry>> GetStoredEntriesAsync(string storeId)
+    protected virtual async Task<IList<ProductSortingEntry>> GetStoredEntriesAsync(string storeId)
     {
         if (string.IsNullOrEmpty(storeId))
         {
@@ -183,12 +183,12 @@ public class ProductSearchOrderService : IProductSearchOrderService
         }
 
         var store = await _storeService.GetNoCloneAsync(storeId);
-        var serialized = store?.Settings.GetValue<string>(SortDefinitions);
+        var serialized = store?.Settings.GetValue<string>(ProductSortings);
 
         return Deserialize(serialized);
     }
 
-    private List<ProductSearchOrderingEntry> Deserialize(string value)
+    private List<ProductSortingEntry> Deserialize(string value)
     {
         if (string.IsNullOrWhiteSpace(value))
         {
@@ -197,24 +197,24 @@ public class ProductSearchOrderService : IProductSearchOrderService
 
         try
         {
-            return JsonConvert.DeserializeObject<List<ProductSearchOrderingEntry>>(value, _jsonSettings) ?? [];
+            return JsonConvert.DeserializeObject<List<ProductSortingEntry>>(value, _jsonSettings) ?? [];
         }
         catch (JsonException ex)
         {
             // Malformed stored value must not break sorting/search: fall back to the code defaults.
-            _logger.LogWarning(ex, "Failed to deserialize {Setting}; falling back to default orderings.", SortDefinitions.Name);
+            _logger.LogWarning(ex, "Failed to deserialize {Setting}; falling back to default sortings.", ProductSortings.Name);
             return [];
         }
     }
 
-    private static ProductSearchOrdering BuildEffectiveForResolver(
-        IProductSearchOrderResolver resolver,
-        ProductSearchOrderingEntry entry,
-        ProductSearchOrderContext context)
+    private static ProductSorting BuildEffectiveForResolver(
+        IProductSortingResolver resolver,
+        ProductSortingEntry entry,
+        ProductSortingContext context)
     {
-        var info = resolver.Info ?? new ProductSearchOrderInfo();
+        var info = resolver.Info ?? new ProductSortingInfo();
 
-        var ordering = new ProductSearchOrdering
+        var sorting = new ProductSorting
         {
             Code = resolver.Code,
             IsCustom = false,
@@ -223,45 +223,45 @@ public class ProductSearchOrderService : IProductSearchOrderService
             LocalizedNames = NormalizeLocalizedNames(entry?.LocalizedNames),
         };
 
-        ApplyDisplayFields(ordering, info, entry);
-        ApplyClauses(ordering, resolver, info, entry, context);
+        ApplyDisplayFields(sorting, info, entry);
+        ApplyClauses(sorting, resolver, info, entry, context);
 
-        return ordering;
+        return sorting;
     }
 
-    private static void ApplyDisplayFields(ProductSearchOrdering ordering, ProductSearchOrderInfo info, ProductSearchOrderingEntry entry)
+    private static void ApplyDisplayFields(ProductSorting sorting, ProductSortingInfo info, ProductSortingEntry entry)
     {
         var canOverride = info.AllowOverride && entry != null;
-        ordering.Name = canOverride && !string.IsNullOrEmpty(entry.Name) ? entry.Name : info.Name;
-        ordering.Order = canOverride && entry.Order.HasValue ? entry.Order.Value : info.Order;
-        ordering.IsVisible = canOverride && entry.IsVisible.HasValue ? entry.IsVisible.Value : info.IsVisible;
+        sorting.Name = canOverride && !string.IsNullOrEmpty(entry.Name) ? entry.Name : info.Name;
+        sorting.Order = canOverride && entry.Order.HasValue ? entry.Order.Value : info.Order;
+        sorting.IsVisible = canOverride && entry.IsVisible.HasValue ? entry.IsVisible.Value : info.IsVisible;
     }
 
     private static void ApplyClauses(
-        ProductSearchOrdering ordering,
-        IProductSearchOrderResolver resolver,
-        ProductSearchOrderInfo info,
-        ProductSearchOrderingEntry entry,
-        ProductSearchOrderContext context)
+        ProductSorting sorting,
+        IProductSortingResolver resolver,
+        ProductSortingInfo info,
+        ProductSortingEntry entry,
+        ProductSortingContext context)
     {
         if (info.IsExpressionEditable && entry?.Clauses != null && entry.Clauses.Count > 0)
         {
-            ordering.Clauses = NormalizeClauses(entry.Clauses);
-            ordering.SortExpression = ordering.Clauses.ToSortExpression();
+            sorting.Clauses = NormalizeClauses(entry.Clauses);
+            sorting.SortExpression = sorting.Clauses.ToSortExpression();
         }
         else
         {
             var expression = resolver.GetSortExpression(context);
-            ordering.SortExpression = expression;
-            ordering.Clauses = ParseClauses(expression);
+            sorting.SortExpression = expression;
+            sorting.Clauses = ParseClauses(expression);
         }
     }
 
-    private static ProductSearchOrdering BuildEffectiveForCustom(ProductSearchOrderingEntry entry, int fallbackOrder)
+    private static ProductSorting BuildEffectiveForCustom(ProductSortingEntry entry, int fallbackOrder)
     {
         var clauses = NormalizeClauses(entry.Clauses);
 
-        return new ProductSearchOrdering
+        return new ProductSorting
         {
             Code = entry.Code,
             Name = entry.Name,
@@ -276,23 +276,23 @@ public class ProductSearchOrderService : IProductSearchOrderService
         };
     }
 
-    private static ProductSearchOrderingEntry BuildDelta(
-        IProductSearchOrderResolver resolver,
-        ProductSearchOrdering ordering,
-        ProductSearchOrderContext context)
+    private static ProductSortingEntry BuildDelta(
+        IProductSortingResolver resolver,
+        ProductSorting sorting,
+        ProductSortingContext context)
     {
-        var info = resolver.Info ?? new ProductSearchOrderInfo();
-        var entry = new ProductSearchOrderingEntry { Code = resolver.Code };
+        var info = resolver.Info ?? new ProductSortingInfo();
+        var entry = new ProductSortingEntry { Code = resolver.Code };
 
         // Evaluate every delta (no short-circuit) so each changed field is captured, then keep the entry only if something changed.
-        var hasDisplayDelta = ApplyDisplayDelta(entry, info, ordering);
-        var hasLocalizedDelta = ApplyLocalizedNamesDelta(entry, ordering);
-        var hasClausesDelta = ApplyClausesDelta(entry, info, ordering, resolver, context);
+        var hasDisplayDelta = ApplyDisplayDelta(entry, info, sorting);
+        var hasLocalizedDelta = ApplyLocalizedNamesDelta(entry, sorting);
+        var hasClausesDelta = ApplyClausesDelta(entry, info, sorting, resolver, context);
 
         return hasDisplayDelta || hasLocalizedDelta || hasClausesDelta ? entry : null;
     }
 
-    private static bool ApplyDisplayDelta(ProductSearchOrderingEntry entry, ProductSearchOrderInfo info, ProductSearchOrdering ordering)
+    private static bool ApplyDisplayDelta(ProductSortingEntry entry, ProductSortingInfo info, ProductSorting sorting)
     {
         if (!info.AllowOverride)
         {
@@ -301,30 +301,30 @@ public class ProductSearchOrderService : IProductSearchOrderService
 
         var hasDelta = false;
 
-        if (ordering.Order != info.Order)
+        if (sorting.Order != info.Order)
         {
-            entry.Order = ordering.Order;
+            entry.Order = sorting.Order;
             hasDelta = true;
         }
 
-        if (ordering.IsVisible != info.IsVisible)
+        if (sorting.IsVisible != info.IsVisible)
         {
-            entry.IsVisible = ordering.IsVisible;
+            entry.IsVisible = sorting.IsVisible;
             hasDelta = true;
         }
 
-        if (!string.IsNullOrEmpty(ordering.Name) && !string.Equals(ordering.Name, info.Name, StringComparison.Ordinal))
+        if (!string.IsNullOrEmpty(sorting.Name) && !string.Equals(sorting.Name, info.Name, StringComparison.Ordinal))
         {
-            entry.Name = ordering.Name;
+            entry.Name = sorting.Name;
             hasDelta = true;
         }
 
         return hasDelta;
     }
 
-    private static bool ApplyLocalizedNamesDelta(ProductSearchOrderingEntry entry, ProductSearchOrdering ordering)
+    private static bool ApplyLocalizedNamesDelta(ProductSortingEntry entry, ProductSorting sorting)
     {
-        var localizedNames = NormalizeLocalizedNames(ordering.LocalizedNames);
+        var localizedNames = NormalizeLocalizedNames(sorting.LocalizedNames);
         if (localizedNames.Count == 0)
         {
             return false;
@@ -335,18 +335,18 @@ public class ProductSearchOrderService : IProductSearchOrderService
     }
 
     private static bool ApplyClausesDelta(
-        ProductSearchOrderingEntry entry,
-        ProductSearchOrderInfo info,
-        ProductSearchOrdering ordering,
-        IProductSearchOrderResolver resolver,
-        ProductSearchOrderContext context)
+        ProductSortingEntry entry,
+        ProductSortingInfo info,
+        ProductSorting sorting,
+        IProductSortingResolver resolver,
+        ProductSortingContext context)
     {
         if (!info.IsExpressionEditable)
         {
             return false;
         }
 
-        var clauses = NormalizeClauses(ordering.Clauses);
+        var clauses = NormalizeClauses(sorting.Clauses);
         var expression = clauses.ToSortExpression();
         var defaultExpression = resolver.GetSortExpression(context);
 
@@ -359,31 +359,31 @@ public class ProductSearchOrderService : IProductSearchOrderService
         return true;
     }
 
-    private void Validate(IList<ProductSearchOrdering> orderings)
+    private void Validate(IList<ProductSorting> sortings)
     {
         var seenCodes = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
-        foreach (var ordering in orderings)
+        foreach (var sorting in sortings)
         {
-            if (string.IsNullOrWhiteSpace(ordering.Code))
+            if (string.IsNullOrWhiteSpace(sorting.Code))
             {
-                throw new InvalidOperationException("A sort ordering code is required.");
+                throw new InvalidOperationException("A sort sorting code is required.");
             }
 
-            if (!seenCodes.Add(ordering.Code))
+            if (!seenCodes.Add(sorting.Code))
             {
-                throw new InvalidOperationException($"Duplicate sort ordering code '{ordering.Code}'.");
+                throw new InvalidOperationException($"Duplicate sort sorting code '{sorting.Code}'.");
             }
 
-            if (string.IsNullOrWhiteSpace(ordering.Name))
+            if (string.IsNullOrWhiteSpace(sorting.Name))
             {
-                throw new InvalidOperationException($"Sort ordering '{ordering.Code}' must have a name.");
+                throw new InvalidOperationException($"Sort sorting '{sorting.Code}' must have a name.");
             }
 
-            // Custom orderings (no backing resolver) must define at least one clause.
-            if (_registry.GetResolver(ordering.Code) == null && !HasUsableClause(ordering.Clauses))
+            // Custom sortings (no backing resolver) must define at least one clause.
+            if (_registry.GetResolver(sorting.Code) == null && !HasUsableClause(sorting.Clauses))
             {
-                throw new InvalidOperationException($"Sort ordering '{ordering.Code}' must define at least one clause.");
+                throw new InvalidOperationException($"Sort sorting '{sorting.Code}' must define at least one clause.");
             }
         }
     }

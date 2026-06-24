@@ -1,5 +1,5 @@
 angular.module('virtoCommerce.catalogModule')
-.controller('virtoCommerce.catalogModule.sortOrderingDetailController',
+.controller('virtoCommerce.catalogModule.productSortingDetailController',
     ['$scope', 'platformWebApp.bladeNavigationService',
     function ($scope, bladeNavigationService) {
         var blade = $scope.blade;
@@ -7,7 +7,7 @@ angular.module('virtoCommerce.catalogModule')
         blade.headIcon = 'fas fa-sort-amount-down';
         blade.updatePermission = 'catalog:BrowseFilters:Update';
 
-        blade.entity = angular.copy(blade.ordering);
+        blade.entity = angular.copy(blade.sorting);
         blade.entity.localizedNames = blade.entity.localizedNames || {};
         blade.entity.clauses = blade.entity.clauses || [];
 
@@ -22,12 +22,12 @@ angular.module('virtoCommerce.catalogModule')
             blade.showAllLanguages = !blade.showAllLanguages;
         };
 
-        // Gate flags coming from the backend (resolver-provided). New custom orderings are fully editable.
+        // Gate flags coming from the backend (resolver-provided). New custom sortings are fully editable.
         blade.canEditDisplay = blade.entity.allowOverride !== false;
         blade.canEditExpression = blade.entity.isExpressionEditable !== false;
         blade.canEditCode = blade.isNew === true;
 
-        // Auto-propose a code from the name for new orderings until the user edits the code manually.
+        // Auto-propose a code from the name for new sortings until the user edits the code manually.
         var codeTouched = !blade.isNew;
 
         buildFieldOptions();
@@ -108,7 +108,7 @@ angular.module('virtoCommerce.catalogModule')
             }
             var codeLower = blade.entity.code.toLowerCase();
             var duplicate = _.some(blade.existingCodes || [], function (c) {
-                return c && c.toLowerCase() === codeLower && c.toLowerCase() !== (blade.ordering.code || '').toLowerCase();
+                return c && c.toLowerCase() === codeLower && c.toLowerCase() !== (blade.sorting.code || '').toLowerCase();
             });
             if (duplicate) {
                 return false;
@@ -133,7 +133,7 @@ angular.module('virtoCommerce.catalogModule')
 
         blade.onClose = function (closeCallback) {
             bladeNavigationService.showConfirmationIfNeeded(isDirty() && isValid(), true, blade, $scope.saveChanges, closeCallback,
-                "catalog.dialogs.sort-ordering-apply.title", "catalog.dialogs.sort-ordering-apply.message");
+                "catalog.dialogs.product-sorting-apply.title", "catalog.dialogs.product-sorting-apply.message");
         };
 
         blade.toolbarCommands = [

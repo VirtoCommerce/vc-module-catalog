@@ -1,10 +1,10 @@
 namespace VirtoCommerce.CatalogModule.Core.Search.Sorting;
 
 /// <summary>
-/// The code-provided defaults for a sort ordering. A resolver supplies concrete values (no nulls);
+/// The code-provided defaults for a sort sorting. A resolver supplies concrete values (no nulls);
 /// the store admin may override them at runtime depending on the two gate flags below.
 /// </summary>
-public class ProductSearchOrderInfo
+public class ProductSortingInfo
 {
     /// <summary>
     /// Default display name (invariant). Localizations are an admin-only concern and are never set from code.
@@ -12,7 +12,7 @@ public class ProductSearchOrderInfo
     public string Name { get; set; }
 
     /// <summary>
-    /// Default position in the storefront dropdown. The empty-sort default is the first visible ordering by <see cref="Order"/>.
+    /// Default position in the storefront dropdown. The empty-sort default is the first visible sorting by <see cref="Order"/>.
     /// </summary>
     public int Order { get; set; }
 
@@ -30,7 +30,7 @@ public class ProductSearchOrderInfo
 
     /// <summary>
     /// When <c>false</c>, the admin cannot edit the sort clauses/expression — the resolver's expression always wins
-    /// and the clause editor is read-only. Use for computed orderings (e.g. ML ranking) or to force an expression
+    /// and the clause editor is read-only. Use for computed sortings (e.g. ML ranking) or to force an expression
     /// without a data migration. Orthogonal to <see cref="AllowOverride"/>.
     /// </summary>
     public bool IsExpressionEditable { get; set; } = true;

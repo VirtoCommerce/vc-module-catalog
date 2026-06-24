@@ -4,21 +4,21 @@ using VirtoCommerce.Platform.Core.Common;
 
 namespace VirtoCommerce.CatalogModule.Core.Search.Sorting;
 
-public static class ProductSearchOrderingExtensions
+public static class ProductSortingExtensions
 {
     /// <summary>
-    /// Picks the ordering selected by an incoming sort token: empty -> the default (first visible) ordering;
-    /// a known code -> that ordering; otherwise <c>null</c> (the token is a raw expression / unknown code and is
+    /// Picks the sorting selected by an incoming sort token: empty -> the default (first visible) sorting;
+    /// a known code -> that sorting; otherwise <c>null</c> (the token is a raw expression / unknown code and is
     /// passed through to the engine unchanged).
     /// </summary>
-    public static ProductSearchOrdering FindSelected(this IEnumerable<ProductSearchOrdering> orderings, string sort)
+    public static ProductSorting FindSelected(this IEnumerable<ProductSorting> sortings, string sort)
     {
-        if (orderings == null)
+        if (sortings == null)
         {
             return null;
         }
 
-        var list = orderings as IList<ProductSearchOrdering> ?? orderings.ToList();
+        var list = sortings as IList<ProductSorting> ?? sortings.ToList();
 
         if (string.IsNullOrWhiteSpace(sort))
         {

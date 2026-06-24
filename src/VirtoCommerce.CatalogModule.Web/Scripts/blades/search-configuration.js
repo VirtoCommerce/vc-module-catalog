@@ -9,10 +9,10 @@ angular.module('virtoCommerce.catalogModule')
             id: 'storeSortOrderings',
             storeId: blade.storeId,
             store: blade.store,
-            title: 'catalog.blades.sort-ordering-list.title',
-            subtitle: 'catalog.blades.sort-ordering-list.subtitle',
-            controller: 'virtoCommerce.catalogModule.sortOrderingListController',
-            template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/sort-ordering-list.tpl.html'
+            title: 'catalog.blades.product-sorting-list.title',
+            subtitle: 'catalog.blades.product-sorting-list.subtitle',
+            controller: 'virtoCommerce.catalogModule.productSortingListController',
+            template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/product-sorting-list.tpl.html'
         }, blade);
     }
 

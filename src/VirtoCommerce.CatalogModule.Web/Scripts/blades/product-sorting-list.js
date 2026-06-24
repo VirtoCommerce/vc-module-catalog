@@ -1,7 +1,7 @@
 angular.module('virtoCommerce.catalogModule')
-.controller('virtoCommerce.catalogModule.sortOrderingListController',
-    ['$scope', 'platformWebApp.bladeNavigationService', 'virtoCommerce.catalogModule.sortOrderings',
-    function ($scope, bladeNavigationService, sortOrderings) {
+.controller('virtoCommerce.catalogModule.productSortingListController',
+    ['$scope', 'platformWebApp.bladeNavigationService', 'virtoCommerce.catalogModule.productSortings',
+    function ($scope, bladeNavigationService, productSortings) {
         var blade = $scope.blade;
         blade.updatePermission = 'catalog:BrowseFilters:Update';
         blade.headIcon = 'fas fa-sort-amount-down';
@@ -9,7 +9,7 @@ angular.module('virtoCommerce.catalogModule')
         function initializeBlade() {
             blade.isLoading = true;
 
-            sortOrderings.getOrderings({ storeId: blade.storeId }, function (data) {
+            productSortings.getSortings({ storeId: blade.storeId }, function (data) {
                 blade.currentEntities = angular.copy(data);
                 blade.origEntities = angular.copy(data);
                 recalculate();
@@ -19,12 +19,12 @@ angular.module('virtoCommerce.catalogModule')
             });
 
             // Sortable fields for the clause editor (loaded once, passed down to detail blades).
-            sortOrderings.getFields({ storeId: blade.storeId }, function (fields) {
+            productSortings.getFields({ storeId: blade.storeId }, function (fields) {
                 blade.sortableFields = fields;
             });
         }
 
-        // Order reflects list position; default = the first visible ordering.
+        // Order reflects list position; default = the first visible sorting.
         function recalculate() {
             _.each(blade.currentEntities, function (item, index) {
                 item.order = index;
@@ -60,16 +60,16 @@ angular.module('virtoCommerce.catalogModule')
 
         function openDetail(node, isNew) {
             bladeNavigationService.showBlade({
-                id: 'sortOrderingDetail',
+                id: 'productSortingDetail',
                 storeId: blade.storeId,
                 store: blade.store,
-                ordering: node,
+                sorting: node,
                 isNew: isNew,
                 sortableFields: blade.sortableFields,
                 existingCodes: _.pluck(blade.currentEntities, 'code'),
-                title: isNew ? 'catalog.blades.sort-ordering-detail.title-new' : node.name,
-                controller: 'virtoCommerce.catalogModule.sortOrderingDetailController',
-                template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/sort-ordering-detail.tpl.html',
+                title: isNew ? 'catalog.blades.product-sorting-detail.title-new' : node.name,
+                controller: 'virtoCommerce.catalogModule.productSortingDetailController',
+                template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/product-sorting-detail.tpl.html',
                 onSaved: function (updated) {
                     if (isNew) {
                         blade.currentEntities.push(updated);
@@ -88,7 +88,7 @@ angular.module('virtoCommerce.catalogModule')
             if ($event) {
                 $event.stopPropagation();
             }
-            // Only admin-authored (custom) orderings can be deleted; built-ins can be hidden via the Visible toggle.
+            // Only admin-authored (custom) sortings can be deleted; built-ins can be hidden via the Visible toggle.
             if (!node.isCustom) {
                 return;
             }
@@ -107,7 +107,7 @@ angular.module('virtoCommerce.catalogModule')
         $scope.saveChanges = function () {
             blade.isLoading = true;
             recalculate();
-            sortOrderings.saveOrderings({ storeId: blade.storeId }, blade.currentEntities, function () {
+            productSortings.saveSortings({ storeId: blade.storeId }, blade.currentEntities, function () {
                 closeChildren();
                 initializeBlade();
             }, function (error) {
@@ -124,7 +124,7 @@ angular.module('virtoCommerce.catalogModule')
 
         blade.onClose = function (closeCallback) {
             bladeNavigationService.showConfirmationIfNeeded(isDirty(), true, blade, $scope.saveChanges, closeCallback,
-                "catalog.dialogs.sort-ordering-save.title", "catalog.dialogs.sort-ordering-save.message");
+                "catalog.dialogs.product-sorting-save.title", "catalog.dialogs.product-sorting-save.message");
         };
 
         blade.toolbarCommands = [

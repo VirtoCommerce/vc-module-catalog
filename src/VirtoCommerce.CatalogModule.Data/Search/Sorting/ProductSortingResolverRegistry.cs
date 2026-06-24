@@ -6,16 +6,16 @@ using VirtoCommerce.CatalogModule.Core.Search.Sorting;
 
 namespace VirtoCommerce.CatalogModule.Data.Search.Sorting;
 
-public class ProductSearchOrderResolverRegistry : IProductSearchOrderResolverRegistry
+public class ProductSortingResolverRegistry : IProductSortingResolverRegistry
 {
-    private readonly IReadOnlyCollection<IProductSearchOrderResolver> _resolvers;
-    private readonly Dictionary<string, IProductSearchOrderResolver> _resolversByCode;
+    private readonly IReadOnlyCollection<IProductSortingResolver> _resolvers;
+    private readonly Dictionary<string, IProductSortingResolver> _resolversByCode;
 
-    public ProductSearchOrderResolverRegistry(
-        IEnumerable<IProductSearchOrderResolver> resolvers,
-        ILogger<ProductSearchOrderResolverRegistry> logger)
+    public ProductSortingResolverRegistry(
+        IEnumerable<IProductSortingResolver> resolvers,
+        ILogger<ProductSortingResolverRegistry> logger)
     {
-        var byCode = new Dictionary<string, IProductSearchOrderResolver>(StringComparer.OrdinalIgnoreCase);
+        var byCode = new Dictionary<string, IProductSortingResolver>(StringComparer.OrdinalIgnoreCase);
 
         foreach (var resolver in resolvers.Where(x => !string.IsNullOrWhiteSpace(x?.Code)))
         {
@@ -35,12 +35,12 @@ public class ProductSearchOrderResolverRegistry : IProductSearchOrderResolverReg
             .ToList();
     }
 
-    public IReadOnlyCollection<IProductSearchOrderResolver> GetAllResolvers()
+    public IReadOnlyCollection<IProductSortingResolver> GetAllResolvers()
     {
         return _resolvers;
     }
 
-    public IProductSearchOrderResolver GetResolver(string code)
+    public IProductSortingResolver GetResolver(string code)
     {
         return code != null && _resolversByCode.TryGetValue(code, out var resolver) ? resolver : null;
     }
