@@ -9,7 +9,7 @@ using VirtoCommerce.CatalogModule.Core.Search.Sorting;
 namespace VirtoCommerce.CatalogModule.Web.Controllers.Api;
 
 [Authorize]
-[Route("api/catalog/sort-sortings")]
+[Route("api/catalog/product-sortings")]
 public class CatalogModuleProductSortingController : Controller
 {
     private readonly IProductSortingService _productSortingService;
@@ -24,11 +24,11 @@ public class CatalogModuleProductSortingController : Controller
     }
 
     /// <summary>
-    /// Effective sort sortings for a store (built-in resolvers merged with admin overrides; includes hidden ones).
+    /// Effective product sortings for a store (built-in resolvers merged with admin overrides; includes hidden ones).
     /// </summary>
     [HttpGet("store/{storeId}")]
     [Authorize(ModuleConstants.Security.Permissions.CatalogBrowseFiltersRead)]
-    public async Task<ActionResult<IList<ProductSorting>>> GetOrderings([FromRoute] string storeId)
+    public async Task<ActionResult<IList<ProductSorting>>> GetSortings([FromRoute] string storeId)
     {
         var sortings = await _productSortingService.GetSortingsAsync(new ProductSortingContext { StoreId = storeId });
         return Ok(sortings);
@@ -48,7 +48,7 @@ public class CatalogModuleProductSortingController : Controller
     [HttpPut("store/{storeId}")]
     [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
     [Authorize(ModuleConstants.Security.Permissions.CatalogBrowseFiltersUpdate)]
-    public async Task<ActionResult> SaveOrderings([FromRoute] string storeId, [FromBody] ProductSorting[] sortings)
+    public async Task<ActionResult> SaveSortings([FromRoute] string storeId, [FromBody] ProductSorting[] sortings)
     {
         await _productSortingService.SaveSortingsAsync(storeId, sortings);
         return NoContent();

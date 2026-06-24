@@ -3,7 +3,7 @@ using System.Collections.Generic;
 namespace VirtoCommerce.CatalogModule.Core.Search.Sorting;
 
 /// <summary>
-/// An effective, composed sort sorting: the code default merged with the store-level admin override.
+/// An effective, composed sorting: the code default merged with the store-level admin override.
 /// This is the projection returned to the admin UI and (filtered to visible) to the storefront via GraphQL.
 /// </summary>
 public class ProductSorting

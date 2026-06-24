@@ -367,23 +367,23 @@ public class ProductSortingService : IProductSortingService
         {
             if (string.IsNullOrWhiteSpace(sorting.Code))
             {
-                throw new InvalidOperationException("A sort sorting code is required.");
+                throw new InvalidOperationException("A sorting code is required.");
             }
 
             if (!seenCodes.Add(sorting.Code))
             {
-                throw new InvalidOperationException($"Duplicate sort sorting code '{sorting.Code}'.");
+                throw new InvalidOperationException($"Duplicate sorting code '{sorting.Code}'.");
             }
 
             if (string.IsNullOrWhiteSpace(sorting.Name))
             {
-                throw new InvalidOperationException($"Sort sorting '{sorting.Code}' must have a name.");
+                throw new InvalidOperationException($"Sorting '{sorting.Code}' must have a name.");
             }
 
             // Custom sortings (no backing resolver) must define at least one clause.
             if (_registry.GetResolver(sorting.Code) == null && !HasUsableClause(sorting.Clauses))
             {
-                throw new InvalidOperationException($"Sort sorting '{sorting.Code}' must define at least one clause.");
+                throw new InvalidOperationException($"Sorting '{sorting.Code}' must define at least one clause.");
             }
         }
     }

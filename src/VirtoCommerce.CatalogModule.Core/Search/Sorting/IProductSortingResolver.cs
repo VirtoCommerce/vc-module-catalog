@@ -1,7 +1,7 @@
 namespace VirtoCommerce.CatalogModule.Core.Search.Sorting;
 
 /// <summary>
-/// Extension point that contributes a product search sort sorting ("sort by" option). Register implementations in DI;
+/// Extension point that contributes a product search sorting ("sort by" option). Register implementations in DI;
 /// they are discovered through <see cref="IProductSortingResolverRegistry"/>. The built-in sortings (Featured,
 /// A-Z, Z-A, price, date) are themselves resolvers, so they are available everywhere without seeding a store setting.
 /// A resolver only provides its <b>code default</b> (info + expression); the store-level override and the

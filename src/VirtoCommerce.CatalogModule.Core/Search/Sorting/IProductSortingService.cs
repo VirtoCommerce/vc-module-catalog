@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 namespace VirtoCommerce.CatalogModule.Core.Search.Sorting;
 
 /// <summary>
-/// Composes the effective list of sort sortings for a store (code resolvers merged with the store-level admin
+/// Composes the effective list of sortings for a store (code resolvers merged with the store-level admin
 /// overrides) and resolves an incoming sort token into a concrete expression. This is the single entry point used
 /// by the admin API and by x-catalog at query time.
 /// </summary>

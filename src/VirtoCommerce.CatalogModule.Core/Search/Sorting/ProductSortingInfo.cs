@@ -1,7 +1,7 @@
 namespace VirtoCommerce.CatalogModule.Core.Search.Sorting;
 
 /// <summary>
-/// The code-provided defaults for a sort sorting. A resolver supplies concrete values (no nulls);
+/// The code-provided defaults for a sorting. A resolver supplies concrete values (no nulls);
 /// the store admin may override them at runtime depending on the two gate flags below.
 /// </summary>
 public class ProductSortingInfo
