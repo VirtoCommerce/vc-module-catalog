@@ -224,8 +224,8 @@ namespace VirtoCommerce.CatalogModule.Tests
 
             await service.SaveSortingsAsync(StoreId, sortings);
 
-            // AllowOverride=false -> the display change is not a delta -> nothing persisted.
-            (store.Settings.Single(x => x.Name == ProductSortings.Name).Value as string).Should().BeNullOrEmpty();
+            // AllowOverride=false -> the display change is not a delta -> no entries persisted (stored as "[]").
+            ReadPersistedEntries(store).Should().BeEmpty();
         }
 
         // ---- SaveSortingsAsync: delta-only persistence ----
@@ -280,9 +280,32 @@ namespace VirtoCommerce.CatalogModule.Tests
 
             await service.SaveSortingsAsync(StoreId, sortings);
 
-            // No overrides -> delta-only store stays empty (untouched built-ins are never persisted).
-            var setting = store.Settings.Single(x => x.Name == ProductSortings.Name);
-            (setting.Value as string).Should().BeNullOrEmpty();
+            // No overrides -> no delta entries persisted (untouched built-ins are never persisted; stored as "[]").
+            ReadPersistedEntries(store).Should().BeEmpty();
+        }
+
+        [Fact]
+        public async Task SaveOrderings_RevertLastOverrideToDefaults_OverwritesStoredValue_NotNull()
+        {
+            // Regression (the "stuck hidden" bug): reverting the LAST remaining override yields zero deltas. The save
+            // must OVERWRITE the stored value (with "[]"), NOT set it to null — writing null does not overwrite the
+            // previously-stored value at the platform settings layer, which left the last override un-clearable.
+            var store = CreateStoreWithSetting(JsonConvert.SerializeObject(new[]
+            {
+                new ProductSortingEntry { Code = ProductSortingConsts.PriceDescending, IsVisible = false },
+            }));
+            var service = new ProductSortingService(CreateRegistry(), CreateStoreServiceMock(store).Object,
+                NullLogger<ProductSortingService>.Instance);
+
+            // Effective list reflects the stored hide; unhide it -> back to all code defaults (zero deltas).
+            var sortings = await service.GetSortingsAsync(Context());
+            sortings.Single(x => x.Code == ProductSortingConsts.PriceDescending).IsVisible = true;
+
+            await service.SaveSortingsAsync(StoreId, sortings);
+
+            var value = store.Settings.Single(x => x.Name == ProductSortings.Name).Value as string;
+            value.Should().NotBeNull("the stale override must be overwritten, not left in place by a null write");
+            ReadPersistedEntries(store).Should().BeEmpty();
         }
 
         // ---- SaveSortingsAsync: validation ----
