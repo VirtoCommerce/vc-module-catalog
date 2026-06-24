@@ -311,6 +311,10 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                     await SeoInfos.Where(x => itemIds.Contains(x.ItemId)).LoadAsync();
                 }
 
+                // IDs of the loaded variations. Associations are stored per item, so a variation's own
+                // associations can only be loaded by including its id in the association queries below.
+                var variationIds = new List<string>();
+
 #pragma warning disable CS0618 // Variations can be used here
                 if (itemResponseGroup.HasFlag(ItemResponseGroup.Variations))
 #pragma warning restore CS0618
@@ -338,13 +342,19 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
                         variationsQuery = variationsQuery.Include(x => x.SeoInfos);
                     }
 
-                    await variationsQuery.AsSplitQuery().LoadAsync();
+                    // Materialize (instead of LoadAsync) so we can also load the variations' own associations.
+                    // The entities stay tracked, so EF relationship fixup still attaches them to their parents.
+                    var variations = await variationsQuery.AsSplitQuery().ToListAsync();
+                    variationIds = variations.Select(x => x.Id).ToList();
                 }
 
                 if (itemResponseGroup.HasFlag(ItemResponseGroup.ItemAssociations))
                 {
+                    // Include variation ids so that per-variation associations are loaded when variations were requested.
+                    var associationItemIds = itemIds.Concat(variationIds).ToList();
+
                     var associations = await Associations
-                        .Where(x => itemIds.Contains(x.ItemId))
+                        .Where(x => associationItemIds.Contains(x.ItemId))
                         .ToListAsync();
 
                     var associatedProductIds = associations
@@ -365,8 +375,11 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
 
                 if (itemResponseGroup.HasFlag(ItemResponseGroup.ReferencedAssociations))
                 {
+                    // Include variation ids so that associations referencing a variation are loaded too.
+                    var referencedItemIds = itemIds.Concat(variationIds).ToList();
+
                     var referencedAssociations = await Associations
-                        .Where(x => itemIds.Contains(x.AssociatedItemId))
+                        .Where(x => referencedItemIds.Contains(x.AssociatedItemId))
                         .ToListAsync();
 
                     var referencedProductIds = referencedAssociations
