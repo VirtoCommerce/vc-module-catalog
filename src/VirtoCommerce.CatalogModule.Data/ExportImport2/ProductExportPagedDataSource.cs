@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Extensions.Logging;
 using VirtoCommerce.AssetsModule.Core.Assets;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.Export;
@@ -18,12 +19,18 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
         private readonly IBlobStorageProvider _blobStorageProvider;
         private readonly IItemService _itemService;
         private readonly IProductSearchService _productSearchService;
+        private readonly ILogger<ProductExportPagedDataSource> _logger;
 
-        public ProductExportPagedDataSource(IBlobStorageProvider blobStorageProvider, IItemService itemService, IProductSearchService productSearchService, ProductExportDataQuery dataQuery) : base(dataQuery)
+        public ProductExportPagedDataSource(IBlobStorageProvider blobStorageProvider,
+            IItemService itemService,
+            IProductSearchService productSearchService,
+            ProductExportDataQuery dataQuery,
+            ILogger<ProductExportPagedDataSource> logger) : base(dataQuery)
         {
             _blobStorageProvider = blobStorageProvider;
             _itemService = itemService;
             _productSearchService = productSearchService;
+            _logger = logger;
         }
 
 
@@ -92,14 +99,18 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             var hasImagesObjects = haveImagesObjects.SelectMany(x => x.GetFlatObjectsListWithInterface<IHasImages>());
             hasImagesObjects = hasImagesObjects.Where(x => !(x is Category)); // Exclude images for upper categories
             var allImages = hasImagesObjects.SelectMany(x => x.Images).ToArray();
+
             foreach (var image in allImages)
             {
-                if (!image.HasExternalUrl) // Skip external links.
+                try
                 {
-                    using (var stream = _blobStorageProvider.OpenRead(image.Url))
-                    {
-                        image.BinaryData = stream.ReadFully();
-                    }
+                    using var stream = _blobStorageProvider.OpenRead(image.Url);
+                    image.BinaryData = stream.ReadFully();
+
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogWarning(ex, "Failed to load image {ImageUrl} for product export", image.Url);
                 }
             }
         }
