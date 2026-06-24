@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Microsoft.Extensions.Logging;
 using VirtoCommerce.AssetsModule.Core.Assets;
 using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CatalogModule.Core.Services;
@@ -17,6 +18,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
         private readonly IItemService _itemService;
         private readonly ICategorySearchService _categorySearchService;
         private readonly ICatalogSearchService _catalogSearchService;
+        private readonly ILoggerFactory _loggerFactory;
 
         public CatalogExportPagedDataSourceFactory(
             IPropertySearchService propertySearchService
@@ -25,7 +27,8 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             , IProductSearchService productSearchService
             , IItemService itemService
             , ICategorySearchService categorySearchService
-            , ICatalogSearchService catalogSearchService)
+            , ICatalogSearchService catalogSearchService
+            , ILoggerFactory loggerFactory)
         {
             _propertySearchService = propertySearchService;
             _propertyDictionaryItemSearchService = propertyDictionaryItemSearchService;
@@ -34,6 +37,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             _itemService = itemService;
             _categorySearchService = categorySearchService;
             _catalogSearchService = catalogSearchService;
+            _loggerFactory = loggerFactory;
         }
 
         public virtual IPagedDataSource Create(ExportDataQuery dataQuery)
@@ -50,7 +54,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             }
             else if (dataQuery is ProductFullExportDataQuery productFullExportQuery)
             {
-                result = new ProductExportPagedDataSource(_blobStorageProvider, _itemService, _productSearchService, productFullExportQuery.ToProductExportDataQuery());
+                result = new ProductExportPagedDataSource(_blobStorageProvider, _itemService, _productSearchService, productFullExportQuery.ToProductExportDataQuery(), _loggerFactory.CreateLogger<ProductExportPagedDataSource>());
             }
             else if (dataQuery is CategoryExportDataQuery categoryExportQuery)
             {
@@ -62,7 +66,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             }
             else if (dataQuery is ProductExportDataQuery productExportQuery)
             {
-                result = new ProductExportPagedDataSource(_blobStorageProvider, _itemService, _productSearchService, productExportQuery);
+                result = new ProductExportPagedDataSource(_blobStorageProvider, _itemService, _productSearchService, productExportQuery, _loggerFactory.CreateLogger<ProductExportPagedDataSource>());
             }
             else if (dataQuery is CatalogFullExportDataQuery catalogFullExportQuery)
             {
