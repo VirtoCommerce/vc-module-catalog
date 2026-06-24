@@ -1131,6 +1131,10 @@
       "automatic-links-delete": {
         "title": "Delete automatic links",
         "message": "{{number}} existing automatic links will be deleted in the background job. Are you sure you want to delete them?"
+      },
+      "reindex-products": {
+        "title": "Reindex all products",
+        "message": "This will reindex all products in this category and its subcategories. Are you sure you want to continue?"
       }
     },
     "wizards": {
@@ -1217,6 +1221,7 @@
       }
     },
     "commands": {
+      "reindex-products": "Reindex all products",
       "copy-id": "Copy ID",
       "copy-sku": "Copy SKU",
       "clear-all": "Clear all",

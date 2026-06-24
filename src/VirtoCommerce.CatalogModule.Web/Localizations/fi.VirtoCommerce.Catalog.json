@@ -1128,6 +1128,10 @@
         "title": "Luo automaattisia linkkejä",
         "message": "{{number}} automaattista linkkiä luodaan taustatyönä. Oletko varma, että haluat luoda ne?"
       },
+      "reindex-products": {
+        "title": "Uudelleenindeksoi kaikki tuotteet",
+        "message": "Tämä uudelleenindeksoi kaikki tässä kategoriassa ja sen alakategorioissa olevat tuotteet. Haluatko varmasti jatkaa?"
+      },
       "automatic-links-delete": {
         "title": "Poista automaattisia linkkejä",
         "message": "{{number}} olemassa olevaa automaattista linkkiä poistetaan taustatyönä. Oletko varma, että haluat poistaa ne?"
@@ -1217,6 +1221,7 @@
       }
     },
     "commands": {
+      "reindex-products": "Uudelleenindeksoi kaikki tuotteet",
       "copy-id": "Kopioi ID",
       "copy-sku": "Kopioi SKU",
       "clear-all": "Tyhjennä kaikki",
