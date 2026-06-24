@@ -82,6 +82,8 @@ Product sort options ("sort by") for category browsing and search are **store-co
 
 Open **Store → Search configuration → Sorting**. Drag to reorder (the first visible row is the default), toggle visibility, rename (with per-language localization), edit the sort clauses, and add/remove custom orderings. The system `code` is the stable key used by the API and the storefront `?sort=` URL, so it can be set only when an ordering is created.
 
+> **Note on persisted order.** Reordering and saving stores explicit `order` values for the orderings. For a resolver whose code `Info.Order` does not equal its position in the default-sorted list, the saved value (a contiguous list index) won't match the code default, so an order-only delta remains in `Catalog.Search.ProductSortings` even after the list is dragged back to the default arrangement — the setting does not return to empty once a reorder has been saved. This is expected behavior, not a defect: the saved list is the admin's persisted intent, the stored values still produce the same displayed order (in both the admin and the storefront), and an admin override always wins over the code `Info.Order` until the ordering is changed again.
+
 ### Extending from code
 
 Contribute a new ordering by registering a resolver — no admin action, no DB seeding, no migration:
