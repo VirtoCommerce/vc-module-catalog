@@ -1128,6 +1128,10 @@
         "title": "Opprett automatiske lenker",
         "message": "{{number}} automatiske lenker vil bli opprettet i bakgrunnsjobben. Er du sikker på at du vil opprette dem?"
       },
+      "reindex-products": {
+        "title": "Reindekser alle produkter",
+        "message": "Dette vil reindeksere alle produkter i denne kategorien og dens underkategorier. Er du sikker på at du vil fortsette?"
+      },
       "automatic-links-delete": {
         "title": "Slett automatiske lenker",
         "message": "{{number}} eksisterende automatiske lenker vil bli slettet i bakgrunnsjobben. Er du sikker på at du vil slette dem?"
@@ -1217,6 +1221,7 @@
       }
     },
     "commands": {
+      "reindex-products": "Reindekser alle produkter",
       "copy-id": "Kopier ID",
       "copy-sku": "Kopier SKU",
       "clear-all": "Tøm alt",

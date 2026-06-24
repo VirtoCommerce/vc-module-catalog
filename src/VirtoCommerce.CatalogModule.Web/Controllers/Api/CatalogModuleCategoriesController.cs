@@ -15,8 +15,13 @@ using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.BackgroundJobs;
 using VirtoCommerce.CatalogModule.Web.Authorization;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.Platform.Core.PushNotifications;
+using VirtoCommerce.Platform.Core.Security;
+using VirtoCommerce.SearchModule.Core.BackgroundJobs;
+using VirtoCommerce.SearchModule.Core.Model;
 using VirtoCommerce.Seo.Core.Models;
 using Permissions = VirtoCommerce.CatalogModule.Core.ModuleConstants.Security.Permissions;
+using SearchPermissions = VirtoCommerce.SearchModule.Core.ModuleConstants.Security.Permissions;
 
 namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 {
@@ -25,7 +30,11 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
     public class CatalogModuleCategoriesController(
         ICategoryService categoryService,
         ICatalogService catalogService,
-        CatalogEntityAuthorizationService authorizationService)
+        CatalogEntityAuthorizationService authorizationService,
+        ICategoryProductResolver categoryProductResolver,
+        IIndexingJobService indexingJobService,
+        IUserNameResolver userNameResolver,
+        IPushNotificationManager pushNotifier)
         : Controller
     {
         /// <summary>
@@ -293,6 +302,42 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         {
             BackgroundJob.Enqueue<AutomaticLinksJob>(x => x.DeleteLinks(id, CancellationToken.None));
             return NoContent();
+        }
+
+        /// <summary>
+        /// Builds search index for all products in the specified category and its subcategories.
+        /// </summary>
+        /// <param name="id">Category id.</param>
+        [HttpPost]
+        [Route("{id}/index/products")]
+        [Authorize(SearchPermissions.IndexRebuild)]
+        public async Task<ActionResult<IndexProgressPushNotification>> IndexCategoryProducts([FromRoute] string id)
+        {
+            var category = await categoryService.GetNoCloneAsync(id, nameof(CategoryResponseGroup.Info));
+            if (category == null)
+            {
+                return NotFound();
+            }
+
+            if (!await authorizationService.AuthorizeAsync(User, category, Permissions.CategoriesRead))
+            {
+                return Forbid();
+            }
+
+            var allProductIds = await categoryProductResolver.GetCategoryProductIds(id);
+
+            var currentUserName = userNameResolver.GetCurrentUserName();
+            var notification = indexingJobService.Enqueue(currentUserName,
+            [
+                new IndexingOptions
+                {
+                    DocumentType = KnownDocumentTypes.Product,
+                    DocumentIds = allProductIds,
+                }
+            ]);
+
+            pushNotifier.Send(notification);
+            return Ok(notification);
         }
 
         private async Task<bool> CategoryExistsAsync(Category category)
