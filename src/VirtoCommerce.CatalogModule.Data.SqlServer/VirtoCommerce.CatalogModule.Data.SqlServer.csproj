@@ -5,7 +5,7 @@
     <Nullable>disable</Nullable>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.5">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.9">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Extensions.Logging;
 using VirtoCommerce.AssetsModule.Core.Assets;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.Export;
@@ -18,12 +19,18 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
         private readonly IBlobStorageProvider _blobStorageProvider;
         private readonly IItemService _itemService;
         private readonly IProductSearchService _productSearchService;
+        private readonly ILogger<ProductExportPagedDataSource> _logger;
 
-        public ProductExportPagedDataSource(IBlobStorageProvider blobStorageProvider, IItemService itemService, IProductSearchService productSearchService, ProductExportDataQuery dataQuery) : base(dataQuery)
+        public ProductExportPagedDataSource(IBlobStorageProvider blobStorageProvider,
+            IItemService itemService,
+            IProductSearchService productSearchService,
+            ProductExportDataQuery dataQuery,
+            ILogger<ProductExportPagedDataSource> logger) : base(dataQuery)
         {
             _blobStorageProvider = blobStorageProvider;
             _itemService = itemService;
             _productSearchService = productSearchService;
+            _logger = logger;
         }
 
 
@@ -92,24 +99,18 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             var hasImagesObjects = haveImagesObjects.SelectMany(x => x.GetFlatObjectsListWithInterface<IHasImages>());
             hasImagesObjects = hasImagesObjects.Where(x => !(x is Category)); // Exclude images for upper categories
             var allImages = hasImagesObjects.SelectMany(x => x.Images).ToArray();
+
             foreach (var image in allImages)
             {
-                // Skip external links. HasExternalUrl is computed from RelativeUrl, but the read
-                // below streams from image.Url — guard against an absolute/foreign Url too, otherwise
-                // the FileSystem blob provider resolves it to an invalid local path and throws (VCST-5278).
-                // Use Uri.TryCreate (not Uri.IsWellFormedUriString) so absolute URLs containing unescaped
-                // characters (spaces, em-dashes, non-ASCII like "— копия.png") are still recognised as
-                // absolute http/https links and skipped; genuinely relative local blob paths still load.
-                if (image.HasExternalUrl
-                    || (Uri.TryCreate(image.Url, UriKind.Absolute, out var imageUri)
-                        && (imageUri.Scheme == Uri.UriSchemeHttp || imageUri.Scheme == Uri.UriSchemeHttps)))
+                try
                 {
-                    continue;
-                }
-
-                using (var stream = _blobStorageProvider.OpenRead(image.Url))
-                {
+                    using var stream = _blobStorageProvider.OpenRead(image.Url);
                     image.BinaryData = stream.ReadFully();
+
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogWarning(ex, "Failed to load image {ImageUrl} for product export", image.Url);
                 }
             }
         }
