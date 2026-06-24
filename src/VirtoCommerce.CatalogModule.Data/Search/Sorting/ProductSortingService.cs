@@ -136,7 +136,9 @@ public class ProductSortingService : IProductSortingService
             .Where(entry => entry != null)
             .ToList();
 
-        var serialized = entries.Count > 0 ? JsonConvert.SerializeObject(entries, _jsonSettings) : null;
+        // Always serialize (empty -> "[]"). Writing null does NOT overwrite a previously-stored value, which would
+        // leave the last remaining override un-clearable (an "unhide the last one / revert to defaults" save would no-op).
+        var serialized = JsonConvert.SerializeObject(entries, _jsonSettings);
 
         var setting = store.Settings.FirstOrDefault(x => x.Name.EqualsIgnoreCase(ProductSortings.Name));
         if (setting == null)
