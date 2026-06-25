@@ -96,7 +96,7 @@ angular.module('virtoCommerce.catalogModule')
             if (idx >= 0) {
                 blade.currentEntities.splice(idx, 1);
                 recalculate();
-                closeChildren();
+                bladeNavigationService.closeChildrenBlades(blade);
             }
         };
 
@@ -108,19 +108,12 @@ angular.module('virtoCommerce.catalogModule')
             blade.isLoading = true;
             recalculate();
             productSortings.saveSortings({ storeId: blade.storeId }, blade.currentEntities, function () {
-                closeChildren();
-                initializeBlade();
+                bladeNavigationService.closeChildrenBlades(blade, initializeBlade);
             }, function (error) {
                 blade.isLoading = false;
                 bladeNavigationService.setError('Error ' + error.status, blade);
             });
         };
-
-        function closeChildren() {
-            angular.forEach((blade.childrenBlades || []).slice(), function (child) {
-                bladeNavigationService.closeBlade(child);
-            });
-        }
 
         blade.onClose = function (closeCallback) {
             bladeNavigationService.showConfirmationIfNeeded(isDirty(), true, blade, $scope.saveChanges, closeCallback,
@@ -144,15 +137,14 @@ angular.module('virtoCommerce.catalogModule')
                 executeMethod: function () {
                     blade.currentEntities = angular.copy(blade.origEntities);
                     recalculate();
-                    closeChildren();
+                    bladeNavigationService.closeChildrenBlades(blade);
                 },
                 canExecuteMethod: isDirty
             },
             {
                 name: 'platform.commands.refresh', icon: 'fa fa-refresh',
                 executeMethod: function () {
-                    closeChildren();
-                    initializeBlade();
+                    bladeNavigationService.closeChildrenBlades(blade, initializeBlade);
                 },
                 canExecuteMethod: function () { return true; }
             }

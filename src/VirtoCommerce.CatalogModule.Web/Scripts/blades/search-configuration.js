@@ -21,7 +21,7 @@ angular.module('virtoCommerce.catalogModule')
         bladeNavigationService.showBlade({
             id: 'storeFilteringProperties',
             storeId: blade.storeId,
-            title: 'Filtering properties',
+            title: 'catalog.blades.search-configuration.menu.facets',
             controller: 'virtoCommerce.catalogModule.aggregationPropertiesController',
             template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/aggregation-properties-list.tpl.html'
         }, blade);

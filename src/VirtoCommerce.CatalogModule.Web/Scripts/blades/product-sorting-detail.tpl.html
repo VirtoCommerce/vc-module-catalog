@@ -17,14 +17,14 @@
           <div class="form-group">
             <label class="form-label required">{{ 'catalog.blades.product-sorting-detail.labels.name' | translate }}</label>
             <div class="form-input">
-              <input class="form-control" type="text" ng-model="blade.entity.name" ng-change="blade.onNameChanged()" ng-disabled="!blade.canEditDisplay" required>
+              <input type="text" ng-model="blade.entity.name" ng-change="blade.onNameChanged()" ng-disabled="!blade.canEditDisplay" required>
             </div>
           </div>
 
           <div class="form-group" ng-if="blade.languages.length">
             <label class="form-label">{{ 'catalog.blades.product-sorting-detail.labels.localized-name' | translate }}</label>
             <div class="form-input product-sorting-localized">
-              <input class="form-control" type="text"
+              <input type="text"
                      ng-repeat="lang in blade.languages | limitTo : (blade.showAllLanguages ? blade.languages.length : blade.defaultVisibleLanguages)"
                      ng-model="blade.entity.localizedNames[lang]"
                      placeholder="{{ lang }} {{ 'catalog.blades.product-sorting-detail.placeholders.localized-name-suffix' | translate }}">
@@ -37,7 +37,7 @@
           <div class="form-group">
             <label class="form-label required">{{ 'catalog.blades.product-sorting-detail.labels.code' | translate }}</label>
             <div class="form-input">
-              <input class="form-control" type="text" ng-model="blade.entity.code" ng-change="blade.onCodeChanged()" ng-disabled="!blade.canEditCode" required>
+              <input type="text" ng-model="blade.entity.code" ng-change="blade.onCodeChanged()" ng-disabled="!blade.canEditCode" required>
             </div>
             <div class="form-help product-sorting-hint">{{ 'catalog.blades.product-sorting-detail.help.code' | translate }}</div>
           </div>
@@ -49,7 +49,7 @@
               <li class="list-item product-sorting-clause" ng-repeat="clause in blade.entity.clauses">
                 <div class="product-sorting-clause__row">
                   <span class="product-sorting__handle" ng-if="blade.canEditExpression"><i class="fa fa-bars"></i></span>
-                  <select class="form-control product-sorting-clause__field" ng-model="clause.field" ng-change="blade.onClauseFieldChanged()"
+                  <select class="product-sorting-clause__field" ng-model="clause.field" ng-change="blade.onClauseFieldChanged()"
                           ng-disabled="!blade.canEditExpression"
                           ng-options="name as name for name in blade.fieldOptions">
                   </select>
