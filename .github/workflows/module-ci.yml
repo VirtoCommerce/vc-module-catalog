@@ -214,6 +214,15 @@ jobs:
           sarif_file: ${{ runner.temp }}/codeanalysis/combined.sarif
           category: roslyn
 
+      # Downloadable copy of the merged code-analysis SARIF for reviewing findings before merge.
+      - name: Publish code analysis SARIF artifact
+        if: ${{ always() && steps.codeanalysis.outputs.hasSarif == 'true' }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: code-analysis-sarif
+          path: ${{ runner.temp }}/codeanalysis/combined.sarif
+          if-no-files-found: warn
+
       - name: Unit Tests
         run: vc-build Test -skip
 
