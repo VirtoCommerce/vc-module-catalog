@@ -9,5 +9,53 @@
   </PropertyGroup>
   <PropertyGroup>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <!-- xUnit1051: don't require passing a CancellationToken to async test APIs. -->
+    <NoWarn>$(NoWarn);xUnit1051</NoWarn>
   </PropertyGroup>
+
+  <!-- Roslyn static & security code analysis (shared for all projects) -->
+  <PropertyGroup>
+    <!-- Built-in .NET analyzers (CAxxxx, incl. CA2xxx/CA3xxx/CA5xxx security rules) -->
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <!-- Emit analyzer findings as SARIF (one per project) so CI can collect/upload them to GitHub
+         code scanning. Gated on CodeAnalysisSarifDir: CI sets that env var to a path OUTSIDE the
+         source checkout, so SARIF is written only in CI (never into the repo working tree). Local
+         builds leave it unset, so they keep the analyzer warnings in the IDE but generate no SARIF
+         files. A developer who wants local SARIF can set the CodeAnalysisSarifDir env var. -->
+    <ErrorLog Condition="'$(CodeAnalysisSarifDir)' != ''">$(CodeAnalysisSarifDir)$(MSBuildProjectName).sarif,version=2.1</ErrorLog>
+    <AnalysisLevel>latest</AnalysisLevel>
+    <!-- 'All' enables the full rule set (including security rules that are off by default) -->
+    <AnalysisMode>All</AnalysisMode>
+    <!-- Compiler warnings stay strict (TreatWarningsAsErrors=true), but analyzer/Roslynator
+         findings (CAxxxx/RCSxxxx) surface as warnings + SARIF only - they do not break the build. -->
+    <CodeAnalysisTreatWarningsAsErrors>false</CodeAnalysisTreatWarningsAsErrors>
+    <!-- Keep code-style (IDExxxx) rules from .editorconfig as IDE-only, not build errors -->
+    <EnforceCodeStyleInBuild>false</EnforceCodeStyleInBuild>
+  </PropertyGroup>
+
+  <!-- NuGet vulnerable-dependency audit (runs during restore, emits NU190x warnings).
+       Repo-level vulnerability reporting in the Security tab is handled by GitHub Dependabot. -->
+  <PropertyGroup>
+    <NuGetAudit>true</NuGetAudit>
+    <!-- Audit direct AND transitive dependencies -->
+    <NuGetAuditMode>all</NuGetAuditMode>
+    <!-- Report advisories at high severity and above (high + critical; skip moderate/low to reduce noise) -->
+    <NuGetAuditLevel>high</NuGetAuditLevel>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Accepted vulnerability advisories: suppress the restore-time NU190x warning per-advisory
+         (instead of a blunt NoWarn) so other and future high/critical vulnerabilities still surface.
+         ONLY suppress advisories that have NO available fix - if a fixed version exists, upgrade. -->
+    <!-- AutoMapper DoS via uncontrolled recursion; transitive via VirtoCommerce, no fixed version. -->
+    <NuGetAuditSuppress Include="https://github.com/advisories/GHSA-rvv3-g6hj-g44x" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Roslynator code-quality analyzers (RCSxxxx) -->
+    <PackageReference Include="Roslynator.Analyzers" Version="4.15.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
 </Project>

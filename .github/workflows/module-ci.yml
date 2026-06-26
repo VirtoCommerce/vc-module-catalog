@@ -42,6 +42,7 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
+      security-events: write  # upload Roslyn analyzer SARIF to code scanning
     env:
       CLOUD_INSTANCE_BASE_URL: ${{secrets.CLOUD_INSTANCE_BASE_URL}}
       CLIENT_ID: ${{secrets.CLIENT_ID}}
@@ -136,7 +137,77 @@ jobs:
           sonarOrg: ${{secrets.SONAR_ORG_KEY}}
 
       - name: Build
-        run: vc-build Compile
+        env:
+          # Directory.Build.props <ErrorLog> writes per-project analyzer SARIF here when set.
+          # Kept outside the checkout so *.sarif never lands in the working tree.
+          CodeAnalysisSarifDir: ${{ runner.temp }}/codeanalysis-sarif/
+        run: |
+          mkdir -p "${{ runner.temp }}/codeanalysis-sarif"
+          vc-build Compile
+
+      - name: Merge analyzer SARIF
+        if: always()
+        id: codeanalysis
+        shell: pwsh
+        run: |
+          # Roslyn writes one *.sarif per project (Directory.Build.props <ErrorLog>). GitHub code
+          # scanning rejects multiple runs that share a tool+category, so merge them into one run
+          # per tool and rewrite the absolute compiler paths to repo-relative so annotations map.
+          $sarifDir = Join-Path $env:RUNNER_TEMP 'codeanalysis-sarif'
+          $root = (($env:GITHUB_WORKSPACE) -replace '\\','/').TrimEnd('/') + '/'
+          $buckets = [ordered]@{}
+          Get-ChildItem -Path $sarifDir -Filter *.sarif -Recurse -ErrorAction SilentlyContinue | ForEach-Object {
+            $sarif = Get-Content $_.FullName -Raw | ConvertFrom-Json
+            foreach ($run in $sarif.runs) {
+              $driver = $run.tool.driver
+              if (-not $driver) { continue }
+              $name = "$($driver.name)"
+              if (-not $buckets.Contains($name)) {
+                $buckets[$name] = @{ driver = $driver; rules = [ordered]@{}; results = [System.Collections.Generic.List[object]]::new() }
+              }
+              $b = $buckets[$name]
+              # Union rule metadata by id (results resolve by ruleId, so order is irrelevant).
+              foreach ($rule in $driver.rules) {
+                if ($rule.id -and -not $b.rules.Contains($rule.id)) { $b.rules[$rule.id] = $rule }
+              }
+              foreach ($res in $run.results) {
+                # ruleIndex points into this file's per-run rules array; drop it so the merged run
+                # resolves rules by ruleId against the unioned list.
+                if ($res.PSObject.Properties.Name -contains 'ruleIndex') { $res.PSObject.Properties.Remove('ruleIndex') }
+                foreach ($loc in $res.locations) {
+                  $al = $loc.physicalLocation.artifactLocation
+                  if ($al -and $al.uri) {
+                    $u = [System.Uri]::UnescapeDataString(($al.uri -replace '^file://','')) -replace '\\','/'
+                    $u = $u -replace '^/([A-Za-z]:)','$1'   # Windows: /C:/x -> C:/x
+                    if ($u.StartsWith($root, [System.StringComparison]::OrdinalIgnoreCase)) { $u = $u.Substring($root.Length) }
+                    $al.uri = $u
+                  }
+                }
+                $b.results.Add($res)
+              }
+            }
+          }
+          $runs = @()
+          foreach ($name in $buckets.Keys) {
+            $b = $buckets[$name]
+            $b.driver | Add-Member -NotePropertyName rules -NotePropertyValue (@($b.rules.Values)) -Force
+            $runs += @{ tool = @{ driver = $b.driver }; results = @($b.results) }
+          }
+          if ($runs.Count -eq 0) { Write-Host 'No analyzer SARIF found - nothing to upload.'; exit 0 }
+          $combined = [ordered]@{ '$schema' = 'https://json.schemastore.org/sarif-2.1.0.json'; version = '2.1.0'; runs = $runs }
+          $outDir = Join-Path $env:RUNNER_TEMP 'codeanalysis'
+          New-Item -ItemType Directory -Path $outDir -Force | Out-Null
+          $combined | ConvertTo-Json -Depth 100 | Set-Content -Path (Join-Path $outDir 'combined.sarif') -Encoding utf8
+          $total = ($buckets.Values | ForEach-Object { $_.results.Count } | Measure-Object -Sum).Sum
+          Write-Host "Merged $($runs.Count) tool run(s), $total finding(s) -> combined.sarif"
+          "hasSarif=true" >> $env:GITHUB_OUTPUT
+
+      - name: Upload analyzer SARIF to code scanning
+        if: ${{ always() && steps.codeanalysis.outputs.hasSarif == 'true' }}
+        uses: github/codeql-action/upload-sarif@dd903d2e4f5405488e5ef1422510ee31c8b32357 # v3
+        with:
+          sarif_file: ${{ runner.temp }}/codeanalysis/combined.sarif
+          category: roslyn
 
       - name: Unit Tests
         run: vc-build Test -skip
