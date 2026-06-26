@@ -156,6 +156,7 @@ jobs:
           $sarifDir = Join-Path $env:RUNNER_TEMP 'codeanalysis-sarif'
           $root = (($env:GITHUB_WORKSPACE) -replace '\\','/').TrimEnd('/') + '/'
           $buckets = [ordered]@{}
+          $dropped = 0
           Get-ChildItem -Path $sarifDir -Filter *.sarif -Recurse -ErrorAction SilentlyContinue | ForEach-Object {
             $sarif = Get-Content $_.FullName -Raw | ConvertFrom-Json
             foreach ($run in $sarif.runs) {
@@ -174,6 +175,7 @@ jobs:
                 # ruleIndex points into this file's per-run rules array; drop it so the merged run
                 # resolves rules by ruleId against the unioned list.
                 if ($res.PSObject.Properties.Name -contains 'ruleIndex') { $res.PSObject.Properties.Remove('ruleIndex') }
+                $hasLoc = $false
                 foreach ($loc in $res.locations) {
                   $al = $loc.physicalLocation.artifactLocation
                   if ($al -and $al.uri) {
@@ -181,9 +183,12 @@ jobs:
                     $u = $u -replace '^/([A-Za-z]:)','$1'   # Windows: /C:/x -> C:/x
                     if ($u.StartsWith($root, [System.StringComparison]::OrdinalIgnoreCase)) { $u = $u.Substring($root.Length) }
                     $al.uri = $u
+                    $hasLoc = $true
                   }
                 }
-                $b.results.Add($res)
+                # GitHub code scanning rejects results without a physical location (assembly-level
+                # analyzer findings, e.g. CA1014/CA1016). Drop them - they can't be annotated.
+                if ($hasLoc) { $b.results.Add($res) } else { $script:dropped++ }
               }
             }
           }
@@ -199,12 +204,12 @@ jobs:
           New-Item -ItemType Directory -Path $outDir -Force | Out-Null
           $combined | ConvertTo-Json -Depth 100 | Set-Content -Path (Join-Path $outDir 'combined.sarif') -Encoding utf8
           $total = ($buckets.Values | ForEach-Object { $_.results.Count } | Measure-Object -Sum).Sum
-          Write-Host "Merged $($runs.Count) tool run(s), $total finding(s) -> combined.sarif"
+          Write-Host "Merged $($runs.Count) tool run(s), $total finding(s) -> combined.sarif (dropped $dropped location-less finding(s))"
           "hasSarif=true" >> $env:GITHUB_OUTPUT
 
       - name: Upload analyzer SARIF to code scanning
         if: ${{ always() && steps.codeanalysis.outputs.hasSarif == 'true' }}
-        uses: github/codeql-action/upload-sarif@dd903d2e4f5405488e5ef1422510ee31c8b32357 # v3
+        uses: github/codeql-action/upload-sarif@8aad20d150bbac5944a9f9d289da16a4b0d87c1e # v4
         with:
           sarif_file: ${{ runner.temp }}/codeanalysis/combined.sarif
           category: roslyn
