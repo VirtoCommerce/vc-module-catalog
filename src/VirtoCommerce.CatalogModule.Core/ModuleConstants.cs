@@ -274,6 +274,17 @@ namespace VirtoCommerce.CatalogModule.Core
                     IsHidden = true,
                 };
 
+                // Store-level admin overrides for product sortings ("sort by" options). The built-in sortings
+                // are provided by code resolvers, so this holds only deltas + admin-authored custom sortings; null/empty
+                // means "use the code defaults". See VirtoCommerce.CatalogModule.Core.Search.Sorting.
+                public static SettingDescriptor ProductSortings { get; } = new SettingDescriptor
+                {
+                    Name = "Catalog.Search.ProductSortings",
+                    GroupName = "Catalog|Search",
+                    ValueType = SettingValueType.Json,
+                    DefaultValue = null,
+                };
+
                 public static IEnumerable<SettingDescriptor> AllSettings
                 {
                     get
@@ -286,6 +297,7 @@ namespace VirtoCommerce.CatalogModule.Core
                         yield return DefaultAggregationSize;
                         yield return FilteredBrowsing;
                         yield return FilteredBrowsingMigrated;
+                        yield return ProductSortings;
                     }
                 }
             }
@@ -335,6 +347,7 @@ namespace VirtoCommerce.CatalogModule.Core
                     yield return General.BrandCatalogId;
                     yield return General.BrandPropertyName;
                     yield return Search.FilteredBrowsing;
+                    yield return Search.ProductSortings;
                 }
             }
 #pragma warning restore S3218

@@ -448,10 +448,12 @@ angular.module(catalogsModuleName, ['ui.grid.validate', 'ui.grid.infiniteScroll'
                 widgetToRegister = angular.extend({}, indexWidget, { documentType: 'Category' });
                 widgetService.registerWidget(widgetToRegister, 'categoryDetail');
 
-                // Aggregation properties in store details
+                // Search configuration (sorting + facets) in store details.
+                // The former standalone "Aggregation properties" widget now lives inside this blade as "Facets".
                 widgetService.registerWidget({
-                    controller: 'virtoCommerce.catalogModule.aggregationPropertiesWidgetController',
-                    template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/widgets/aggregationPropertiesWidget.tpl.html'
+                    controller: 'virtoCommerce.catalogModule.searchConfigurationWidgetController',
+                    template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/widgets/searchConfigurationWidget.tpl.html',
+                    isVisible: function (blade) { return !blade.isNew; }
                 }, 'storeDetail');
 
                 // predefine search filters for catalog search

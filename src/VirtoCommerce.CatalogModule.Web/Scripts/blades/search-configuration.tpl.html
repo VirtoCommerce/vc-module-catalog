@@ -1,0 +1,14 @@
+<div class="blade-content __small-narrow">
+  <div class="blade-inner">
+    <div class="inner-block">
+      <!-- Widget-style tiles. The platform's .gridster-cnt centering is scoped under .gridster (not available here),
+           so .search-config-tile reproduces the widget look (see catalog.css). -->
+      <div class="search-config-tiles">
+        <div class="search-config-tile" ng-repeat="item in blade.menuItems" ng-click="item.action()">
+          <i class="{{ item.icon }} fa-2x fa-gray"></i>
+          <div class="search-config-tile__label">{{ item.name | translate }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
