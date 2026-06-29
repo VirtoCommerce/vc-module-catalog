@@ -32,6 +32,49 @@
       "BillOfMaterials": "Product with bill of materials"
     },
     "blades": {
+      "search-configuration": {
+        "title": "Search configuration",
+        "subtitle": "Sorting and facets for storefront search",
+        "menu": {
+          "sorting": "Sorting",
+          "facets": "Facets"
+        }
+      },
+      "product-sorting-list": {
+        "title": "Sorting",
+        "subtitle": "Define how products are ordered when customers browse categories or search",
+        "hint": "Drag to reorder how options appear in the storefront sort dropdown. The first visible option is the default.",
+        "empty": "No sort orderings found.",
+        "badges": {
+          "default": "DEFAULT",
+          "hidden": "HIDDEN",
+          "custom": "CUSTOM",
+          "readonly": "READ-ONLY"
+        }
+      },
+      "product-sorting-detail": {
+        "title-new": "New sort ordering",
+        "labels": {
+          "visible": "Visible",
+          "name": "Name",
+          "localized-name": "Localized name",
+          "code": "System code",
+          "clauses": "Sort clauses",
+          "expression": "Resolved expression"
+        },
+        "placeholders": {
+          "localized-name-suffix": "name"
+        },
+        "help": {
+          "code": "Stable key used by the API & storefront URL (?sort=<code>).",
+          "clauses": "Ordered list of clauses applied in sequence (tie-breakers). Drag to reorder."
+        },
+        "commands": {
+          "add-clause": "Add clause",
+          "show-more-languages": "Show more languages",
+          "show-fewer-languages": "Show fewer languages"
+        }
+      },
       "catalogs-list": {
         "title": "Catalog",
         "subtitle": "Manage catalogs",
@@ -906,6 +949,9 @@
       "productSubtitle": "Export catalog products to JSON or CSV"
     },
     "widgets": {
+      "search-configuration": {
+        "title": "Search configuration"
+      },
       "catalogLanguages": {
         "blade-subtitle": "Manage languages",
         "title": "Languages",
@@ -982,6 +1028,14 @@
       }
     },
     "dialogs": {
+      "product-sorting-save": {
+        "title": "Save changes",
+        "message": "The sort orderings have been modified. Do you want to save the changes?"
+      },
+      "product-sorting-apply": {
+        "title": "Apply changes",
+        "message": "The ordering has been modified. Apply the changes?"
+      },
       "catalog-save": {
         "title": "Save changes",
         "message": "This catalog has been modified. Do you want to save the changes?"
@@ -1358,6 +1412,10 @@
             "title": "Event-based indexing for catalog entities",
             "description": "Enable/disable automatic background indexing of catalog entities whenever they are changed"
           }
+        },
+        "ProductSortings": {
+          "title": "Product sorting",
+          "description": "Per-store product sorting (\"sort by\") options. Edit through the Search configuration widget on the store page"
         }
       },
       "ProductConfigurationMaximumFiles": {

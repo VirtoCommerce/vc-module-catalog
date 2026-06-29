@@ -56,6 +56,7 @@ The module's behavior can be tuned through Platform Settings (**Settings > Catal
 | `VirtoCommerce.Search.IndexingJobs.IndexationDate.Category` | Date/time | — | Date and time the category indexing task starts. |
 | `Catalog.BrowseFilters.FilteredBrowsing` | JSON | — | Per-store faceted browsing filter configuration. Edited through the *Filtering properties* widget on the store page. Store-level. |
 | `Catalog.BrowseFilters.FilteredBrowsingMigrated` | Boolean | `false` | Internal flag marking that legacy filtered-browsing configuration has been migrated. Hidden; not intended for manual editing. |
+| `Catalog.Search.ProductSortings` | JSON | — | Per-store product sorting ("sort by") options — admin overrides of the built-in orderings plus any custom orderings. `null` means "use the code defaults". Edited through the *Search configuration → Sorting* widget on the store page. Store-level. See [Configurable product sorting](#configurable-product-sorting). |
 
 ### Backup & Restore
 
@@ -65,6 +66,46 @@ These settings tune the module's backup/restore (export/import) pipeline. The de
 |---------|------|---------|-------------|
 | `Catalog.BackupRestore.BatchSize` | Positive integer | `50` | Number of records saved per batch during catalog export and import. Lower values reduce memory usage; higher values improve throughput. |
 | `Catalog.BackupRestore.ErrorPolicy` | String (`Stop`, `SkipBatch`, `SkipItem`) | `SkipItem` | Behavior when a batch fails to save during import: `Stop` aborts the module import, `SkipBatch` skips the whole failed batch, `SkipItem` retries items one-by-one and skips only the failing rows. |
+
+## Configurable product sorting
+
+Product sort options ("sort by") for category browsing and search are **store-configurable and code-extensible** rather than hard-coded. Category managers control which orderings shoppers see, their labels (localizable), their order, and which one is the default.
+
+### How it works
+
+- **Code-first resolvers are the source of truth for which orderings exist.** Each ordering is an `IProductSortingResolver` registered in DI. The seven built-ins (Featured, A–Z, Z–A, Price low→high / high→low, Date new→old / old→new) ship as code, so they exist in every environment with no seeding and no migration. `Featured` resolves to `__score:desc;priority:desc;id:asc`.
+- **The store-level setting holds only overrides, not the source of truth.** `Catalog.Search.ProductSortings` (JSON, store-level) stores admin **deltas** keyed by `code` (renamed label / changed order / hidden / edited clauses) plus any admin-authored **custom** orderings. `null`/empty means "use the code defaults", so changes to a resolver's code defaults flow through to untouched fields.
+- **Composition.** `IProductSortingService` merges the resolvers with the stored deltas into the effective list. Two orthogonal per-resolver gate flags govern overriding: `AllowOverride` (admin may change name/order/visibility) and `IsExpressionEditable` (admin may edit the sort clauses), both default `true`. Setting either to `false` in code is a no-migration "kill switch" that forces the code value.
+- **Default ordering** is the first visible ordering (there is no stored `IsDefault`); an empty incoming `sort` resolves to it.
+
+### Configuring in the admin UI
+
+Open **Store → Search configuration → Sorting**. Drag to reorder (the first visible row is the default), toggle visibility, rename (with per-language localization), edit the sort clauses, and add/remove custom orderings. The system `code` is the stable key used by the API and the storefront `?sort=` URL, so it can be set only when an ordering is created.
+
+> **Note on persisted order.** Reordering and saving stores explicit `order` values for the orderings. For a resolver whose code `Info.Order` does not equal its position in the default-sorted list, the saved value (a contiguous list index) won't match the code default, so an order-only delta remains in `Catalog.Search.ProductSortings` even after the list is dragged back to the default arrangement — the setting does not return to empty once a reorder has been saved. This is expected behavior, not a defect: the saved list is the admin's persisted intent, the stored values still produce the same displayed order (in both the admin and the storefront), and an admin override always wins over the code `Info.Order` until the ordering is changed again.
+
+### Extending from code
+
+Contribute a new ordering by registering a resolver — no admin action, no DB seeding, no migration:
+
+```csharp
+public class VendorAscendingProductSortingResolver : AbstractExpressionProductSortingResolver
+{
+    public override string Code => "vendor-ascending";
+    public override ProductSortingInfo Info { get; } = new() { Name = "Vendor (A-Z)", Order = 35 };
+    protected override string DefaultExpression => "vendor:asc"; // logical expression; bound to the physical index field downstream
+}
+
+// in Module.Initialize:
+serviceCollection.AddSingleton<IProductSortingResolver, VendorAscendingProductSortingResolver>();
+```
+
+For an ordering whose expression depends on the request (e.g. a different order per category), implement `IProductSortingResolver` directly and compute the expression in `GetSortExpression(ProductSortingContext context)` (the context carries store, catalog, current category/outline, currency, culture, keyword, filter and facet).
+
+### API
+
+- **REST (admin):** `GET`/`PUT api/catalog/product-sortings/store/{storeId}` (plus `GET .../fields` for the clause-field picker, derived from the product index schema). Guarded by the `catalog:BrowseFilters:Read` / `catalog:BrowseFilters:Update` permissions.
+- **GraphQL (storefront):** the `products` connection exposes `sortings { id name isDefault selected }`. An empty `sort` applies the store default, a known `code` applies that ordering, and an unknown token / raw expression passes through to the search engine unchanged.
 
 ## Documentation
 * [Catalog module user documentation](https://docs.virtocommerce.org/platform/user-guide/catalog/overview/)

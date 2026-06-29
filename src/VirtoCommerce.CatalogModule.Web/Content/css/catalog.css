@@ -398,3 +398,180 @@ vc-item-search {
   margin-bottom: 20px;
 }
 
+/* ===== VCST-5177 Search configuration (Facets / Sorting) ===== */
+
+/* "Search configuration" menu blade tiles (reproduce the widget-grid tile look outside .gridster). */
+.search-config-tiles {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 10px;
+    padding: 8px 0;
+}
+
+.search-config-tile {
+    cursor: pointer;
+    flex: 0 0 120px;
+    width: 120px;
+    height: 120px;
+    background: #fbfdfe;
+    box-shadow: inset 0 0 0 1px #dee9f0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+}
+
+.search-config-tile__label {
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.4;
+    text-align: center;
+    color: #161d25;
+    padding: 0 6px;
+}
+
+/* Sort-sorting list blade */
+.product-sorting__row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding-left: 12px;
+}
+
+.product-sorting__handle {
+    cursor: move;
+    color: #c2ccd4;
+    padding-top: 2px;
+}
+
+.product-sorting__body {
+    flex: 1;
+    min-width: 0;
+}
+
+.product-sorting__expr {
+    color: #8a99a8;
+    background: transparent;
+    border: none;
+    padding: 0;
+    text-shadow: none;
+}
+
+/* Status badges */
+.product-sorting-badge {
+    display: inline-block;
+    margin-left: 8px;
+    padding: 1px 8px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: bold;
+    line-height: 1;
+    text-shadow: none;
+    vertical-align: middle;
+}
+
+.product-sorting-badge.__default {
+    border: 1px solid #b7e0c4;
+    background-color: #e6f4ea;
+    color: #3a9d5d;
+    font-weight: 600;
+}
+
+.product-sorting-badge.__hidden {
+    border: 1px solid #999;
+    color: #fff;
+    background-color: #999;
+}
+
+.product-sorting-badge.__muted {
+    border: 1px solid #999;
+    color: #999;
+}
+
+/* Sort-sorting detail blade */
+.product-sorting-localized {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.product-sorting-langs-toggle {
+    display: inline-block;
+    margin-top: 8px;
+}
+
+.product-sorting-hint {
+    font-size: 11px;
+    color: #8a99a8;
+    margin-top: 4px;
+}
+
+.product-sorting-clause {
+    padding: 8px 12px;
+}
+
+.product-sorting-clause__row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.product-sorting-clause__field {
+    flex: 1;
+    height: 34px;
+    padding: 5px 10px;
+    font-size: 13px;
+    border: 1px solid #eaedf3;
+    border-radius: 0;
+    background: #fff;
+}
+
+.product-sorting-dir {
+    display: flex;
+    border: 1px solid #e4e9ee;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.product-sorting-dir__btn {
+    border: none;
+    padding: 6px 12px;
+    cursor: pointer;
+    font-size: 11px;
+    background-color: #fff;
+    color: #8a99a8;
+}
+
+.product-sorting-dir__btn + .product-sorting-dir__btn {
+    border-left: 1px solid #e4e9ee;
+}
+
+.product-sorting-dir__btn.__active {
+    background-color: #43b0e6;
+    color: #fff;
+}
+
+.product-sorting-expression {
+    background: #f4f6f8;
+    border: 1px solid #e4e9ee;
+    border-radius: 3px;
+    padding: 10px 12px;
+    font-family: Consolas, 'SFMono-Regular', monospace;
+    font-size: 11px;
+    line-height: 1.7;
+    color: #5a6b7b;
+}
+
+.product-sorting-expression__field {
+    color: #43b0e6;
+}
+
+.product-sorting-expression__dir {
+    color: #e6533f;
+}
+
+.product-sorting-expression__empty {
+    color: #a8b3bc;
+}
+
