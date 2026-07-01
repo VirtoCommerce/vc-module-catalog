@@ -10,4 +10,7 @@
   <PropertyGroup>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
+  <!-- BEGIN managed: VirtoCommerce common build props -->
+  <Import Project="$(MSBuildThisFileDirectory)nuget-audit.props" Condition="Exists('$(MSBuildThisFileDirectory)nuget-audit.props')" />
+  <!-- END managed: VirtoCommerce common build props -->
 </Project>

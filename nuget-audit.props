@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  MANAGED FILE — owned by VirtoCommerce/.github, distributed by
+  .github/workflows/deploy-module-workflows.yml. Do NOT edit in module repos:
+  local changes are overwritten on the next deploy. Edit the source here instead,
+  tag a new version, and re-run "Deploy Module workflows".
+
+  Imported (not merged) by each module's root Directory.Build.props so the
+  module keeps its own VersionPrefix / TreatWarningsAsErrors etc.
+-->
+<Project>
+
+  <!-- NuGet vulnerable-dependency audit (runs during restore, emits NU190x warnings).
+       Modules set TreatWarningsAsErrors=true, so a high/critical advisory FAILS the
+       build until the package is upgraded or the advisory is suppressed below. -->
+  <PropertyGroup>
+    <NuGetAudit>true</NuGetAudit>
+    <!-- Audit direct AND transitive dependencies -->
+    <NuGetAuditMode>all</NuGetAuditMode>
+    <!-- Report advisories at high severity and above (high + critical; skip moderate/low to reduce noise) -->
+    <NuGetAuditLevel>high</NuGetAuditLevel>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Accepted vulnerability advisories: suppress the restore-time NU190x warning per-advisory
+         (instead of a blunt NoWarn) so other and future high/critical vulnerabilities still surface
+         in the build log and the CI Scans tab. Keep in sync with nuget-audit-ignore.json (the
+         Scans-tab filter) and the platform-side deploy/backend/trivyScan-ignore.json.
+         ONLY suppress advisories that have NO available fix - if a fixed version exists, upgrade. -->
+    <!-- AutoMapper DoS via uncontrolled recursion (CVE-2026-32933); transitive via VirtoCommerce,
+         no fixed version published yet. -->
+    <NuGetAuditSuppress Include="https://github.com/advisories/GHSA-rvv3-g6hj-g44x" />
+  </ItemGroup>
+
+</Project>
