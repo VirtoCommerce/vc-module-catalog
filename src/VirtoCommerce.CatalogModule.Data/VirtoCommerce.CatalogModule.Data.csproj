@@ -14,6 +14,8 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="HtmlSanitizer" Version="9.0.892" />
+    <!-- TEST ONLY — remove. Known-vulnerable (GHSA-ghhp-997w-qr28, critical) to verify NuGet audit fails CI. -->
+    <PackageReference Include="System.Text.Encodings.Web" Version="4.5.0" />
     <PackageReference Include="VirtoCommerce.AssetsModule.Core" Version="3.1005.0" />
     <PackageReference Include="VirtoCommerce.ExportModule.Data" Version="3.1002.0" />
     <PackageReference Include="VirtoCommerce.Platform.Data" Version="3.1039.0" />
