@@ -30,6 +30,10 @@
     <!-- AutoMapper DoS via uncontrolled recursion (CVE-2026-32933); transitive via VirtoCommerce,
          no fixed version published yet. -->
     <NuGetAuditSuppress Include="https://github.com/advisories/GHSA-rvv3-g6hj-g44x" />
+    <!-- TEST ONLY — remove. System.Text.Encodings.Web critical (GHSA-ghhp-997w-qr28); paired with
+         the temporary vulnerable PackageReference in vc-module-catalog to verify the suppression
+         path lets CI pass. -->
+    <NuGetAuditSuppress Include="https://github.com/advisories/GHSA-ghhp-997w-qr28" />
   </ItemGroup>
 
 </Project>
