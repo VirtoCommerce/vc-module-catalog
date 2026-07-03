@@ -14,10 +14,6 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="HtmlSanitizer" Version="9.0.892" />
-    <!-- TEST ONLY — remove. Known-vulnerable high advisory (GHSA-9pq7-rcxv-47vq / CVE-2021-27293)
-         to exercise NuGet audit + suppression in CI. Standalone third-party package: not in the
-         module's dependency graph (no NU1605 downgrade) and not framework-provided (no NU1510). -->
-    <PackageReference Include="RestSharp" Version="106.11.7" />
     <PackageReference Include="VirtoCommerce.AssetsModule.Core" Version="3.1005.0" />
     <PackageReference Include="VirtoCommerce.ExportModule.Data" Version="3.1002.0" />
     <PackageReference Include="VirtoCommerce.Platform.Data" Version="3.1039.0" />
