@@ -27,6 +27,14 @@ angular.module('virtoCommerce.catalogModule')
                 {
                     id: "NameDescending",
                     nameKey: "catalog.blades.aggregation-properties-details.sorting-type-labels.nameDescending",
+                },
+                {
+                    id: "NumericAscending",
+                    nameKey: "catalog.blades.aggregation-properties-details.sorting-type-labels.numericAscending",
+                },
+                {
+                    id: "NumericDescending",
+                    nameKey: "catalog.blades.aggregation-properties-details.sorting-type-labels.numericDescending",
                 }];
 
             function initializeBlade() {
