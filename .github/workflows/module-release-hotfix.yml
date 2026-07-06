@@ -65,7 +65,9 @@ jobs:
         id: login
         uses: NuGet/login@8d196754b4036150537f80ac539e15c2f1028841 # v1.2.0
         with:
-          user: VirtoCommerce
+          # nuget.org username of the account that CREATED the trust policy (a shared service
+          # account, org member). Org-level GitHub Actions variable so every repo inherits it.
+          user: ${{ vars.NUGET_TRUSTED_USER }}
       # Job outputs aren't masked across jobs; mask so the key never prints in downstream logs.
       - name: Mask API key
         run: echo "::add-mask::${{ steps.login.outputs.NUGET_API_KEY }}"

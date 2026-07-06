@@ -210,7 +210,9 @@ jobs:
         id: nuget_login
         uses: NuGet/login@8d196754b4036150537f80ac539e15c2f1028841 # v1.2.0
         with:
-          user: VirtoCommerce
+          # nuget.org username of the account that CREATED the trust policy (a shared service
+          # account, org member). Org-level GitHub Actions variable so every repo inherits it.
+          user: ${{ vars.NUGET_TRUSTED_USER }}
 
       - name: Publish Nuget
         if: ${{ github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/VCST-5373' }}
