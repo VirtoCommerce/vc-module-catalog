@@ -30,13 +30,35 @@ jobs:
     secrets:
       envPAT: ${{ secrets.REPO_TOKEN }}
 
+  # NuGet Trusted Publishing: the push happens inside the cross-repo reusable publish-github.yml,
+  # whose job_workflow_ref points at the .github repo and so can't match a policy scoped to this
+  # repo. So we mint the short-lived key HERE (job_workflow_ref = publish-nugets.yml) and pass it
+  # into the reusable workflow via its existing nugetKey secret. Runs after build so the ~1h key is
+  # minted right before publish.
+  nuget-login:
+    needs: [build, test]
+    permissions:
+      id-token: write
+    runs-on: ubuntu-24.04
+    outputs:
+      key: ${{ steps.login.outputs.NUGET_API_KEY }}
+    steps:
+      - name: NuGet login (OIDC -> temp API key)
+        id: login
+        uses: NuGet/login@8d196754b4036150537f80ac539e15c2f1028841 # v1.2.0
+        with:
+          user: VirtoCommerce
+      # Job outputs aren't masked across jobs; mask so the key never prints in downstream logs.
+      - name: Mask API key
+        run: echo "::add-mask::${{ steps.login.outputs.NUGET_API_KEY }}"
+
   publish-nuget:
     # publish-github.yml creates the release + edits the PR via the passed GITHUB_TOKEN — grant write to both.
     permissions:
       contents: write
       pull-requests: write
     needs:
-      [build, test]
+      [build, test, nuget-login]
     uses: VirtoCommerce/.github/.github/workflows/publish-github.yml@v3.800.40
     with:
       fullKey: ${{ needs.build.outputs.packageFullKey }}
@@ -44,5 +66,5 @@ jobs:
       forceBlob: true
     secrets:
       envPAT: ${{ secrets.GITHUB_TOKEN }}
-      nugetKey: ${{ secrets.NUGET_KEY }}
+      nugetKey: ${{ needs.nuget-login.outputs.key }}
       BLOB_TOKEN: ${{ secrets.BLOB_TOKEN }}
