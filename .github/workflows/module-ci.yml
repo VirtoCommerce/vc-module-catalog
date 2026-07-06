@@ -174,7 +174,7 @@ jobs:
         if: ${{ github.ref != 'refs/heads/master' && github.ref != 'refs/heads/main' }}
         uses: VirtoCommerce/vc-github-actions/add-version-suffix@master
         with:
-          # TEMP TEST (VCST-5305): force a unique prerelease suffix so the trusted-publishing
+          # TEMP TEST (VCST-5373): force a unique prerelease suffix so the trusted-publishing
           # test push can never land as a real release version. REVERT to: ${{ env.VERSION_SUFFIX }}
           versionSuffix: test-vcst5305-${{ github.run_number }}
 
@@ -203,17 +203,17 @@ jobs:
 
       # NuGet Trusted Publishing: exchange the GitHub OIDC token for a short-lived nuget.org
       # API key. Kept adjacent to the push - the key expires in ~1h.
-      # TEMP TEST (VCST-5305): '|| refs/heads/VCST-5305' added so the trusted-publishing flow runs
+      # TEMP TEST (VCST-5373): '|| refs/heads/VCST-5373' added so the trusted-publishing flow runs
       # from this feature branch. REVERT both `if` to master/main-only before merge.
       - name: NuGet login (OIDC -> temp API key)
-        if: ${{ github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/VCST-5305' }}
+        if: ${{ github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/VCST-5373' }}
         id: nuget_login
         uses: NuGet/login@8d196754b4036150537f80ac539e15c2f1028841 # v1.2.0
         with:
           user: VirtoCommerce
 
       - name: Publish Nuget
-        if: ${{ github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/VCST-5305' }}
+        if: ${{ github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/VCST-5373' }}
         uses: VirtoCommerce/vc-github-actions/publish-nuget@master
         env:
           NUGET_KEY: ${{ steps.nuget_login.outputs.NUGET_API_KEY }}
