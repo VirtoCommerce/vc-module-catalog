@@ -42,7 +42,7 @@ jobs:
     outputs:
       version-only: ${{ steps.detect.outputs.version-only }}
     steps:
-      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           fetch-depth: 0
           persist-credentials: false
@@ -118,7 +118,7 @@ jobs:
             node-version: '24'
 
       - name: Set up Java 17
-        uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5.2.0
+        uses: actions/setup-java@1bcf9fb12cf4aa7d266a90ae39939e61372fe520 # v5.4.0
         with:
           distribution: 'temurin'
           java-version: '17'
@@ -128,7 +128,7 @@ jobs:
         run: |
           echo "RELEASE_STATUS=true" >> $GITHUB_ENV
 
-      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           fetch-depth: 0
           persist-credentials: false
@@ -350,8 +350,10 @@ jobs:
           STEPS_PUSH_BUILD_INFO_TO_JIRA_OUTPUTS_RESPONSE: ${{ steps.push_build_info_to_jira.outputs.response }}
 
   auto-tests:
-    if: ${{ ((github.ref == 'refs/heads/dev') && (github.event_name == 'push')) ||
-        (github.event_name == 'workflow_dispatch') || ((github.base_ref == 'dev') && (github.event_name == 'pull_request')) }}
+    # !cancelled() keeps this running when detect-version-bump is skipped (PR); ci.result == 'success' still gates on the build.
+    if: ${{ !cancelled() && needs.ci.result == 'success' && (
+        ((github.ref == 'refs/heads/dev') && (github.event_name == 'push')) ||
+        (github.event_name == 'workflow_dispatch') || ((github.base_ref == 'dev') && (github.event_name == 'pull_request'))) }}
     needs: ci
     uses: VirtoCommerce/.github/.github/workflows/pytest-tests.yml@v3.800.40
     with:
@@ -370,8 +372,10 @@ jobs:
       sendgridApiKey: ${{ secrets.SENDGRID_APIKEY_4E2E_AUTOTESTS }}
 
   swagger-validation:
-    if: ${{ github.ref == 'refs/heads/dev' ||
-        (github.event_name == 'pull_request' && github.base_ref == 'dev') }}
+    # !cancelled() keeps this running when detect-version-bump is skipped (PR); ci.result == 'success' still gates on the build.
+    if: ${{ !cancelled() && needs.ci.result == 'success' && (
+        github.ref == 'refs/heads/dev' ||
+        (github.event_name == 'pull_request' && github.base_ref == 'dev')) }}
     needs: ci
     runs-on: ubuntu-24.04
     permissions:
