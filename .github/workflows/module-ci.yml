@@ -200,8 +200,11 @@ jobs:
         run: vc-build Compress -skip Clean+Restore+Compile+Test
 
       # Trusted Publishing: swap the GitHub OIDC token for a ~1h nuget.org key, minted right before push.
+      # TEMP TEST (VCST-5373): '|| refs/heads/VCST-5373' added so the flow runs from this feature
+      # branch. Dispatch via workflow_dispatch -> VERSION_SUFFIX=fullSuffix = alpha prerelease.
+      # REVERT both `if` to master/main-only before merge.
       - name: NuGet login (OIDC -> temp API key)
-        if: ${{ github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main' }}
+        if: ${{ github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/VCST-5373' }}
         id: nuget_login
         uses: NuGet/login@8d196754b4036150537f80ac539e15c2f1028841 # v1.2.0
         with:
@@ -209,7 +212,7 @@ jobs:
           user: ${{ vars.NUGET_TRUSTED_USER }}
 
       - name: Publish Nuget
-        if: ${{ github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main' }}
+        if: ${{ github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/VCST-5373' }}
         uses: VirtoCommerce/vc-github-actions/publish-nuget@master
         env:
           NUGET_KEY: ${{ steps.nuget_login.outputs.NUGET_API_KEY }}
