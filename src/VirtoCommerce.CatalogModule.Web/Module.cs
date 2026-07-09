@@ -202,7 +202,7 @@ namespace VirtoCommerce.CatalogModule.Web
 
             PropertyValueValidator PropertyValueValidatorFactory(PropertyValidationRule rule) => new PropertyValueValidator(rule);
             serviceCollection.AddSingleton((Func<PropertyValidationRule, PropertyValueValidator>)PropertyValueValidatorFactory);
-            serviceCollection.AddTransient<AbstractValidator<IHasProperties>, HasPropertiesValidator>();
+            serviceCollection.AddSingleton<AbstractValidator<IHasProperties>, HasPropertiesValidator>();
 
             serviceCollection.AddSingleton<AbstractValidator<CatalogProduct>, ProductValidator>();
             serviceCollection.AddSingleton<AbstractValidator<Property>, PropertyValidator>();
