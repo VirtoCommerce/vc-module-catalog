@@ -1,5 +1,5 @@
-# v3.800.39
-# https://virtocommerce.atlassian.net/browse/VCST-5246
+# v3.800.40
+# https://virtocommerce.atlassian.net/browse/VCST-5305
 name: Module CI
 
 on:
@@ -33,10 +33,56 @@ permissions:
   contents: read
 
 jobs:
+  # Skips build/deploy for version-only bumps (every changed line is a <VersionPrefix>/<version>). Push-only.
+  detect-version-bump:
+    if: ${{ github.event_name == 'push' }}
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    outputs:
+      version-only: ${{ steps.detect.outputs.version-only }}
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Detect version-bump-only push
+        id: detect
+        env:
+          BEFORE: ${{ github.event.before }}
+          AFTER: ${{ github.sha }}
+        run: |
+          # New branch (no "before" ref) -> run CI.
+          if [ -z "$BEFORE" ] || [ "$BEFORE" = "0000000000000000000000000000000000000000" ]; then
+            echo "version-only=false" >> "$GITHUB_OUTPUT"; echo "New branch push - running CI."; exit 0
+          fi
+
+          echo "Files changed:"; git diff --name-only "$BEFORE" "$AFTER"
+
+          # version-only when every changed +/- line is a "<VersionPrefix|version>X.Y.Z</...>" bump.
+          # || true: a content-less diff (rename/mode-only) makes grep match nothing (exit 1), which
+          # pipefail+set -e would turn into a step failure; fall through and let CI decide instead.
+          CHANGED=$(git diff --unified=0 "$BEFORE" "$AFTER" | grep -E '^[+-]' | grep -vE '^(\+\+\+|---)' \
+            | sed -E 's/^[+-][[:space:]]*//; s/[[:space:]]*$//' || true)
+          NON_VERSION=$(echo "$CHANGED" \
+            | grep -vxE '<VersionPrefix>[0-9]+\.[0-9]+\.[0-9]+</VersionPrefix>|<version>[0-9]+\.[0-9]+\.[0-9]+</version>' \
+            | grep -v '^$' || true)
+
+          if [ -n "$CHANGED" ] && [ -z "$NON_VERSION" ]; then
+            echo "version-only=true"  >> "$GITHUB_OUTPUT"; echo "::notice::Version-only push - skipping CI build."
+          else
+            echo "version-only=false" >> "$GITHUB_OUTPUT"; echo "Non-version changes detected - running CI."
+          fi
+
   ci:
-    if: ${{ github.actor != 'dependabot[bot]' &&
+    needs: detect-version-bump
+    # !cancelled() keeps CI running when detect-version-bump is skipped (PR) or fails (fail-open).
+    if: ${{ !cancelled()
+        && needs.detect-version-bump.outputs.version-only != 'true'
+        && github.actor != 'dependabot[bot]' &&
         (github.event.pull_request.head.repo.full_name == github.repository ||
-        github.event.pull_request.head.repo.full_name == '') }}  # Check that PR not from forked repo and not from Dependabot
+        github.event.pull_request.head.repo.full_name == '') }}  # Skip version-only bumps; PR not from a fork or Dependabot
     runs-on: ubuntu-24.04
     # Default GITHUB_TOKEN creates the release + updates the PR; rest uses the REPO_TOKEN PAT.
     permissions:
@@ -72,7 +118,7 @@ jobs:
             node-version: '24'
 
       - name: Set up Java 17
-        uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5.2.0
+        uses: actions/setup-java@1bcf9fb12cf4aa7d266a90ae39939e61372fe520 # v5.4.0
         with:
           distribution: 'temurin'
           java-version: '17'
@@ -82,7 +128,7 @@ jobs:
         run: |
           echo "RELEASE_STATUS=true" >> $GITHUB_ENV
 
-      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           fetch-depth: 0
           persist-credentials: false
@@ -260,10 +306,7 @@ jobs:
         with:
           githubToken: ${{ secrets.REPO_TOKEN }}
 
-      # NOTE: This step is intentionally NOT gated on swagger-validation. In the normal flow swagger
-      # runs (and must pass) on the PR into dev before code is merged, so anything reaching dev/master/main
-      # is already validated. The only uncovered case is a direct push that bypasses the PR; that is closed
-      # by the branch protection rule on dev (required swagger check + no direct pushes), not in-workflow.
+      # Not gated on swagger-validation: PRs into dev already validate it, and direct pushes are blocked by branch protection.
       - name: Publish Manifest
         if: ${{ (github.ref == 'refs/heads/dev' && github.event_name != 'workflow_dispatch') || github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main' }}
         uses: VirtoCommerce/vc-github-actions/publish-manifest@master
@@ -307,10 +350,12 @@ jobs:
           STEPS_PUSH_BUILD_INFO_TO_JIRA_OUTPUTS_RESPONSE: ${{ steps.push_build_info_to_jira.outputs.response }}
 
   auto-tests:
-    if: ${{ ((github.ref == 'refs/heads/dev') && (github.event_name == 'push')) ||
-        (github.event_name == 'workflow_dispatch') || ((github.base_ref == 'dev') && (github.event_name == 'pull_request')) }}
+    # !cancelled() keeps this running when detect-version-bump is skipped (PR); ci.result == 'success' still gates on the build.
+    if: ${{ !cancelled() && needs.ci.result == 'success' && (
+        ((github.ref == 'refs/heads/dev') && (github.event_name == 'push')) ||
+        (github.event_name == 'workflow_dispatch') || ((github.base_ref == 'dev') && (github.event_name == 'pull_request'))) }}
     needs: ci
-    uses: VirtoCommerce/.github/.github/workflows/pytest-tests.yml@v3.800.39
+    uses: VirtoCommerce/.github/.github/workflows/pytest-tests.yml@v3.800.40
     with:
       installModules: 'false'
       installCustomModule: 'true'
@@ -327,8 +372,10 @@ jobs:
       sendgridApiKey: ${{ secrets.SENDGRID_APIKEY_4E2E_AUTOTESTS }}
 
   swagger-validation:
-    if: ${{ github.ref == 'refs/heads/dev' ||
-        (github.event_name == 'pull_request' && github.base_ref == 'dev') }}
+    # !cancelled() keeps this running when detect-version-bump is skipped (PR); ci.result == 'success' still gates on the build.
+    if: ${{ !cancelled() && needs.ci.result == 'success' && (
+        github.ref == 'refs/heads/dev' ||
+        (github.event_name == 'pull_request' && github.base_ref == 'dev')) }}
     needs: ci
     runs-on: ubuntu-24.04
     permissions:
@@ -353,9 +400,7 @@ jobs:
           platformImage: ghcr.io/virtocommerce/platform
 
   deploy-cloud:
-    # always() + explicit result checks: swagger-validation only runs on the dev flow, so it is
-    # 'skipped' on master/main pushes. Deploy when swagger passed (dev) or was skipped (master/main),
-    # but block when it failed (e.g. a direct push to dev that bypassed branch protection).
+    # always() + explicit checks: deploy when swagger-validation passed (dev) or was skipped (master/main); block on failure.
     if: ${{ always()
       && needs.ci.result == 'success'
       && (needs.swagger-validation.result == 'success' || needs.swagger-validation.result == 'skipped')
@@ -367,7 +412,7 @@ jobs:
     permissions:
       contents: read
       deployments: write
-    uses: VirtoCommerce/.github/.github/workflows/deploy-cloud.yml@v3.800.39
+    uses: VirtoCommerce/.github/.github/workflows/deploy-cloud.yml@v3.800.40
     with:
       releaseSource: module
       moduleId: ${{ needs.ci.outputs.moduleId }}
@@ -375,4 +420,4 @@ jobs:
       moduleBlob: ${{ needs.ci.outputs.blobId }}
       jiraKeys: ${{ needs.ci.outputs.jira-keys }}
       matrix: '{"include":${{ needs.ci.outputs.matrix }}}'
-    secrets: inherit # zizmor: ignore[secrets-inherit] deploy-cloud.yml@v3.800.39 reads undeclared org secrets; explicit passing needs a new release + tag bump
+    secrets: inherit # zizmor: ignore[secrets-inherit] deploy-cloud.yml@v3.800.40 reads undeclared org secrets; explicit passing needs a new release + tag bump
