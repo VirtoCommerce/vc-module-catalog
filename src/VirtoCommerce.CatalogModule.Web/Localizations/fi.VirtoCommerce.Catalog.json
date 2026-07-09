@@ -1,4 +1,4 @@
-{
+﻿{
   "catalog": {
     "main-menu-title": "Katalogi",
     "main-blade-title": "Katalogi",
@@ -686,7 +686,9 @@
           "score": "Pisteet",
           "priority": "Prioriteetti",
           "nameAscending": "Nimi nouseva",
-          "nameDescending": "Nimi laskeva"
+          "nameDescending": "Nimi laskeva",
+          "numericAscending": "Numeerinen nouseva",
+          "numericDescending": "Numeerinen laskeva"
         }
       },
       "importers-list": {

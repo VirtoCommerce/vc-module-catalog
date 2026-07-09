@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Moq;
 using VirtoCommerce.CatalogModule.Core;
@@ -125,6 +126,165 @@ namespace VirtoCommerce.CatalogModule.Tests
             Assert.Equal("Azure", items[0].Value);
             Assert.Equal("Black", items[1].Value);
             Assert.Equal("Crimson", items[2].Value);
+        }
+
+        [Fact]
+        public async Task SortAggregationItems_NumericAscending_ItemsSortedNumerically()
+        {
+            // Arrange: string-alphabetical order would be 100,109,110,12,56 — numeric must give 12,56,100,109,110
+            var converter = GetAggregationConverterWithValues(
+                ModuleConstants.TermValuesSortingTypeNumericAscending,
+                ["100", "109", "110", "12", "56"]);
+            var criteria = new ProductIndexedSearchCriteria();
+            var responses = BuildAggregationResponsesFromIds(["100", "109", "110", "12", "56"]);
+
+            // Act
+            var aggregations = await converter.ConvertAggregationsAsync(responses, criteria);
+
+            // Assert
+            var items = aggregations[0].Items;
+            Assert.Equal(5, items.Length);
+            Assert.Equal("12", items[0].Value);
+            Assert.Equal("56", items[1].Value);
+            Assert.Equal("100", items[2].Value);
+            Assert.Equal("109", items[3].Value);
+            Assert.Equal("110", items[4].Value);
+        }
+
+        [Fact]
+        public async Task SortAggregationItems_NumericDescending_ItemsSortedNumerically()
+        {
+            // Arrange
+            var converter = GetAggregationConverterWithValues(
+                ModuleConstants.TermValuesSortingTypeNumericDescending,
+                ["100", "109", "110", "12", "56"]);
+            var criteria = new ProductIndexedSearchCriteria();
+            var responses = BuildAggregationResponsesFromIds(["100", "109", "110", "12", "56"]);
+
+            // Act
+            var aggregations = await converter.ConvertAggregationsAsync(responses, criteria);
+
+            // Assert
+            var items = aggregations[0].Items;
+            Assert.Equal(5, items.Length);
+            Assert.Equal("110", items[0].Value);
+            Assert.Equal("109", items[1].Value);
+            Assert.Equal("100", items[2].Value);
+            Assert.Equal("56", items[3].Value);
+            Assert.Equal("12", items[4].Value);
+        }
+
+        [Fact]
+        public async Task SortAggregationItems_NumericAscending_DecimalValues()
+        {
+            // Arrange
+            var converter = GetAggregationConverterWithValues(
+                ModuleConstants.TermValuesSortingTypeNumericAscending,
+                ["10.2", "1.5", "12"]);
+            var criteria = new ProductIndexedSearchCriteria();
+            var responses = BuildAggregationResponsesFromIds(["10.2", "1.5", "12"]);
+
+            // Act
+            var aggregations = await converter.ConvertAggregationsAsync(responses, criteria);
+
+            // Assert
+            var items = aggregations[0].Items;
+            Assert.Equal(3, items.Length);
+            Assert.Equal("1.5", items[0].Value);
+            Assert.Equal("10.2", items[1].Value);
+            Assert.Equal("12", items[2].Value);
+        }
+
+        [Fact]
+        public async Task SortAggregationItems_NumericAscending_NonNumericValuesGoToEnd()
+        {
+            // Arrange
+            var converter = GetAggregationConverterWithValues(
+                ModuleConstants.TermValuesSortingTypeNumericAscending,
+                ["abc", "12", "5", "xyz"]);
+            var criteria = new ProductIndexedSearchCriteria();
+            var responses = BuildAggregationResponsesFromIds(["abc", "12", "5", "xyz"]);
+
+            // Act
+            var aggregations = await converter.ConvertAggregationsAsync(responses, criteria);
+
+            // Assert
+            var items = aggregations[0].Items;
+            Assert.Equal(4, items.Length);
+            Assert.Equal("5", items[0].Value);
+            Assert.Equal("12", items[1].Value);
+            // non-numeric values come last (alphabetical among themselves)
+            Assert.Equal("abc", items[2].Value);
+            Assert.Equal("xyz", items[3].Value);
+        }
+
+        [Fact]
+        public async Task SortAggregationItems_NumericDescending_NonNumericValuesGoToEnd()
+        {
+            // Arrange: non-numeric values must go to the end even in descending mode
+            var converter = GetAggregationConverterWithValues(
+                ModuleConstants.TermValuesSortingTypeNumericDescending,
+                ["abc", "12", "5", "xyz"]);
+            var criteria = new ProductIndexedSearchCriteria();
+            var responses = BuildAggregationResponsesFromIds(["abc", "12", "5", "xyz"]);
+
+            // Act
+            var aggregations = await converter.ConvertAggregationsAsync(responses, criteria);
+
+            // Assert
+            var items = aggregations[0].Items;
+            Assert.Equal(4, items.Length);
+            Assert.Equal("12", items[0].Value);
+            Assert.Equal("5", items[1].Value);
+            // non-numeric values come last (alphabetical among themselves)
+            Assert.Equal("abc", items[2].Value);
+            Assert.Equal("xyz", items[3].Value);
+        }
+
+        private static IList<AggregationResponse> BuildAggregationResponsesFromIds(IList<string> ids)
+        {
+            return
+            [
+                new AggregationResponse
+                {
+                    Id = PropertyFieldName,
+                    Values = [.. ids.Select(id => new AggregationResponseValue { Id = id, Count = 1 })],
+                },
+            ];
+        }
+
+        private static AggregationConverter GetAggregationConverterWithValues(string termValuesSortingType, IList<string> valueIds)
+        {
+            var browseFilters = new List<IBrowseFilter>
+            {
+                new AttributeFilter
+                {
+                    Key = PropertyFieldName,
+                    TermValuesSortingType = termValuesSortingType,
+                },
+            };
+
+            var browseFilterServiceMock = new Mock<IBrowseFilterService>();
+            browseFilterServiceMock
+                .Setup(x => x.GetBrowseFiltersAsync(It.IsAny<ProductIndexedSearchCriteria>()))
+                .ReturnsAsync(browseFilters);
+
+            var propertyServiceMock = new Mock<IPropertyService>();
+            propertyServiceMock
+                .Setup(x => x.GetAllCatalogPropertiesAsync(It.IsAny<string>()))
+                .ReturnsAsync(new List<Property> { ColorProperty });
+
+            var propDictSearchServiceMock = new Mock<IPropertyDictionaryItemSearchService>();
+            propDictSearchServiceMock
+                .Setup(x => x.SearchAsync(It.IsAny<PropertyDictionaryItemSearchCriteria>(), It.IsAny<bool>()))
+                .ReturnsAsync(new PropertyDictionaryItemSearchResult { Results = [], TotalCount = 0 });
+
+            var categoryServiceMock = new Mock<ICategoryService>();
+            categoryServiceMock
+                .Setup(x => x.GetAsync(It.IsAny<IList<string>>(), It.IsAny<string>(), It.IsAny<bool>()))
+                .ReturnsAsync(new List<Category>());
+
+            return new AggregationConverter(browseFilterServiceMock.Object, propertyServiceMock.Object, propDictSearchServiceMock.Object, categoryServiceMock.Object, null, null);
         }
 
         private static IList<AggregationResponse> BuildAggregationResponses()

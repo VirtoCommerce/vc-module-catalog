@@ -1,4 +1,4 @@
-{
+﻿{
   "catalog": {
     "main-menu-title": "目录",
     "main-blade-title": "目录",
@@ -686,7 +686,9 @@
           "score": "评分",
           "priority": "优先级",
           "nameAscending": "名称升序",
-          "nameDescending": "名称降序"
+          "nameDescending": "名称降序",
+          "numericAscending": "数值升序",
+          "numericDescending": "数值降序"
         }
       },
       "importers-list": {
