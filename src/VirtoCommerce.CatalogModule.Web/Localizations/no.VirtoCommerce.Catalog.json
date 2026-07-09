@@ -1,4 +1,4 @@
-{
+﻿{
   "catalog": {
     "main-menu-title": "Katalog",
     "main-blade-title": "Katalog",
@@ -686,7 +686,9 @@
           "score": "Poeng",
           "priority": "Prioritet",
           "nameAscending": "Navn stigende",
-          "nameDescending": "Navn synkende"
+          "nameDescending": "Navn synkende",
+          "numericAscending": "Numerisk stigende",
+          "numericDescending": "Numerisk synkende"
         }
       },
       "importers-list": {

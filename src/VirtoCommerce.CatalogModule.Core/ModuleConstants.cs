@@ -22,6 +22,8 @@ namespace VirtoCommerce.CatalogModule.Core
         public const string TermValuesSortingTypePriority = "Priority";
         public const string TermValuesSortingTypeNameAscending = "NameAscending";
         public const string TermValuesSortingTypeNameDescending = "NameDescending";
+        public const string TermValuesSortingTypeNumericAscending = "NumericAscending";
+        public const string TermValuesSortingTypeNumericDescending = "NumericDescending";
 
         public static class Security
         {

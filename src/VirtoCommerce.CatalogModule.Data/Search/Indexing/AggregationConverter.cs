@@ -578,9 +578,32 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                 case ModuleConstants.TermValuesSortingTypeNameDescending:
                     aggregation.Items = [.. aggregation.Items.OrderByDescending(x => x.Value)];
                     return true;
+                case ModuleConstants.TermValuesSortingTypeNumericAscending:
+                    SortNumeric(aggregation, descending: false);
+                    return true;
+                case ModuleConstants.TermValuesSortingTypeNumericDescending:
+                    SortNumeric(aggregation, descending: true);
+                    return true;
                 default:
                     return true; // already sorted by score
             }
+        }
+
+        private static void SortNumeric(Aggregation aggregation, bool descending = false)
+        {
+            var keyed = aggregation.Items.Select(x => (Item: x, Num: TryParseDouble(x.Value)));
+            var ordered = keyed.OrderBy(t => t.Num.HasValue ? 0 : 1);
+            ordered = descending
+                ? ordered.ThenByDescending(t => t.Num)
+                : ordered.ThenBy(t => t.Num);
+            aggregation.Items = [.. ordered.ThenBy(t => t.Item.Value).Select(t => t.Item)];
+        }
+
+        private static double? TryParseDouble(object value)
+        {
+            return double.TryParse(value?.ToString(), System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out var result)
+                ? result
+                : null;
         }
 
         private async Task SortByPriorityAsync(List<Tuple<Aggregation, string>> prioritySortingMap, string catalogId)
