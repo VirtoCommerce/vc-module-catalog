@@ -1,4 +1,4 @@
-{
+﻿{
   "catalog": {
     "main-menu-title": "Catalog",
     "main-blade-title": "Catalog",
@@ -729,7 +729,9 @@
           "score": "Score",
           "priority": "Priority",
           "nameAscending": "Name ascending",
-          "nameDescending": "Name descending"
+          "nameDescending": "Name descending",
+          "numericAscending": "Numeric ascending",
+          "numericDescending": "Numeric descending"
         }
       },
       "importers-list": {
