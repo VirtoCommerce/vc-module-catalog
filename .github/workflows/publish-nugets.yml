@@ -17,12 +17,12 @@ permissions:
 
 jobs:
   test:
-    uses: VirtoCommerce/.github/.github/workflows/test-and-sonar.yml@v3.800.40    
+    uses: VirtoCommerce/.github/.github/workflows/test-and-sonar.yml@VCST-5414    
     secrets:
       sonarToken: ${{ secrets.SONAR_TOKEN }}
 
   build:
-    uses: VirtoCommerce/.github/.github/workflows/build.yml@v3.800.40    
+    uses: VirtoCommerce/.github/.github/workflows/build.yml@VCST-5414    
     with:
       uploadPackage: 'true'
       uploadDocker: 'false'
@@ -37,7 +37,7 @@ jobs:
       pull-requests: write
     needs:
       [build, test]
-    uses: VirtoCommerce/.github/.github/workflows/publish-github.yml@v3.800.40
+    uses: VirtoCommerce/.github/.github/workflows/publish-github.yml@VCST-5414
     with:
       fullKey: ${{ needs.build.outputs.packageFullKey }}
       forceGithub: false

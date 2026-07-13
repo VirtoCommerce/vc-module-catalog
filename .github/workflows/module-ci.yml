@@ -134,17 +134,17 @@ jobs:
           persist-credentials: false
 
       - name: Install VirtoCommerce.GlobalTool
-        uses: VirtoCommerce/vc-github-actions/setup-vcbuild@master
+        uses: VirtoCommerce/.github/actions/setup-vcbuild@VCST-5414
 
       - name: Install dotnet-sonarscanner
         run: dotnet tool install --global dotnet-sonarscanner
 
       - name: Get Changelog
         id: changelog
-        uses: VirtoCommerce/vc-github-actions/changelog-generator@master
+        uses: VirtoCommerce/.github/actions/changelog-generator@VCST-5414
 
       - name: Get Artifact Version
-        uses: VirtoCommerce/vc-github-actions/get-image-version@master
+        uses: VirtoCommerce/.github/actions/get-image-version@VCST-5414
         id: artifact_ver
 
       - name: Check if .deployment folder exists
@@ -171,12 +171,12 @@ jobs:
 
       - name: Add version suffix
         if: ${{ github.ref != 'refs/heads/master' && github.ref != 'refs/heads/main' }}
-        uses: VirtoCommerce/vc-github-actions/add-version-suffix@master
+        uses: VirtoCommerce/.github/actions/add-version-suffix@VCST-5414
         with:
           versionSuffix: ${{ env.VERSION_SUFFIX }}
 
       - name: SonarCloud Begin
-        uses: VirtoCommerce/vc-github-actions/sonar-scanner-begin@master
+        uses: VirtoCommerce/.github/actions/sonar-scanner-begin@VCST-5414
         with:
           repoOrg: ${{ github.repository_owner }}
           sonarOrg: ${{secrets.SONAR_ORG_KEY}}
@@ -188,10 +188,10 @@ jobs:
         run: vc-build Test -skip
 
       - name: SonarCloud End
-        uses: VirtoCommerce/vc-github-actions/sonar-scanner-end@master
+        uses: VirtoCommerce/.github/actions/sonar-scanner-end@VCST-5414
 
       - name: Quality Gate
-        uses: VirtoCommerce/vc-github-actions/sonar-quality-gate@master
+        uses: VirtoCommerce/.github/actions/sonar-quality-gate@VCST-5414
         with:
           login: ${{secrets.SONAR_TOKEN}}
 
@@ -200,12 +200,12 @@ jobs:
 
       - name: Publish Nuget
         if: ${{ github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main' }}
-        uses: VirtoCommerce/vc-github-actions/publish-nuget@master
+        uses: VirtoCommerce/.github/actions/publish-nuget@VCST-5414
 
       - name: Publish to Blob
         if: ${{ github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev' || github.event_name == 'pull_request' || (github.event_name == 'workflow_dispatch' && github.ref != 'refs/heads/master') || (github.event_name == 'workflow_dispatch' && github.ref != 'refs/heads/main') }}
         id: blobRelease
-        uses: VirtoCommerce/vc-github-actions/publish-blob-release@master
+        uses: VirtoCommerce/.github/actions/publish-blob-release@VCST-5414
         with:
           blobSAS: ${{ secrets.BLOB_TOKEN }}
           blobUrl: ${{ vars.BLOB_URL }}
@@ -227,7 +227,7 @@ jobs:
 
       - name: Add Jira link
         if: ${{ github.event_name == 'pull_request' }}
-        uses: VirtoCommerce/vc-github-actions/publish-jira-link@master
+        uses: VirtoCommerce/.github/actions/publish-jira-link@VCST-5414
         with:
           branchName: ${{ steps.sanitize_branch.outputs.branchName }}
           repoOrg: ${{ github.repository_owner }}
@@ -236,7 +236,7 @@ jobs:
 
       - name: Add link to PR
         if: ${{ github.event_name == 'pull_request' }}
-        uses: VirtoCommerce/vc-github-actions/publish-artifact-link@master
+        uses: VirtoCommerce/.github/actions/publish-artifact-link@VCST-5414
         with:
           artifactUrl: ${{ steps.blobRelease.outputs.packageUrl }}
           repoOrg: ${{ github.repository_owner }}
@@ -248,7 +248,7 @@ jobs:
         with:
           changelog: ${{ steps.changelog.outputs.changelog }}
           organization: ${{ github.repository_owner }}
-        uses: VirtoCommerce/vc-github-actions/publish-github-release@master
+        uses: VirtoCommerce/.github/actions/publish-github-release@VCST-5414
 
       - name: Set artifactUrl value
         id: artifactUrl
@@ -264,7 +264,7 @@ jobs:
 
       - name: Create deployment matrix
         if: ${{ github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main' }}
-        uses: VirtoCommerce/vc-github-actions/cloud-create-deploy-matrix@master
+        uses: VirtoCommerce/.github/actions/cloud-create-deploy-matrix@VCST-5414
         id: deployment-matrix
         with:
           deployConfigPath: '.deployment/module/cloudDeploy.json'
@@ -302,19 +302,19 @@ jobs:
 
       - name: Setup Git Credentials
         if: ${{ (github.ref == 'refs/heads/dev' && github.event_name != 'workflow_dispatch') || github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main' }}
-        uses: VirtoCommerce/vc-github-actions/setup-git-credentials-github@master
+        uses: VirtoCommerce/.github/actions/setup-git-credentials-github@VCST-5414
         with:
           githubToken: ${{ secrets.REPO_TOKEN }}
 
       # Not gated on swagger-validation: PRs into dev already validate it, and direct pushes are blocked by branch protection.
       - name: Publish Manifest
         if: ${{ (github.ref == 'refs/heads/dev' && github.event_name != 'workflow_dispatch') || github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main' }}
-        uses: VirtoCommerce/vc-github-actions/publish-manifest@master
+        uses: VirtoCommerce/.github/actions/publish-manifest@VCST-5414
         with:
           packageUrl: ${{ steps.artifactUrl.outputs.download_url }}
 
       - name: Parse Jira Keys from All Commits
-        uses: VirtoCommerce/vc-github-actions/get-jira-keys@master
+        uses: VirtoCommerce/.github/actions/get-jira-keys@VCST-5414
         if: always()
         id: jira_keys
         with:
@@ -355,7 +355,7 @@ jobs:
         ((github.ref == 'refs/heads/dev') && (github.event_name == 'push')) ||
         (github.event_name == 'workflow_dispatch') || ((github.base_ref == 'dev') && (github.event_name == 'pull_request'))) }}
     needs: ci
-    uses: VirtoCommerce/.github/.github/workflows/pytest-tests.yml@v3.800.40
+    uses: VirtoCommerce/.github/.github/workflows/pytest-tests.yml@VCST-5414
     with:
       installModules: 'false'
       installCustomModule: 'true'
@@ -383,10 +383,10 @@ jobs:
       packages: read
     steps:
       - name: Install VirtoCommerce.GlobalTool
-        uses: VirtoCommerce/vc-github-actions/setup-vcbuild@master
+        uses: VirtoCommerce/.github/actions/setup-vcbuild@VCST-5414
 
       - name: Swagger validation
-        uses: VirtoCommerce/vc-github-actions/docker-env@master
+        uses: VirtoCommerce/.github/actions/docker-env@VCST-5414
         with:
           appInsightsInstrumentationKey: ${{ secrets.E2E_APPINSIGHTSINSTRUMENTATIONKEY }}
           githubUser: ${{ github.actor }}
@@ -412,7 +412,7 @@ jobs:
     permissions:
       contents: read
       deployments: write
-    uses: VirtoCommerce/.github/.github/workflows/deploy-cloud.yml@v3.800.40
+    uses: VirtoCommerce/.github/.github/workflows/deploy-cloud.yml@VCST-5414
     with:
       releaseSource: module
       moduleId: ${{ needs.ci.outputs.moduleId }}
