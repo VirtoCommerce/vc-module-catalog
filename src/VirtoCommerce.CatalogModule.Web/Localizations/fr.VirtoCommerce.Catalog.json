@@ -1293,10 +1293,12 @@
     "catalog:categories:read": "Afficher les catégories",
     "catalog:categories:update": "Modifier les catégories",
     "catalog:categories:delete": "Supprimer des catégories",
+    "catalog:categories:link": "Lier des catégories à d'autres catégories/catalogues",
     "catalog:products:create": "Créer des produits",
     "catalog:products:read": "Afficher les produits",
     "catalog:products:update": "Modifier les produits",
-    "catalog:products:delete": "Supprimer des produits"
+    "catalog:products:delete": "Supprimer des produits",
+    "catalog:products:link": "Lier des produits/variantes à des catégories/catalogues"
   },
   "settings": {
     "Catalog": {

@@ -1,13 +1,26 @@
 angular.module('virtoCommerce.catalogModule')
     .controller('virtoCommerce.catalogModule.linksListController',
-        ['$scope', '$timeout', 'platformWebApp.bladeNavigationService', 'platformWebApp.dialogService', 'platformWebApp.bladeUtils', 'platformWebApp.uiGridHelper', 'virtoCommerce.catalogModule.listEntries',
-            function ($scope, $timeout, bladeNavigationService, dialogService, bladeUtils, uiGridHelper, listEntries) {
+        ['$scope', '$timeout', 'platformWebApp.bladeNavigationService', 'platformWebApp.dialogService', 'platformWebApp.bladeUtils', 'platformWebApp.uiGridHelper', 'platformWebApp.authService', 'virtoCommerce.catalogModule.listEntries',
+            function ($scope, $timeout, bladeNavigationService, dialogService, bladeUtils, uiGridHelper, authService, listEntries) {
                 var blade = $scope.blade;
 
                 blade.updatePermission = 'catalog:update';
                 blade.headIcon = 'fas fa-link';
                 blade.title = 'catalog.blades.links-list.title';
                 blade.linkImage = 'Modules/$(VirtoCommerce.Catalog)/Content/images/link.svg';
+
+                // Permission depends on blade.type (blade.currentEntity is the link source), not the picker's selection.
+                $scope.canLinkEntries = function () {
+                    if (blade.type === 'Category') {
+                        return authService.checkPermission('catalog:categories:link', blade.securityScopes);
+                    }
+
+                    if (blade.type === 'CatalogProduct') {
+                        return authService.checkPermission('catalog:products:link', blade.securityScopes);
+                    }
+
+                    return false;
+                };
 
                 $scope.links = [];
                 $scope.hasMore = true;
@@ -101,7 +114,7 @@ angular.module('virtoCommerce.catalogModule')
                             $scope.openAddLinksBlade();
                         },
                         canExecuteMethod: function () {
-                            return true;
+                            return $scope.canLinkEntries();
                         }
                     },
                     {
@@ -277,7 +290,7 @@ angular.module('virtoCommerce.catalogModule')
                                     function (error) { bladeNavigationService.setError('Error ' + error.status, blade); });
                                 },
                                 canExecuteMethod: function () {
-                                    return _.any(selection);
+                                    return _.any(selection) && $scope.canLinkEntries();
                                 }
                             },
                             {

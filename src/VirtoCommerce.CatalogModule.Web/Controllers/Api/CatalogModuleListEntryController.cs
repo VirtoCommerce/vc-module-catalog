@@ -72,8 +72,8 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             if (!await authorizationService.AuthorizeEntitiesAsync(
                     User,
                     hasLinkEntries,
-                    Permissions.CategoriesUpdate,
-                    Permissions.ProductsUpdate))
+                    Permissions.CategoriesLink,
+                    Permissions.ProductsLink))
             {
                 return Forbid();
             }
@@ -116,8 +116,8 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             var authorizedCriteria = await authorizationService.GetAuthorizedCriteriaByObjectTypeAsync(
                 User,
                 creationRequest.SearchCriteria,
-                Permissions.CategoriesUpdate,
-                Permissions.ProductsUpdate);
+                Permissions.CategoriesLink,
+                Permissions.ProductsLink);
             if (authorizedCriteria.Count == 0)
             {
                 return Forbid();
@@ -134,8 +134,8 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             if (!await authorizationService.AuthorizeEntitiesAsync(
                     User,
                     hasLinkEntries,
-                    Permissions.CategoriesUpdate,
-                    Permissions.ProductsUpdate))
+                    Permissions.CategoriesLink,
+                    Permissions.ProductsLink))
             {
                 return Forbid();
             }

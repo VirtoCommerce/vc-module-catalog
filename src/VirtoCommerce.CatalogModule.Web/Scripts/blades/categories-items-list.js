@@ -38,6 +38,30 @@ angular.module('virtoCommerce.catalogModule')
                        authService.checkPermission('catalog:read', blade.securityScopes);
             };
 
+            $scope.canLinkCategories = function () {
+                return authService.checkPermission('catalog:categories:link', blade.securityScopes);
+            };
+
+            $scope.canLinkProducts = function () {
+                return authService.checkPermission('catalog:products:link', blade.securityScopes);
+            };
+
+            function canLinkListItem(listItem) {
+                if (listItem.type === 'category') {
+                    return $scope.canLinkCategories();
+                }
+
+                if (listItem.type === 'product') {
+                    return $scope.canLinkProducts();
+                }
+
+                return false;
+            }
+
+            $scope.isRowSelectable = function (row) {
+                return blade.mode !== 'mappingSource' || canLinkListItem(row.entity);
+            };
+
             blade.refresh = function () {
 
                 blade.isLoading = true;
@@ -307,7 +331,7 @@ angular.module('virtoCommerce.catalogModule')
                         }
                     );
                 } else {
-                    var selection = $scope.gridApi.selection.getSelectedRows();
+                    var selection = _.filter($scope.gridApi.selection.getSelectedRows(), canLinkListItem);
                     var listEntryLinks = [];
                     angular.forEach(selection, function (listItem) {
                         listEntryLinks.push({

@@ -1293,10 +1293,12 @@
     "catalog:categories:read": "Vis kategorier",
     "catalog:categories:update": "Rediger kategorier",
     "catalog:categories:delete": "Slett kategorier",
+    "catalog:categories:link": "Lenk kategorier til andre kategorier/kataloger",
     "catalog:products:create": "Opprett produkter",
     "catalog:products:read": "Vis produkter",
     "catalog:products:update": "Rediger produkter",
-    "catalog:products:delete": "Slett produkter"
+    "catalog:products:delete": "Slett produkter",
+    "catalog:products:link": "Lenk produkter/varianter til kategorier/kataloger"
   },
   "settings": {
     "Catalog": {

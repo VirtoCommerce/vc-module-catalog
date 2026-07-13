@@ -1293,10 +1293,12 @@
     "catalog:categories:read": "Näytä kategoriat",
     "catalog:categories:update": "Muokkaa kategorioita",
     "catalog:categories:delete": "Poista kategorioita",
+    "catalog:categories:link": "Linkitä kategorioita muihin kategorioihin/katalogeihin",
     "catalog:products:create": "Luo tuotteita",
     "catalog:products:read": "Näytä tuotteet",
     "catalog:products:update": "Muokkaa tuotteita",
-    "catalog:products:delete": "Poista tuotteita"
+    "catalog:products:delete": "Poista tuotteita",
+    "catalog:products:link": "Linkitä tuotteita/muunnoksia kategorioihin/katalogeihin"
   },
   "settings": {
     "Catalog": {
