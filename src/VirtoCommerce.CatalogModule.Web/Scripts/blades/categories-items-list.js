@@ -68,7 +68,9 @@ angular.module('virtoCommerce.catalogModule')
                 }
 
                 var hasType = function (type) {
-                    return _.some($scope.items, function (item) { return item.type === type; });
+                    return _.some($scope.items, function (item) {
+                        return item.type === type;
+                    });
                 };
 
                 if (!$scope.canLinkCategories() && hasType('category')) {
