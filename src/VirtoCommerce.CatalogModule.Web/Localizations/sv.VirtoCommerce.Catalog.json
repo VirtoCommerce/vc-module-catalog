@@ -110,6 +110,10 @@
         },
         "descr": {
           "title-mapping": "Den är mappad till denna virtuella plats"
+        },
+        "notifications": {
+          "categories-not-linkable": "Kategorier kan inte väljas — din roll har inte behörighet att länka dem.",
+          "products-not-linkable": "Produkter/artiklar kan inte väljas — din roll har inte behörighet att länka dem."
         }
       },
       "category-detail": {
@@ -738,6 +742,7 @@
       },
       "links-list": {
         "title": "Länkar",
+        "no-link-permission": "Du har inte behörighet att skapa den här länken.",
         "labels": {
           "no-data": "Det finns inga länkar än",
           "add-links": "Lägg till ny länk",

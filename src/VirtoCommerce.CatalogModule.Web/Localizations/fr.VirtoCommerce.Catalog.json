@@ -110,6 +110,10 @@
         },
         "descr": {
           "title-mapping": "Il est mappé à cet emplacement virtuel"
+        },
+        "notifications": {
+          "categories-not-linkable": "Les catégories ne peuvent pas être sélectionnées — votre rôle n'a pas la permission de les lier.",
+          "products-not-linkable": "Les produits/articles ne peuvent pas être sélectionnés — votre rôle n'a pas la permission de les lier."
         }
       },
       "category-detail": {
@@ -738,6 +742,7 @@
       },
       "links-list": {
         "title": "Liens",
+        "no-link-permission": "Vous n'avez pas la permission de créer ce lien.",
         "labels": {
           "no-data": "Il n'y a pas encore de liens",
           "add-links": "Ajouter un nouveau lien",

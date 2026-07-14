@@ -115,6 +115,9 @@ angular.module('virtoCommerce.catalogModule')
                         },
                         canExecuteMethod: function () {
                             return $scope.canLinkEntries();
+                        },
+                        get title() {
+                            return $scope.canLinkEntries() ? '' : 'catalog.blades.links-list.no-link-permission';
                         }
                     },
                     {
@@ -291,6 +294,9 @@ angular.module('virtoCommerce.catalogModule')
                                 },
                                 canExecuteMethod: function () {
                                     return _.any(selection) && $scope.canLinkEntries();
+                                },
+                                get title() {
+                                    return $scope.canLinkEntries() ? '' : 'catalog.blades.links-list.no-link-permission';
                                 }
                             },
                             {

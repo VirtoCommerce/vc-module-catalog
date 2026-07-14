@@ -153,6 +153,10 @@
         },
         "descr": {
           "title-mapping": "It is mapped to this virtual location"
+        },
+        "notifications": {
+          "categories-not-linkable": "Categories cannot be selected — your role does not have permission to link them.",
+          "products-not-linkable": "Products/items cannot be selected — your role does not have permission to link them."
         }
       },
       "category-detail": {
@@ -781,6 +785,7 @@
       },
       "links-list": {
         "title": "Links",
+        "no-link-permission": "You do not have permission to create this link.",
         "labels": {
           "no-data": "There are no links yet",
           "add-links": "Add new link",

@@ -110,6 +110,10 @@
         },
         "descr": {
           "title-mapping": "このバーチャルロケーションにマッピングされています"
+        },
+        "notifications": {
+          "categories-not-linkable": "カテゴリは選択できません — あなたのロールにはカテゴリをリンクする権限がありません。",
+          "products-not-linkable": "商品/アイテムは選択できません — あなたのロールにはリンクする権限がありません。"
         }
       },
       "category-detail": {
@@ -738,6 +742,7 @@
       },
       "links-list": {
         "title": "リンク",
+        "no-link-permission": "このリンクを作成する権限がありません。",
         "labels": {
           "no-data": "まだリンクはありません",
           "add-links": "新しいリンクを追加",

@@ -62,6 +62,30 @@ angular.module('virtoCommerce.catalogModule')
                 return blade.mode !== 'mappingSource' || canLinkListItem(row.entity);
             };
 
+            $scope.mappingRestrictionMessage = function () {
+                if (blade.mode !== 'mappingSource') {
+                    return null;
+                }
+
+                var hasType = function (type) {
+                    return _.some($scope.items, function (item) { return item.type === type; });
+                };
+
+                if (!$scope.canLinkCategories() && hasType('category')) {
+                    return 'catalog.blades.categories-items-list.notifications.categories-not-linkable';
+                }
+
+                if (!$scope.canLinkProducts() && hasType('product')) {
+                    return 'catalog.blades.categories-items-list.notifications.products-not-linkable';
+                }
+
+                return null;
+            };
+
+            $scope.canSelectAllForMapping = function () {
+                return blade.mode !== 'mappingSource' || _.some($scope.items, canLinkListItem);
+            };
+
             blade.refresh = function () {
 
                 blade.isLoading = true;

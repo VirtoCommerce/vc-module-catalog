@@ -110,6 +110,10 @@
         },
         "descr": {
           "title-mapping": "Está mapeado para este local virtual"
+        },
+        "notifications": {
+          "categories-not-linkable": "Categorias não podem ser selecionadas — sua função não tem permissão para vinculá-las.",
+          "products-not-linkable": "Produtos/itens não podem ser selecionados — sua função não tem permissão para vinculá-los."
         }
       },
       "category-detail": {
@@ -738,6 +742,7 @@
       },
       "links-list": {
         "title": "Links",
+        "no-link-permission": "Você não tem permissão para criar este link.",
         "labels": {
           "no-data": "Ainda não há links",
           "add-links": "Adicionar novo link",

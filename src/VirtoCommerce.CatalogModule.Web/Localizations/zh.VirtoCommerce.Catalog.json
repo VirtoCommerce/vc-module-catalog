@@ -110,6 +110,10 @@
         },
         "descr": {
           "title-mapping": "它映射到此虚拟位置"
+        },
+        "notifications": {
+          "categories-not-linkable": "无法选择分类 — 您的角色没有关联分类的权限。",
+          "products-not-linkable": "无法选择产品/项目 — 您的角色没有关联产品/项目的权限。"
         }
       },
       "category-detail": {
@@ -738,6 +742,7 @@
       },
       "links-list": {
         "title": "链接",
+        "no-link-permission": "您没有权限创建此链接。",
         "labels": {
           "no-data": "尚无链接",
           "add-links": "添加新链接",

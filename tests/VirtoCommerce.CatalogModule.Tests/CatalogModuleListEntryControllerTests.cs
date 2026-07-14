@@ -40,21 +40,21 @@ namespace VirtoCommerce.CatalogModule.Tests
                 _catalogServiceMock.Object,
                 authorizationService,
                 new ListEntryMover<Category>(),
-                new ListEntryMover<CatalogProduct>());
-
-            controller.ControllerContext = new ControllerContext
+                new ListEntryMover<CatalogProduct>())
             {
-                HttpContext = new DefaultHttpContext
+                ControllerContext = new ControllerContext
                 {
-                    User = new ClaimsPrincipal(new ClaimsIdentity([new Claim(ClaimTypes.Name, "testuser")], "test"))
+                    HttpContext = new DefaultHttpContext
+                    {
+                        User = new ClaimsPrincipal(new ClaimsIdentity([new Claim(ClaimTypes.Name, "testuser")], "test"))
+                    }
                 }
             };
 
             return controller;
         }
 
-        // Only requests that carry the exact required permission succeed; everything else (including the
-        // legacy CategoriesUpdate/ProductsUpdate permissions) is denied, since there is no fallback.
+        // Only the exact permission(s) passed here succeed — legacy CategoriesUpdate/ProductsUpdate are not a fallback.
         private void SetupAuthorization(params string[] grantedPermissions)
         {
             _authorizationServiceMock
@@ -86,7 +86,7 @@ namespace VirtoCommerce.CatalogModule.Tests
         public async Task CreateLinks_CategoryEntryWithoutCategoriesLinkPermission_ReturnsForbid()
         {
             // Arrange
-            var category = new Category { Id = "cat1", CatalogId = "catalog1", Links = new List<CategoryLink>() };
+            var category = new Category { Id = "cat1", CatalogId = "catalog1", Links = [] };
             _categoryServiceMock
                 .Setup(x => x.GetAsync(It.IsAny<IList<string>>(), It.IsAny<string>(), It.IsAny<bool>()))
                 .ReturnsAsync([category]);
@@ -110,9 +110,8 @@ namespace VirtoCommerce.CatalogModule.Tests
         [Fact]
         public async Task CreateLinks_CategoryEntryHavingOnlyLegacyCategoriesUpdatePermission_StillReturnsForbid()
         {
-            // Arrange: the legacy "catalog:categories:update" permission must NOT authorize linking a category
-            // (this is the intentional breaking change replacing it with the dedicated "catalog:categories:link").
-            var category = new Category { Id = "cat1", CatalogId = "catalog1", Links = new List<CategoryLink>() };
+            // Arrange: categories:update must not authorize linking anymore — that's the intentional breaking change.
+            var category = new Category { Id = "cat1", CatalogId = "catalog1", Links = [] };
             _categoryServiceMock
                 .Setup(x => x.GetAsync(It.IsAny<IList<string>>(), It.IsAny<string>(), It.IsAny<bool>()))
                 .ReturnsAsync([category]);
@@ -136,7 +135,7 @@ namespace VirtoCommerce.CatalogModule.Tests
         public async Task CreateLinks_CategoryEntryWithCategoriesLinkPermission_CreatesLinkAndReturnsOk()
         {
             // Arrange
-            var category = new Category { Id = "cat1", CatalogId = "catalog1", Links = new List<CategoryLink>() };
+            var category = new Category { Id = "cat1", CatalogId = "catalog1", Links = [] };
             _categoryServiceMock
                 .Setup(x => x.GetAsync(It.IsAny<IList<string>>(), It.IsAny<string>(), It.IsAny<bool>()))
                 .ReturnsAsync([category]);
@@ -162,7 +161,7 @@ namespace VirtoCommerce.CatalogModule.Tests
         public async Task CreateLinks_ProductEntryWithoutProductsLinkPermission_ReturnsForbid()
         {
             // Arrange
-            var product = new CatalogProduct { Id = "prod1", CatalogId = "catalog1", Links = new List<CategoryLink>() };
+            var product = new CatalogProduct { Id = "prod1", CatalogId = "catalog1", Links = [] };
             _itemServiceMock
                 .Setup(x => x.GetAsync(It.IsAny<IList<string>>(), It.IsAny<string>(), It.IsAny<bool>()))
                 .ReturnsAsync([product]);
@@ -187,7 +186,7 @@ namespace VirtoCommerce.CatalogModule.Tests
         public async Task CreateLinks_ProductEntryWithProductsLinkPermission_CreatesLinkAndReturnsOk()
         {
             // Arrange
-            var product = new CatalogProduct { Id = "prod1", CatalogId = "catalog1", Links = new List<CategoryLink>() };
+            var product = new CatalogProduct { Id = "prod1", CatalogId = "catalog1", Links = [] };
             _itemServiceMock
                 .Setup(x => x.GetAsync(It.IsAny<IList<string>>(), It.IsAny<string>(), It.IsAny<bool>()))
                 .ReturnsAsync([product]);

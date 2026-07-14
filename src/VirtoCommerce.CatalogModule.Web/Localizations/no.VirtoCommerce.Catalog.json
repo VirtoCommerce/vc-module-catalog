@@ -110,6 +110,10 @@
         },
         "descr": {
           "title-mapping": "Den er kartlagt til denne virtuelle plasseringen"
+        },
+        "notifications": {
+          "categories-not-linkable": "Kategorier kan ikke velges — rollen din har ikke tillatelse til å lenke dem.",
+          "products-not-linkable": "Produkter/varer kan ikke velges — rollen din har ikke tillatelse til å lenke dem."
         }
       },
       "category-detail": {
@@ -738,6 +742,7 @@
       },
       "links-list": {
         "title": "Lenker",
+        "no-link-permission": "Du har ikke tillatelse til å opprette denne lenken.",
         "labels": {
           "no-data": "Det finnes ingen lenker ennå",
           "add-links": "Legg til ny lenke",
