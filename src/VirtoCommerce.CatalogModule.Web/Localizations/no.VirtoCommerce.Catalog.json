@@ -110,6 +110,10 @@
         },
         "descr": {
           "title-mapping": "Den er kartlagt til denne virtuelle plasseringen"
+        },
+        "notifications": {
+          "categories-not-linkable": "Kategorier kan ikke velges — rollen din har ikke tillatelse til å lenke dem.",
+          "products-not-linkable": "Produkter/varer kan ikke velges — rollen din har ikke tillatelse til å lenke dem."
         }
       },
       "category-detail": {
@@ -738,6 +742,7 @@
       },
       "links-list": {
         "title": "Lenker",
+        "no-link-permission": "Du har ikke tillatelse til å opprette denne lenken.",
         "labels": {
           "no-data": "Det finnes ingen lenker ennå",
           "add-links": "Legg til ny lenke",
@@ -1293,10 +1298,12 @@
     "catalog:categories:read": "Vis kategorier",
     "catalog:categories:update": "Rediger kategorier",
     "catalog:categories:delete": "Slett kategorier",
+    "catalog:categories:link": "Lenk kategorier til andre kategorier/kataloger",
     "catalog:products:create": "Opprett produkter",
     "catalog:products:read": "Vis produkter",
     "catalog:products:update": "Rediger produkter",
-    "catalog:products:delete": "Slett produkter"
+    "catalog:products:delete": "Slett produkter",
+    "catalog:products:link": "Lenk produkter/varianter til kategorier/kataloger"
   },
   "settings": {
     "Catalog": {

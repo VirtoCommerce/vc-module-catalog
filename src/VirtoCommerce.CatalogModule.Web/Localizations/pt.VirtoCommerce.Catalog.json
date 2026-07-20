@@ -110,6 +110,10 @@
         },
         "descr": {
           "title-mapping": "Está mapeado para este local virtual"
+        },
+        "notifications": {
+          "categories-not-linkable": "Categorias não podem ser selecionadas — sua função não tem permissão para vinculá-las.",
+          "products-not-linkable": "Produtos/itens não podem ser selecionados — sua função não tem permissão para vinculá-los."
         }
       },
       "category-detail": {
@@ -738,6 +742,7 @@
       },
       "links-list": {
         "title": "Links",
+        "no-link-permission": "Você não tem permissão para criar este link.",
         "labels": {
           "no-data": "Ainda não há links",
           "add-links": "Adicionar novo link",
@@ -1293,10 +1298,12 @@
     "catalog:categories:read": "Ver categorias",
     "catalog:categories:update": "Editar categorias",
     "catalog:categories:delete": "Excluir categorias",
+    "catalog:categories:link": "Vincular categorias a outras categorias/catálogos",
     "catalog:products:create": "Criar produtos",
     "catalog:products:read": "Ver produtos",
     "catalog:products:update": "Editar produtos",
-    "catalog:products:delete": "Excluir produtos"
+    "catalog:products:delete": "Excluir produtos",
+    "catalog:products:link": "Vincular produtos/variações a categorias/catálogos"
   },
   "settings": {
     "Catalog": {
