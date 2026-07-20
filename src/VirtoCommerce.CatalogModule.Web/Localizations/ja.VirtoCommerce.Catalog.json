@@ -110,6 +110,10 @@
         },
         "descr": {
           "title-mapping": "このバーチャルロケーションにマッピングされています"
+        },
+        "notifications": {
+          "categories-not-linkable": "カテゴリは選択できません — あなたのロールにはカテゴリをリンクする権限がありません。",
+          "products-not-linkable": "商品/アイテムは選択できません — あなたのロールにはリンクする権限がありません。"
         }
       },
       "category-detail": {
@@ -722,6 +726,7 @@
       },
       "links-list": {
         "title": "リンク",
+        "no-link-permission": "このリンクを作成する権限がありません。",
         "labels": {
           "no-data": "まだリンクはありません",
           "add-links": "新しいリンクを追加",
@@ -1258,10 +1263,12 @@
     "catalog:categories:read": "カテゴリを表示",
     "catalog:categories:update": "カテゴリを編集",
     "catalog:categories:delete": "カテゴリを削除",
+    "catalog:categories:link": "カテゴリを他のカテゴリ/カタログにリンク",
     "catalog:products:create": "商品を作成",
     "catalog:products:read": "商品を表示",
     "catalog:products:update": "商品を編集",
-    "catalog:products:delete": "商品を削除"
+    "catalog:products:delete": "商品を削除",
+    "catalog:products:link": "商品/バリエーションをカテゴリ/カタログにリンク"
   },
   "settings": {
     "Catalog": {

@@ -110,6 +110,10 @@
         },
         "descr": {
           "title-mapping": "È mappato a questa posizione virtuale"
+        },
+        "notifications": {
+          "categories-not-linkable": "Le categorie non possono essere selezionate — il tuo ruolo non ha il permesso di collegarle.",
+          "products-not-linkable": "I prodotti/articoli non possono essere selezionati — il tuo ruolo non ha il permesso di collegarli."
         }
       },
       "category-detail": {
@@ -722,6 +726,7 @@
       },
       "links-list": {
         "title": "Collegamenti",
+        "no-link-permission": "Non hai il permesso di creare questo collegamento.",
         "labels": {
           "no-data": "Non ci sono ancora collegamenti",
           "add-links": "Aggiungi nuovo collegamento",
@@ -1258,10 +1263,12 @@
     "catalog:categories:read": "Visualizza categorie",
     "catalog:categories:update": "Modifica categorie",
     "catalog:categories:delete": "Elimina categorie",
+    "catalog:categories:link": "Collega categorie ad altre categorie/cataloghi",
     "catalog:products:create": "Crea prodotti",
     "catalog:products:read": "Visualizza prodotti",
     "catalog:products:update": "Modifica prodotti",
-    "catalog:products:delete": "Elimina prodotti"
+    "catalog:products:delete": "Elimina prodotti",
+    "catalog:products:link": "Collega prodotti/varianti a categorie/cataloghi"
   },
   "settings": {
     "Catalog": {

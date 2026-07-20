@@ -110,6 +110,10 @@
         },
         "descr": {
           "title-mapping": "Es ist an diesem virtuellen Ort zugeordnet"
+        },
+        "notifications": {
+          "categories-not-linkable": "Kategorien können nicht ausgewählt werden — Ihre Rolle hat keine Berechtigung, diese zu verknüpfen.",
+          "products-not-linkable": "Produkte/Artikel können nicht ausgewählt werden — Ihre Rolle hat keine Berechtigung, diese zu verknüpfen."
         }
       },
       "category-detail": {
@@ -722,6 +726,7 @@
       },
       "links-list": {
         "title": "Links",
+        "no-link-permission": "Sie haben keine Berechtigung, diesen Link zu erstellen.",
         "labels": {
           "no-data": "Es gibt noch keine Links",
           "add-links": "Neuen Link hinzufügen",
@@ -1258,10 +1263,12 @@
     "catalog:categories:read": "Kategorien anzeigen",
     "catalog:categories:update": "Kategorien bearbeiten",
     "catalog:categories:delete": "Kategorien löschen",
+    "catalog:categories:link": "Kategorien mit anderen Kategorien/Katalogen verknüpfen",
     "catalog:products:create": "Produkte erstellen",
     "catalog:products:read": "Produkte anzeigen",
     "catalog:products:update": "Produkte bearbeiten",
-    "catalog:products:delete": "Produkte löschen"
+    "catalog:products:delete": "Produkte löschen",
+    "catalog:products:link": "Produkte/Varianten mit Kategorien/Katalogen verknüpfen"
   },
   "settings": {
     "Catalog": {
