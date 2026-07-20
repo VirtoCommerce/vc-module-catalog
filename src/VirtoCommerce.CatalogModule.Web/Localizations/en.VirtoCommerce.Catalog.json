@@ -110,6 +110,10 @@
         },
         "descr": {
           "title-mapping": "It is mapped to this virtual location"
+        },
+        "notifications": {
+          "categories-not-linkable": "Categories cannot be selected — your role does not have permission to link them.",
+          "products-not-linkable": "Products/items cannot be selected — your role does not have permission to link them."
         }
       },
       "category-detail": {
@@ -738,6 +742,7 @@
       },
       "links-list": {
         "title": "Links",
+        "no-link-permission": "You do not have permission to create this link.",
         "labels": {
           "no-data": "There are no links yet",
           "add-links": "Add new link",
@@ -1288,10 +1293,12 @@
     "catalog:categories:read": "View categories",
     "catalog:categories:update": "Edit categories",
     "catalog:categories:delete": "Delete categories",
+    "catalog:categories:link": "Link categories to other categories/catalogs",
     "catalog:products:create": "Create products",
     "catalog:products:read": "View products",
     "catalog:products:update": "Edit products",
-    "catalog:products:delete": "Delete products"
+    "catalog:products:delete": "Delete products",
+    "catalog:products:link": "Link products/variations to categories/catalogs"
   },
   "settings": {
     "Catalog": {

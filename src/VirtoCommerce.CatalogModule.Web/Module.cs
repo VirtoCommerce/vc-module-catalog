@@ -324,10 +324,12 @@ namespace VirtoCommerce.CatalogModule.Web
                 ModuleConstants.Security.Permissions.CategoriesRead,
                 ModuleConstants.Security.Permissions.CategoriesUpdate,
                 ModuleConstants.Security.Permissions.CategoriesDelete,
+                ModuleConstants.Security.Permissions.CategoriesLink,
                 ModuleConstants.Security.Permissions.ProductsCreate,
                 ModuleConstants.Security.Permissions.ProductsRead,
                 ModuleConstants.Security.Permissions.ProductsUpdate,
                 ModuleConstants.Security.Permissions.ProductsDelete,
+                ModuleConstants.Security.Permissions.ProductsLink,
             }, new SelectedCatalogScope());
 
             appBuilder.RegisterEventHandler<ProductChangedEvent, LogChangesChangedEventHandler>();
