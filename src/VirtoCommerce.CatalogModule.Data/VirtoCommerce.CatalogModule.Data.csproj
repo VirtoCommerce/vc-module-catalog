@@ -18,9 +18,9 @@
     
     <PackageReference Include="VirtoCommerce.AssetsModule.Core" Version="3.1000.0" />
     <PackageReference Include="VirtoCommerce.ExportModule.Data" Version="3.1000.0" />
-    <PackageReference Include="VirtoCommerce.Platform.Data" Version="3.1007.5" />
-    <PackageReference Include="VirtoCommerce.Platform.Hangfire" Version="3.1007.5" />
-    <PackageReference Include="VirtoCommerce.Platform.Security" Version="3.1007.5" />
+    <PackageReference Include="VirtoCommerce.Platform.Data" Version="3.1007.22" />
+    <PackageReference Include="VirtoCommerce.Platform.Hangfire" Version="3.1007.22" />
+    <PackageReference Include="VirtoCommerce.Platform.Security" Version="3.1007.22" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\VirtoCommerce.CatalogModule.Core\VirtoCommerce.CatalogModule.Core.csproj" />
