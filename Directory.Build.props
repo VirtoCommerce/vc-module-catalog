@@ -2,12 +2,13 @@
 <Project>
   <!-- These properties will be shared for all projects -->
   <PropertyGroup>
-    <VersionPrefix>3.1036.0</VersionPrefix>
+    <VersionPrefix>3.1038.0</VersionPrefix>
     <VersionSuffix>
     </VersionSuffix>
     <VersionSuffix Condition=" '$(VersionSuffix)' != '' AND '$(BuildNumber)' != '' ">$(VersionSuffix)-$(BuildNumber)</VersionSuffix>
   </PropertyGroup>
   <PropertyGroup>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <WarningsNotAsErrors>$(WarningsNotAsErrors);NU1902</WarningsNotAsErrors>
   </PropertyGroup>
 </Project>

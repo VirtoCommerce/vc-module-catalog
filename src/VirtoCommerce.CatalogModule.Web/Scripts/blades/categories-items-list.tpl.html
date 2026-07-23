@@ -13,6 +13,7 @@
                 rowTemplate: 'item-list.row.html',
                 rowHeight: 60,
                 infiniteScrollRowsFromEnd: 10,
+                isRowSelectable: isRowSelectable,
                 columnDefs: [
                         { name: 'actions', displayName: '', enableColumnResizing: false, enableSorting: false, width: 30, cellTemplate: 'item-list-actions.cell.html', pinnedLeft:true },
                         {
@@ -24,7 +25,13 @@
                         { name: 'code', displayName: 'catalog.blades.categories-items-list.labels.sku', width: 170, cellTemplate: 'item-list-SKU.cell.html' },
                         { name: '$path', displayName: 'Parent', enableSorting: false, visible: false, cellTooltip: true }
                  ]})">
-      <div class="table-wrapper" ng-if="items.length > 0">
+      <div class="table-wrapper vc-alert vc-alert--warning" ng-if="mappingRestrictionMessage()">
+        <svg class="vc-alert__icon">
+          <use href="/images/error.svg#icon"></use>
+        </svg>
+        <div class="vc-alert__text">{{ mappingRestrictionMessage() | translate }}</div>
+      </div>
+      <div class="table-wrapper" ng-if="items.length > 0" ng-class="{'__no-select-all': !canSelectAllForMapping()}">
         <div ui-grid="gridOptions" ui-grid-auto-resize ui-grid-save-state ui-grid-selection ui-grid-resize-columns ui-grid-move-columns ui-grid-pinning ui-grid-height ui-grid-infinite-scroll></div>
         <ul class="menu __context" role="menu" id="cil_menu_{{blade.level}}">
           <li class="menu-item" ng-click='edit(contextMenuEntity)'>
@@ -50,7 +57,7 @@
 </div>
 
 <script type="text/ng-template" id="item-list.row.html">
-  <div ng-click='grid.appScope.selectItem($event, row.entity)' ng-repeat="(colRenderIndex, col) in colContainer.renderedColumns track by col.uid" ui-grid-one-bind-id-grid="rowRenderIndex + '-' + col.uid + '-cell'" class="ui-grid-cell" ng-class="{'ui-grid-row-header-cell': col.isRowHeader, '__hovered': grid.appScope.contextMenuEntity === row.entity, '__selected': row.entity.id===grid.appScope.selectedNodeId }" role="{{col.isRowHeader ? 'rowheader' : 'gridcell' }}" ui-grid-cell context-menu="grid.appScope.contextMenuEntity = row.entity" data-target="cil_menu_{{grid.appScope.blade.level}}"></div>
+  <div ng-click='grid.appScope.selectItem($event, row.entity)' ng-repeat="(colRenderIndex, col) in colContainer.renderedColumns track by col.uid" ui-grid-one-bind-id-grid="rowRenderIndex + '-' + col.uid + '-cell'" class="ui-grid-cell" ng-class="{'ui-grid-row-header-cell': col.isRowHeader, '__hovered': grid.appScope.contextMenuEntity === row.entity, '__selected': row.entity.id===grid.appScope.selectedNodeId }" ng-style="col.isRowHeader && !grid.appScope.isRowSelectable(row) ? {opacity: 0.4, 'pointer-events': 'none'} : {}" role="{{col.isRowHeader ? 'rowheader' : 'gridcell' }}" ui-grid-cell context-menu="grid.appScope.contextMenuEntity = row.entity" data-target="cil_menu_{{grid.appScope.blade.level}}"></div>
 </script>
 <script type="text/ng-template" id="item-list-actions.cell.html">
   <div class="ui-grid-actions" left-click-menu="grid.appScope.contextMenuEntity = row.entity" data-target="cil_menu_{{grid.appScope.blade.level}}">
