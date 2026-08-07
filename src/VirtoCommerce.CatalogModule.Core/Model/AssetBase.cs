@@ -19,6 +19,12 @@ namespace VirtoCommerce.CatalogModule.Core.Model
         }
         public string RelativeUrl { get; set; }
         public string Url { get; set; }
+        /// <summary>
+        /// Gets or sets the transient relative reference to binary data in a catalog backup package.
+        /// The property is populated only while a backup is exported or restored and is not persisted.
+        /// </summary>
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string BinaryDataReference { get; set; }
         public string Description { get; set; }
         public int SortOrder { get; set; }
         [JsonIgnore]

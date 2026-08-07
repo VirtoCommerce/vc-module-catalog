@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -103,21 +104,26 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             var progressInfo = new ExportImportProgressInfo { Description = "loading data..." };
             progressCallback(progressInfo);
 
-            using var sw = new StreamWriter(outStream);
-            using var writer = new JsonTextWriter(sw);
-            await writer.WriteStartObjectAsync(cancellationToken);
+            using var package = CatalogExportPackage.Create(outStream, options?.HandleBinaryData == true);
+            using (var streamWriter = new StreamWriter(package.CatalogStream, new UTF8Encoding(false), 1024, leaveOpen: true))
+            using (var writer = new JsonTextWriter(streamWriter))
+            {
+                await writer.WriteStartObjectAsync(cancellationToken);
 
-            await ExportPropertyGroupsAsync(writer, progressInfo, progressCallback, cancellationToken);
-            await ExportPropertiesAsync(writer, progressInfo, progressCallback, cancellationToken);
-            await ExportPropertyDictionaryItemsAsync(writer, progressInfo, progressCallback, cancellationToken);
-            await ExportCatalogsAsync(writer, progressInfo, progressCallback, cancellationToken);
-            await ExportCategoriesAsync(writer, options, progressInfo, progressCallback, cancellationToken);
-            await ExportProductsAsync(writer, options, progressInfo, progressCallback, cancellationToken);
-            await ExportProductConfigurationsAsync(writer, progressInfo, progressCallback, cancellationToken);
-            await ExportMeasuresAsync(writer, progressInfo, progressCallback, cancellationToken);
+                await ExportPropertyGroupsAsync(writer, progressInfo, progressCallback, cancellationToken);
+                await ExportPropertiesAsync(writer, progressInfo, progressCallback, cancellationToken);
+                await ExportPropertyDictionaryItemsAsync(writer, progressInfo, progressCallback, cancellationToken);
+                await ExportCatalogsAsync(writer, progressInfo, progressCallback, cancellationToken);
+                await ExportCategoriesAsync(writer, options, package, progressInfo, progressCallback, cancellationToken);
+                await ExportProductsAsync(writer, options, package, progressInfo, progressCallback, cancellationToken);
+                await ExportProductConfigurationsAsync(writer, progressInfo, progressCallback, cancellationToken);
+                await ExportMeasuresAsync(writer, progressInfo, progressCallback, cancellationToken);
 
-            await writer.WriteEndObjectAsync(cancellationToken);
-            await writer.FlushAsync(cancellationToken);
+                await writer.WriteEndObjectAsync(cancellationToken);
+                await writer.FlushAsync(cancellationToken);
+            }
+
+            await package.CompleteAsync(cancellationToken);
         }
 
         private async Task ExportPropertyGroupsAsync(JsonTextWriter writer, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback, CancellationToken cancellationToken)
@@ -190,21 +196,28 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             }, cancellationToken);
         }
 
-        private async Task ExportCategoriesAsync(JsonTextWriter writer, ExportImportOptions options, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback, CancellationToken cancellationToken)
+        private async Task ExportCategoriesAsync(JsonTextWriter writer, ExportImportOptions options, CatalogExportPackage package, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback, CancellationToken cancellationToken)
         {
             progressInfo.Description = "Categories exporting...";
             progressCallback(progressInfo);
 
+            var isCountQuery = true;
             await writer.WritePropertyNameAsync("Categories", cancellationToken);
             await writer.SerializeArrayWithPagingAsync(_jsonSerializer, _batchSize, async (skip, take) =>
             {
                 var searchResult = await _categorySearchService.SearchAsync(new CategorySearchCriteria { Skip = skip, Take = take });
-                LoadImages(searchResult.Results.OfType<IHasImages>().ToArray(), progressInfo, options.HandleBinaryData);
+                if (isCountQuery)
+                {
+                    isCountQuery = false;
+                    return (GenericSearchResult<Category>)searchResult;
+                }
+
                 foreach (var item in searchResult.Results)
                 {
                     ResetRedundantReferences(item);
                 }
 
+                await ExportBinaryDataAsync(searchResult.Results, options?.HandleBinaryData == true, package, progressInfo, cancellationToken);
                 return (GenericSearchResult<Category>)searchResult;
             }, (processedCount, totalCount) =>
             {
@@ -213,20 +226,28 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             }, cancellationToken);
         }
 
-        private async Task ExportProductsAsync(JsonTextWriter writer, ExportImportOptions options, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback, CancellationToken cancellationToken)
+        private async Task ExportProductsAsync(JsonTextWriter writer, ExportImportOptions options, CatalogExportPackage package, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback, CancellationToken cancellationToken)
         {
             progressInfo.Description = "Products exporting...";
             progressCallback(progressInfo);
 
+            var isCountQuery = true;
             await writer.WritePropertyNameAsync("Products", cancellationToken);
             await writer.SerializeArrayWithPagingAsync(_jsonSerializer, _batchSize, async (skip, take) =>
             {
                 var searchResult = await _productSearchService.SearchAsync(new ProductSearchCriteria { Skip = skip, Take = take, ResponseGroup = ItemResponseGroup.Full.ToString() });
-                LoadImages(searchResult.Results.OfType<IHasImages>().ToArray(), progressInfo, options.HandleBinaryData);
+                if (isCountQuery)
+                {
+                    isCountQuery = false;
+                    return (GenericSearchResult<CatalogProduct>)searchResult;
+                }
+
                 foreach (var item in searchResult.Results)
                 {
                     ResetRedundantReferences(item);
                 }
+
+                await ExportBinaryDataAsync(searchResult.Results, options?.HandleBinaryData == true, package, progressInfo, cancellationToken);
                 return (GenericSearchResult<CatalogProduct>)searchResult;
             }, (processedCount, totalCount) =>
             {
@@ -304,7 +325,8 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             var propertyGroupsWithForeignKeys = new List<PropertyGroup>();
             var propertiesWithForeignKeys = new List<Property>();
 
-            using var streamReader = new StreamReader(inputStream);
+            using var package = await CatalogImportPackage.OpenAsync(inputStream, cancellationToken);
+            using var streamReader = new StreamReader(package.CatalogStream, Encoding.UTF8, detectEncodingFromByteOrderMarks: true, 1024, leaveOpen: true);
             using var reader = new JsonTextReader(streamReader);
 
             var handlers = new Dictionary<string, Func<Task>>
@@ -313,8 +335,8 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                 ["Properties"] = () => ImportPropertiesAsync(reader, propertiesWithForeignKeys, progressInfo, progressCallback, cancellationToken),
                 ["PropertyDictionaryItems"] = () => ImportPropertyDictionaryItemsAsync(reader, progressInfo, progressCallback, cancellationToken),
                 ["Catalogs"] = () => ImportCatalogsAsync(reader, progressInfo, progressCallback, cancellationToken),
-                ["Categories"] = () => ImportCategoriesAsync(reader, progressInfo, progressCallback, cancellationToken),
-                ["Products"] = () => ImportProductsAsync(reader, options, progressInfo, progressCallback, cancellationToken),
+                ["Categories"] = () => ImportCategoriesAsync(reader, options, package, progressInfo, progressCallback, cancellationToken),
+                ["Products"] = () => ImportProductsAsync(reader, options, package, progressInfo, progressCallback, cancellationToken),
                 ["ProductConfigurations"] = () => ImportProductConfigurationsAsync(reader, progressInfo, progressCallback, cancellationToken),
                 ["Measures"] = () => ImportMeasuresAsync(reader, progressInfo, progressCallback, cancellationToken),
             };
@@ -411,7 +433,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                 }, cancellationToken);
         }
 
-        private async Task ImportCategoriesAsync(JsonTextReader reader, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback, CancellationToken cancellationToken)
+        private async Task ImportCategoriesAsync(JsonTextReader reader, ExportImportOptions options, CatalogImportPackage package, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback, CancellationToken cancellationToken)
         {
             var processedCount = 0;
             var categoriesByHierarchyLevel = new Dictionary<int, IList<Category>>();
@@ -421,6 +443,11 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             await reader.DeserializeArrayWithPagingAsync<Category>(_jsonSerializer, _batchSize, async items =>
             {
                 var categories = new List<Category>();
+
+                if (options?.HandleBinaryData != true)
+                {
+                    ClearBinaryData(items);
+                }
 
                 foreach (var category in items)
                 {
@@ -472,17 +499,17 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                 }
 
                 // save hierarchy level 0 (root) categories
-                processedCount += await SaveCategories(categories, rootStage, progressInfo);
+                processedCount += await SaveCategories(categories, options, package, rootStage, progressInfo, cancellationToken);
             }, _ =>
             {
                 progressInfo.Description = $"{processedCount} categories have been imported";
                 progressCallback(progressInfo);
             }, cancellationToken);
-            processedCount = await SaveCategoriesByHierarchyAsync(categoriesByHierarchyLevel, processedCount, progressInfo, progressCallback);
+            processedCount = await SaveCategoriesByHierarchyAsync(categoriesByHierarchyLevel, options, package, processedCount, progressInfo, progressCallback, cancellationToken);
             await SaveCategoryLinksAsync(categoryLinks, progressInfo, progressCallback);
         }
 
-        private async Task<int> SaveCategoriesByHierarchyAsync(Dictionary<int, IList<Category>> categoriesByHierarchyLevel, int processedCount, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback)
+        private async Task<int> SaveCategoriesByHierarchyAsync(Dictionary<int, IList<Category>> categoriesByHierarchyLevel, ExportImportOptions options, CatalogImportPackage package, int processedCount, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback, CancellationToken cancellationToken)
         {
             // save hierarchy level 1+ categories
             foreach (var categories in categoriesByHierarchyLevel.OrderBy(x => x.Key))
@@ -490,7 +517,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                 var levelStage = BuildStage($"Categories Level {categories.Key}", nameof(Category), progressInfo, progressCallback);
                 foreach (var page in categories.Value.Paginate(_batchSize))
                 {
-                    processedCount += await SaveCategories(page, levelStage, progressInfo);
+                    processedCount += await SaveCategories(page, options, package, levelStage, progressInfo, cancellationToken);
 
                     progressInfo.Description = $"{processedCount} categories have been imported";
                     progressCallback(progressInfo);
@@ -530,14 +557,14 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             }
         }
 
-        private async Task<int> SaveCategories(IEnumerable<Category> categories, ImportStageContext stage, ExportImportProgressInfo progressInfo)
+        private async Task<int> SaveCategories(IEnumerable<Category> categories, ExportImportOptions options, CatalogImportPackage package, ImportStageContext stage, ExportImportProgressInfo progressInfo, CancellationToken cancellationToken)
         {
             var itemsArray = categories.ToArray();
             var saved = await ImportStage.RunBatchAsync(stage, itemsArray, items => _categoryService.SaveChangesAsync(items), c => c.Id);
-            if (saved.Count > 0)
+            if (options?.HandleBinaryData == true && saved.Count > 0)
             {
-                // Image binaries only need to be uploaded for categories that actually persisted.
-                ImportImages(saved.OfType<IHasImages>().ToArray(), progressInfo);
+                // Binaries only need to be uploaded for categories that actually persisted.
+                await ImportBinaryDataAsync(saved, package, progressInfo, cancellationToken);
             }
             return saved.Count;
         }
@@ -602,7 +629,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                 }, cancellationToken);
         }
 
-        private async Task ImportProductsAsync(JsonTextReader reader, ExportImportOptions options, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback, CancellationToken cancellationToken)
+        private async Task ImportProductsAsync(JsonTextReader reader, ExportImportOptions options, CatalogImportPackage package, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback, CancellationToken cancellationToken)
         {
             var associationBackupMap = new Dictionary<string, IList<ProductAssociation>>();
             // De-dupe across the whole import job: manifests may list a variation both nested under
@@ -621,6 +648,11 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                 var parentsToSave = new List<CatalogProduct>();
                 var variationsToSave = new List<CatalogProduct>();
                 var pendingIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+                if (options?.HandleBinaryData != true)
+                {
+                    ClearBinaryData(items);
+                }
 
                 foreach (var product in items)
                 {
@@ -691,7 +723,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                     }
                     if (options != null && options.HandleBinaryData && savedParents.Count > 0)
                     {
-                        ImportImages(savedParents.OfType<IHasImages>().ToArray(), progressInfo);
+                        await ImportBinaryDataAsync(savedParents, package, progressInfo, cancellationToken);
                     }
                 }
 
@@ -707,7 +739,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                     }
                     if (options != null && options.HandleBinaryData && savedVariations.Count > 0)
                     {
-                        ImportImages(savedVariations.OfType<IHasImages>().ToArray(), progressInfo);
+                        await ImportBinaryDataAsync(savedVariations, package, progressInfo, cancellationToken);
                     }
                 }
             }, processedCount =>
@@ -868,50 +900,188 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             }
         }
 
-        private void LoadImages(IHasImages[] haveImagesObjects, ExportImportProgressInfo progressInfo, bool handleBinaryData)
+        private async Task ExportBinaryDataAsync<T>(IEnumerable<T> entities, bool handleBinaryData, CatalogExportPackage package, ExportImportProgressInfo progressInfo, CancellationToken cancellationToken)
         {
-            var allImages = haveImagesObjects.SelectMany(x => x.GetFlatObjectsListWithInterface<IHasImages>())
-                                             .SelectMany(x => x.Images).ToArray();
-            foreach (var image in allImages)
+            foreach (var image in GetImages(entities))
             {
-                image.Url = image.RelativeUrl;
-
-                if (handleBinaryData && !image.HasExternalUrl)
+                var sourceUrl = GetRelativeUrl(image);
+                if (!string.IsNullOrEmpty(sourceUrl))
                 {
-                    try
-                    {
-                        using var stream = _blobStorageProvider.OpenRead(image.Url);
-                        image.BinaryData = stream.ReadFully();
-                    }
-                    catch (Exception ex)
-                    {
-                        progressInfo.Errors.Add(ex.Message);
-                    }
+                    image.Url = sourceUrl;
+                }
+
+                image.BinaryData = null;
+                image.BinaryDataReference = null;
+
+                if (handleBinaryData && !string.IsNullOrEmpty(sourceUrl))
+                {
+                    await ExportBinaryDataAsync(image, sourceUrl, package, progressInfo, cancellationToken);
+                }
+            }
+
+            foreach (var asset in GetAssets(entities))
+            {
+                var sourceUrl = GetRelativeUrl(asset);
+                asset.BinaryData = null;
+                asset.BinaryDataReference = null;
+
+                if (handleBinaryData && !string.IsNullOrEmpty(sourceUrl))
+                {
+                    asset.Url = sourceUrl;
+                    await ExportBinaryDataAsync(asset, sourceUrl, package, progressInfo, cancellationToken);
                 }
             }
         }
 
-        private void ImportImages(IHasImages[] haveImagesObjects, ExportImportProgressInfo progressInfo)
+        private async Task ExportBinaryDataAsync(AssetBase asset, string sourceUrl, CatalogExportPackage package, ExportImportProgressInfo progressInfo, CancellationToken cancellationToken)
         {
-            var allImages = haveImagesObjects.SelectMany(x => x.GetFlatObjectsListWithInterface<IHasImages>())
-                                       .SelectMany(x => x.Images).ToArray();
-            foreach (var image in allImages.Where(x => x.BinaryData != null))
+            try
             {
-                try
+                asset.BinaryDataReference = await package.WriteBinaryDataAsync(
+                    sourceUrl,
+                    () => _blobStorageProvider.OpenReadAsync(sourceUrl),
+                    cancellationToken);
+            }
+            catch (Exception ex) when (ex is not OperationCanceledException)
+            {
+                progressInfo.Errors ??= [];
+                progressInfo.Errors.Add(ex.Message);
+            }
+        }
+
+        private async Task ImportBinaryDataAsync<T>(IEnumerable<T> entities, CatalogImportPackage package, ExportImportProgressInfo progressInfo, CancellationToken cancellationToken)
+        {
+            foreach (var image in GetImages(entities))
+            {
+                await ImportBinaryDataAsync(image, image.BinaryData, package, progressInfo, cancellationToken);
+            }
+
+            foreach (var asset in GetAssets(entities))
+            {
+                await ImportBinaryDataAsync(asset, asset.BinaryData, package, progressInfo, cancellationToken);
+            }
+        }
+
+        private async Task ImportBinaryDataAsync(AssetBase asset, byte[] inlineBinaryData, CatalogImportPackage package, ExportImportProgressInfo progressInfo, CancellationToken cancellationToken)
+        {
+            try
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+
+                if (inlineBinaryData == null && string.IsNullOrEmpty(asset.BinaryDataReference))
                 {
-                    var url = image.Url != null && !image.Url.IsAbsoluteUrl() ? image.Url : image.RelativeUrl;
-                    //do not save images with external url
-                    if (!string.IsNullOrEmpty(url))
+                    return;
+                }
+
+                var url = GetRelativeUrl(asset);
+                if (string.IsNullOrEmpty(url))
+                {
+                    return;
+                }
+
+                if (inlineBinaryData != null)
+                {
+                    // Legacy JSON packages already materialize the base64 value during deserialization.
+                    await using (var targetStream = await _blobStorageProvider.OpenWriteAsync(url))
                     {
-                        using var sourceStream = new MemoryStream(image.BinaryData);
-                        using var targetStream = _blobStorageProvider.OpenWrite(image.Url);
-                        sourceStream.CopyTo(targetStream);
+                        await targetStream.WriteAsync(inlineBinaryData, cancellationToken);
                     }
                 }
-                catch (Exception ex)
+                else
                 {
-                    progressInfo.Errors.Add(ex.Message);
+                    if (!CatalogPackageFormat.IsValidBinaryDataReference(asset.BinaryDataReference))
+                    {
+                        throw new InvalidDataException($"The binary data reference '{asset.BinaryDataReference}' is invalid.");
+                    }
+
+                    var expectedReference = CatalogPackageFormat.CreateBinaryDataReference(url);
+                    if (!string.Equals(asset.BinaryDataReference, expectedReference, StringComparison.Ordinal))
+                    {
+                        throw new InvalidDataException($"Binary data reference '{asset.BinaryDataReference}' does not match destination URL '{url}'.");
+                    }
+
+                    if (package.IsBinaryDataImported(asset.BinaryDataReference, url))
+                    {
+                        return;
+                    }
+
+                    await using (var sourceStream = package.OpenBinaryData(asset.BinaryDataReference))
+                    await using (var targetStream = await _blobStorageProvider.OpenWriteAsync(url))
+                    {
+                        await sourceStream.CopyToAsync(targetStream, cancellationToken);
+                    }
+
+                    package.MarkBinaryDataImported(asset.BinaryDataReference, url);
                 }
+            }
+            catch (Exception ex) when (ex is not OperationCanceledException)
+            {
+                progressInfo.Errors ??= [];
+                progressInfo.Errors.Add(ex.Message);
+            }
+            finally
+            {
+                ClearBinaryData(asset);
+            }
+        }
+
+        private static IEnumerable<Image> GetImages<T>(IEnumerable<T> entities)
+        {
+            return new { entities }
+                .GetFlatObjectsListWithInterface<IHasImages>()
+                .Where(x => !x.Images.IsNullOrEmpty())
+                .SelectMany(x => x.Images);
+        }
+
+        private static IEnumerable<Asset> GetAssets<T>(IEnumerable<T> entities)
+        {
+            return new { entities }
+                .GetFlatObjectsListWithInterface<IHasAssets>()
+                .Where(x => !x.Assets.IsNullOrEmpty())
+                .SelectMany(x => x.Assets);
+        }
+
+        private static string GetRelativeUrl(AssetBase asset)
+        {
+            if (!string.IsNullOrWhiteSpace(asset.RelativeUrl))
+            {
+                return IsRelativeBlobUrl(asset.RelativeUrl) ? asset.RelativeUrl : null;
+            }
+
+            return IsRelativeBlobUrl(asset.Url) ? asset.Url : null;
+        }
+
+        private static bool IsRelativeBlobUrl(string url)
+        {
+            return !string.IsNullOrWhiteSpace(url)
+                && !url.StartsWith("//", StringComparison.Ordinal)
+                && !Uri.IsWellFormedUriString(url, UriKind.Absolute);
+        }
+
+        private static void ClearBinaryData<T>(IEnumerable<T> entities)
+        {
+            foreach (var image in GetImages(entities))
+            {
+                ClearBinaryData(image);
+            }
+
+            foreach (var asset in GetAssets(entities))
+            {
+                ClearBinaryData(asset);
+            }
+        }
+
+        private static void ClearBinaryData(AssetBase asset)
+        {
+            asset.BinaryDataReference = null;
+
+            if (asset is Image image)
+            {
+                image.BinaryData = null;
+            }
+            else if (asset is Asset file)
+            {
+                file.BinaryData = null;
             }
         }
     }
