@@ -53,8 +53,8 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
         {
             public ExportImportOptions Options { get; init; }
             public CatalogImportPackage Package { get; init; }
-            public IDictionary<string, IList<ProductAssociation>> AssociationBackupMap { get; init; }
-            public ISet<string> AlreadySavedIds { get; init; }
+            public Dictionary<string, IList<ProductAssociation>> AssociationBackupMap { get; init; }
+            public HashSet<string> AlreadySavedIds { get; init; }
             public ImportStageContext ProductsStage { get; init; }
             public ImportStageContext VariationsStage { get; init; }
             public ExportImportProgressInfo ProgressInfo { get; init; }
@@ -532,7 +532,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
 
         private static void AddCategoryByHierarchyLevel(
             Category category,
-            ICollection<Category> rootCategories,
+            List<Category> rootCategories,
             IDictionary<int, IList<Category>> categoriesByHierarchyLevel)
         {
             if (category.Level <= 0)
@@ -728,8 +728,8 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
 
         private static (List<CatalogProduct> Parents, List<CatalogProduct> Variations) PrepareProducts(
             IEnumerable<CatalogProduct> products,
-            IDictionary<string, IList<ProductAssociation>> associationBackupMap,
-            ISet<string> alreadySavedIds)
+            Dictionary<string, IList<ProductAssociation>> associationBackupMap,
+            HashSet<string> alreadySavedIds)
         {
             var parentsToSave = new List<CatalogProduct>();
             var variationsToSave = new List<CatalogProduct>();
@@ -763,7 +763,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             return (parentsToSave, variationsToSave);
         }
 
-        private static bool TryReserveProduct(string productId, ISet<string> alreadySavedIds, ISet<string> pendingIds)
+        private static bool TryReserveProduct(string productId, HashSet<string> alreadySavedIds, HashSet<string> pendingIds)
         {
             return !alreadySavedIds.Contains(productId) && pendingIds.Add(productId);
         }
@@ -777,7 +777,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
 
         private static void DetachAssociations(
             CatalogProduct product,
-            IDictionary<string, IList<ProductAssociation>> associationBackupMap)
+            Dictionary<string, IList<ProductAssociation>> associationBackupMap)
         {
             if (!product.Associations.IsNullOrEmpty())
             {
@@ -799,7 +799,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
         }
 
         private async Task SaveProductBatchAsync(
-            IList<CatalogProduct> products,
+            List<CatalogProduct> products,
             ImportStageContext stage,
             ProductImportContext context)
         {
@@ -826,7 +826,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
         }
 
         private async Task ImportProductAssociationsAsync(
-            IReadOnlyDictionary<string, IList<ProductAssociation>> associationBackupMap,
+            Dictionary<string, IList<ProductAssociation>> associationBackupMap,
             ExportImportProgressInfo progressInfo,
             Action<ExportImportProgressInfo> progressCallback)
         {
