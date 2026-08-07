@@ -53,12 +53,17 @@ internal sealed class CatalogExportPackage : IDisposable
         return new CatalogExportPackage(outputStream, includeBinaryData);
     }
 
-    public async Task<string> WriteBinaryDataAsync(string sourceUrl, Func<Task<Stream>> openSourceStream, CancellationToken cancellationToken)
+    public Task<string> WriteBinaryDataAsync(string sourceUrl, Func<Task<Stream>> openSourceStream, CancellationToken cancellationToken)
     {
         ArgumentException.ThrowIfNullOrEmpty(sourceUrl);
         ArgumentNullException.ThrowIfNull(openSourceStream);
         cancellationToken.ThrowIfCancellationRequested();
 
+        return WriteBinaryDataInternalAsync(sourceUrl, openSourceStream, cancellationToken);
+    }
+
+    private async Task<string> WriteBinaryDataInternalAsync(string sourceUrl, Func<Task<Stream>> openSourceStream, CancellationToken cancellationToken)
+    {
         if (_archive == null)
         {
             throw new InvalidOperationException("The catalog export package is not configured to include binary data.");

@@ -11,6 +11,10 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport;
 
 internal sealed class CatalogImportPackage : IDisposable
 {
+    private const int ManifestPropertyCount = 3;
+
+    private static readonly byte[] ZipLocalFileHeader = [0x50, 0x4B, 0x03, 0x04];
+
     private readonly Stream _inputStream;
     private readonly FileStream _temporaryStream;
     private readonly ZipArchive _archive;
@@ -26,10 +30,16 @@ internal sealed class CatalogImportPackage : IDisposable
 
     public Stream CatalogStream { get; }
 
-    public static async Task<CatalogImportPackage> OpenAsync(Stream inputStream, CancellationToken cancellationToken)
+    public static Task<CatalogImportPackage> OpenAsync(Stream inputStream, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(inputStream);
+        cancellationToken.ThrowIfCancellationRequested();
 
+        return OpenInternalAsync(inputStream, cancellationToken);
+    }
+
+    private static async Task<CatalogImportPackage> OpenInternalAsync(Stream inputStream, CancellationToken cancellationToken)
+    {
         FileStream temporaryStream = null;
         ZipArchive archive = null;
 
@@ -144,7 +154,7 @@ internal sealed class CatalogImportPackage : IDisposable
         }
     }
 
-    private static async Task CopyPackageAsync(Stream source, Stream destination, byte[] signature, int signatureLength, CancellationToken cancellationToken)
+    private static async Task CopyPackageAsync(Stream source, FileStream destination, byte[] signature, int signatureLength, CancellationToken cancellationToken)
     {
         await destination.WriteAsync(signature.AsMemory(0, signatureLength), cancellationToken);
         var totalLength = (long)signatureLength;
@@ -188,11 +198,12 @@ internal sealed class CatalogImportPackage : IDisposable
 
     private static bool IsZipArchive(byte[] signature, int length)
     {
-        return length == CatalogPackageFormat.SignatureLength
-            && signature[0] == 0x50
-            && signature[1] == 0x4B
-            && signature[2] == 0x03
-            && signature[3] == 0x04;
+        if (length != ZipLocalFileHeader.Length)
+        {
+            return false;
+        }
+
+        return signature.AsSpan(0, length).SequenceEqual(ZipLocalFileHeader);
     }
 
     private static void ValidateArchive(ZipArchive archive)
@@ -236,6 +247,12 @@ internal sealed class CatalogImportPackage : IDisposable
         var entry = archive.GetEntry(CatalogPackageFormat.ManifestEntryName)
             ?? throw new InvalidDataException($"The catalog export package does not contain '{CatalogPackageFormat.ManifestEntryName}'.");
 
+        var manifest = await ReadManifestAsync(entry, cancellationToken);
+        ValidateManifest(manifest);
+    }
+
+    private static async Task<JObject> ReadManifestAsync(ZipArchiveEntry entry, CancellationToken cancellationToken)
+    {
         if (entry.Length > CatalogPackageFormat.MaximumManifestLength)
         {
             throw new InvalidDataException("The catalog export package manifest is too large.");
@@ -244,10 +261,9 @@ internal sealed class CatalogImportPackage : IDisposable
         using var stream = entry.Open();
         using var streamReader = new StreamReader(stream);
         using var jsonReader = new JsonTextReader(streamReader);
-        JObject manifest;
         try
         {
-            manifest = await JObject.LoadAsync(jsonReader, new JsonLoadSettings
+            var manifest = await JObject.LoadAsync(jsonReader, new JsonLoadSettings
             {
                 DuplicatePropertyNameHandling = DuplicatePropertyNameHandling.Error,
             }, cancellationToken);
@@ -256,21 +272,38 @@ internal sealed class CatalogImportPackage : IDisposable
             {
                 throw new InvalidDataException("The catalog export package manifest contains trailing content.");
             }
+
+            return manifest;
         }
         catch (JsonException ex)
         {
             throw new InvalidDataException("The catalog export package manifest is not valid JSON.", ex);
         }
+    }
 
-        if (manifest.Count != 3
-            || manifest["formatVersion"]?.Type != JTokenType.Integer
-            || manifest.Value<int>("formatVersion") != CatalogPackageFormat.Version
-            || manifest["catalogEntry"]?.Type != JTokenType.String
-            || manifest.Value<string>("catalogEntry") != CatalogPackageFormat.CatalogEntryName
-            || manifest["binaryDataDirectory"]?.Type != JTokenType.String
-            || manifest.Value<string>("binaryDataDirectory") != CatalogPackageFormat.BinaryDataDirectory)
+    private static void ValidateManifest(JObject manifest)
+    {
+        if (manifest.Count != ManifestPropertyCount)
         {
-            throw new InvalidDataException("The catalog export package manifest is invalid or unsupported.");
+            ThrowInvalidManifest();
         }
+
+        ValidateManifestValue(manifest, "formatVersion", JTokenType.Integer, CatalogPackageFormat.Version);
+        ValidateManifestValue(manifest, "catalogEntry", JTokenType.String, CatalogPackageFormat.CatalogEntryName);
+        ValidateManifestValue(manifest, "binaryDataDirectory", JTokenType.String, CatalogPackageFormat.BinaryDataDirectory);
+    }
+
+    private static void ValidateManifestValue<T>(JObject manifest, string propertyName, JTokenType tokenType, T expectedValue)
+    {
+        var property = manifest[propertyName];
+        if (property?.Type != tokenType || !EqualityComparer<T>.Default.Equals(property.Value<T>(), expectedValue))
+        {
+            ThrowInvalidManifest();
+        }
+    }
+
+    private static void ThrowInvalidManifest()
+    {
+        throw new InvalidDataException("The catalog export package manifest is invalid or unsupported.");
     }
 }
