@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -362,8 +361,7 @@ internal static class CatalogPackageTestHelper
 
     public static string CreateReference(string relativeUrl)
     {
-        var hash = SHA256.HashData(Encoding.UTF8.GetBytes(relativeUrl));
-        return $"assets/{Convert.ToHexString(hash).ToLowerInvariant()}.bin";
+        return $"assets/{relativeUrl}";
     }
 
     public static CatalogPackageContents Read(byte[] packageBytes)

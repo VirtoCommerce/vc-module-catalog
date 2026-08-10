@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using System.Security.Cryptography;
 using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -15,7 +14,6 @@ internal static class CatalogPackageFormat
     public const string BinaryDataDirectory = "assets/";
     public const int SignatureLength = 4;
     public const int MaximumManifestLength = 4096;
-    public const int Sha256HexLength = 64;
     public const int CopyBufferSize = 81920;
 
     // These are abuse-prevention ceilings, not operational catalog-size limits.
@@ -26,8 +24,13 @@ internal static class CatalogPackageFormat
     {
         ArgumentException.ThrowIfNullOrEmpty(sourceUrl);
 
-        var hash = SHA256.HashData(Encoding.UTF8.GetBytes(sourceUrl));
-        return $"{BinaryDataDirectory}{Convert.ToHexString(hash).ToLowerInvariant()}.bin";
+        var reference = $"{BinaryDataDirectory}{sourceUrl}";
+        if (!IsValidBinaryDataReference(reference))
+        {
+            throw new ArgumentException($"The source URL '{sourceUrl}' cannot be represented as a safe package path.", nameof(sourceUrl));
+        }
+
+        return reference;
     }
 
     public static bool IsValidBinaryDataReference(string reference)
@@ -39,11 +42,21 @@ internal static class CatalogPackageFormat
             return false;
         }
 
-        var segments = reference.Split('/');
-        return segments.Length == 2
-            && segments[1].Length == Sha256HexLength + ".bin".Length
-            && segments[1].EndsWith(".bin", StringComparison.Ordinal)
-            && IsLowerHex(segments[1].AsSpan(0, Sha256HexLength));
+        var relativePath = reference[BinaryDataDirectory.Length..];
+        if (relativePath.Length == 0)
+        {
+            return false;
+        }
+
+        foreach (var segment in relativePath.Split('/'))
+        {
+            if (!IsValidPathSegment(segment))
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     public static bool IsAllowedEntryName(string entryName)
@@ -65,13 +78,16 @@ internal static class CatalogPackageFormat
         return Encoding.UTF8.GetBytes(manifest.ToString(Formatting.None));
     }
 
-    private static bool IsLowerHex(ReadOnlySpan<char> value)
+    private static bool IsValidPathSegment(string segment)
     {
-        foreach (var character in value)
+        if (segment.Length == 0 || segment is "." or "..")
         {
-            var isDigit = character is >= '0' and <= '9';
-            var isLowerHexLetter = character is >= 'a' and <= 'f';
-            if (!isDigit && !isLowerHexLetter)
+            return false;
+        }
+
+        foreach (var character in segment)
+        {
+            if (char.IsControl(character))
             {
                 return false;
             }

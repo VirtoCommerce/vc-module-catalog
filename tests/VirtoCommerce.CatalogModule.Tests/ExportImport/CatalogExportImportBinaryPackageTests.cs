@@ -59,7 +59,7 @@ public class CatalogExportImportBinaryPackageTests
             var jsonAsset = binaryObjects.Single(x => x.Value<string>("RelativeUrl") == url);
             var reference = jsonAsset.Value<string>("BinaryDataReference");
 
-            reference.Should().Be(CatalogPackageTestHelper.CreateReference(url));
+            reference.Should().Be($"assets/{url}", "the source URL hierarchy should be visible in the package");
             jsonAsset["BinaryData"].Should().BeNull("new packages must not contain inline base64 data");
             package.Entries[reference].Should().Equal(bytes);
         }
@@ -113,6 +113,47 @@ public class CatalogExportImportBinaryPackageTests
         package.Entries[expectedReference].Should().Equal(sharedBytes);
         fixture.BlobReadOpenCounts[sharedUrl].Should().Be(1);
         fixture.BlobReadOpenCounts.Should().NotContainKey(externalUrl);
+    }
+
+    [Fact]
+    public async Task DoExportAsync_BlobReadFailure_ReportsErrorAndContinuesWithRemainingFiles()
+    {
+        // Arrange
+        const string missingUrl = "catalog/missing.jpg";
+        const string availableUrl = "catalog/available.jpg";
+        var availableBytes = new byte[] { 21, 22, 23 };
+        var fixture = new CatalogExportImportTestFixture();
+        fixture.AddBlob(availableUrl, availableBytes);
+        fixture.SetProductExportResults(CreateProduct("product", new List<Image>
+        {
+            CreateImage("missing-image", missingUrl),
+            CreateImage("available-image", availableUrl),
+        }, new List<Asset>()));
+
+        using var output = new MemoryStream();
+
+        // Act
+        await fixture.CreateSut().DoExportAsync(
+            output,
+            new ExportImportOptions { HandleBinaryData = true },
+            fixture.CaptureProgress,
+            CancellationToken.None);
+
+        // Assert
+        var package = CatalogPackageTestHelper.Read(output.ToArray());
+        var binaryObjects = GetBinaryObjects(package.Catalog).ToDictionary(x => x.Value<string>("RelativeUrl"));
+        var availableReference = CatalogPackageTestHelper.CreateReference(availableUrl);
+
+        binaryObjects[missingUrl]["BinaryDataReference"].Should().BeNull();
+        binaryObjects[availableUrl].Value<string>("BinaryDataReference").Should().Be(availableReference);
+        package.Entries.Keys.Where(x => x.StartsWith("assets/", StringComparison.Ordinal)).Should().ContainSingle().Which.Should().Be(availableReference);
+        package.Entries[availableReference].Should().Equal(availableBytes);
+        fixture.BlobReadOpenCounts.Should().BeEquivalentTo(new Dictionary<string, int>
+        {
+            [missingUrl] = 1,
+            [availableUrl] = 1,
+        });
+        fixture.Progress.SelectMany(x => x.Errors).Distinct().Should().ContainSingle(x => x.Contains(missingUrl, StringComparison.Ordinal));
     }
 
     [Fact]
@@ -488,9 +529,9 @@ public class CatalogExportImportBinaryPackageTests
 
         var imageReference = CatalogPackageTestHelper.CreateReference(imageRelativeUrl);
         var assetReference = CatalogPackageTestHelper.CreateReference(assetRelativeUrl);
-        var customSchemeReference = CatalogPackageTestHelper.CreateReference(customSchemeUrl);
-        var httpsReference = CatalogPackageTestHelper.CreateReference(httpsUrl);
-        var schemeRelativeReference = CatalogPackageTestHelper.CreateReference(schemeRelativeUrl);
+        const string customSchemeReference = "assets/external/s3-image.jpg";
+        const string httpsReference = "assets/external/https-image.jpg";
+        const string schemeRelativeReference = "assets/external/cdn-file.pdf";
 
         var preferredImage = CreateImage("preferred-image", imageDifferentUrl, binaryReference: imageReference);
         preferredImage.RelativeUrl = imageRelativeUrl;
@@ -677,6 +718,9 @@ public class CatalogExportImportBinaryPackageTests
     [Theory]
     [InlineData("../outside.bin")]
     [InlineData("assets/../outside.bin")]
+    [InlineData("assets/./inside.bin")]
+    [InlineData("assets//inside.bin")]
+    [InlineData("assets/")]
     [InlineData("/assets/0000000000000000000000000000000000000000000000000000000000000000.bin")]
     [InlineData("assets\\0000000000000000000000000000000000000000000000000000000000000000.bin")]
     [InlineData("catalog.json")]
@@ -699,6 +743,38 @@ public class CatalogExportImportBinaryPackageTests
         // Assert
         fixture.BlobWriteOpenCounts.Should().BeEmpty();
         fixture.Progress.SelectMany(x => x.Errors).Should().Contain(x => x.Contains("invalid", StringComparison.OrdinalIgnoreCase));
+    }
+
+    [Theory]
+    [InlineData("../outside.jpg")]
+    [InlineData("catalog/../outside.jpg")]
+    [InlineData("catalog/./image.jpg")]
+    [InlineData("catalog//image.jpg")]
+    [InlineData("catalog\\image.jpg")]
+    public async Task DoExportAsync_UnsafeSourceUrl_DoesNotCreateSideCar(string sourceUrl)
+    {
+        // Arrange
+        var fixture = new CatalogExportImportTestFixture();
+        var product = CreateProduct("product",
+            new List<Image> { CreateImage("image", sourceUrl) },
+            new List<Asset>());
+        fixture.SetProductExportResults(product);
+        using var output = new MemoryStream();
+
+        // Act
+        await fixture.CreateSut().DoExportAsync(
+            output,
+            new ExportImportOptions { HandleBinaryData = true },
+            fixture.CaptureProgress,
+            CancellationToken.None);
+
+        // Assert
+        var package = CatalogPackageTestHelper.Read(output.ToArray());
+        var image = GetBinaryObjects(package.Catalog).Single();
+        image["BinaryDataReference"].Should().BeNull();
+        package.Entries.Keys.Should().NotContain(x => x.StartsWith("assets/", StringComparison.Ordinal));
+        fixture.BlobReadOpenCounts.Should().BeEmpty();
+        fixture.Progress.SelectMany(x => x.Errors).Should().Contain(x => x.Contains("safe package path", StringComparison.Ordinal));
     }
 
     [Fact]
