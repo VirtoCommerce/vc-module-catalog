@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -81,6 +82,7 @@ internal sealed class CatalogExportImportTestFixture
     public Mock<IPropertyGroupService> PropertyGroupService { get; } = new();
     public Mock<IPropertyGroupSearchService> PropertyGroupSearchService { get; } = new();
     public Mock<ISettingsManager> SettingsManager { get; } = new();
+    public Mock<ILogger<CatalogExportImport>> Logger { get; } = new();
 
     public IDictionary<string, Func<Stream>> BlobReadFactories { get; } = new Dictionary<string, Func<Stream>>(StringComparer.Ordinal);
     public IDictionary<string, Func<Stream>> BlobWriteFactories { get; } = new Dictionary<string, Func<Stream>>(StringComparer.Ordinal);
@@ -120,7 +122,8 @@ internal sealed class CatalogExportImportTestFixture
             MeasureSearchService.Object,
             PropertyGroupService.Object,
             PropertyGroupSearchService.Object,
-            SettingsManager.Object);
+            SettingsManager.Object,
+            Logger.Object);
     }
 
     public void CaptureProgress(VirtoCommerce.Platform.Core.ExportImport.ExportImportProgressInfo progress)

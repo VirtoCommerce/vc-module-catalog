@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -153,7 +154,35 @@ public class CatalogExportImportBinaryPackageTests
             [missingUrl] = 1,
             [availableUrl] = 1,
         });
-        fixture.Progress.SelectMany(x => x.Errors).Distinct().Should().ContainSingle(x => x.Contains(missingUrl, StringComparison.Ordinal));
+        fixture.Progress.SelectMany(x => x.Errors).Should().BeEmpty();
+        fixture.Logger.Invocations
+            .Where(x => x.Arguments[0] is LogLevel.Warning)
+            .Select(x => x.Arguments[2].ToString())
+            .Should().ContainSingle(x => x.Contains(missingUrl, StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public async Task DoExportAsync_WithoutImagesOrAssets_ExportsWithoutErrorsOrWarnings()
+    {
+        // Arrange
+        var fixture = new CatalogExportImportTestFixture();
+        fixture.SetProductExportResults(CreateProduct("product", null, null));
+        using var output = new MemoryStream();
+
+        // Act
+        await fixture.CreateSut().DoExportAsync(
+            output,
+            new ExportImportOptions { HandleBinaryData = true },
+            fixture.CaptureProgress,
+            CancellationToken.None);
+
+        // Assert
+        var package = CatalogPackageTestHelper.Read(output.ToArray());
+        GetBinaryObjects(package.Catalog).Should().BeEmpty();
+        package.Entries.Keys.Should().NotContain(x => x.StartsWith("assets/", StringComparison.Ordinal));
+        fixture.BlobReadOpenCounts.Should().BeEmpty();
+        fixture.Progress.SelectMany(x => x.Errors).Should().BeEmpty();
+        fixture.Logger.Invocations.Should().BeEmpty();
     }
 
     [Fact]
@@ -774,7 +803,12 @@ public class CatalogExportImportBinaryPackageTests
         image["BinaryDataReference"].Should().BeNull();
         package.Entries.Keys.Should().NotContain(x => x.StartsWith("assets/", StringComparison.Ordinal));
         fixture.BlobReadOpenCounts.Should().BeEmpty();
-        fixture.Progress.SelectMany(x => x.Errors).Should().Contain(x => x.Contains("safe package path", StringComparison.Ordinal));
+        fixture.Progress.SelectMany(x => x.Errors).Should().BeEmpty();
+
+        var warning = fixture.Logger.Invocations.Single(x => x.Arguments[0] is LogLevel.Warning);
+        warning.Arguments[2].ToString().Should().Contain(sourceUrl);
+        warning.Arguments[3].Should().BeOfType<ArgumentException>()
+            .Which.Message.Should().Contain("safe package path");
     }
 
     [Fact]

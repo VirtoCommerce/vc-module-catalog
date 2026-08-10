@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VirtoCommerce.AssetsModule.Core.Assets;
 using VirtoCommerce.CatalogModule.Core;
@@ -43,6 +44,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
         private readonly IPropertyGroupService _propertyGroupService;
         private readonly IPropertyGroupSearchService _propertyGroupSearchService;
         private readonly ISettingsManager _settingsManager;
+        private readonly ILogger<CatalogExportImport> _logger;
 
         // Defaults preserve the previous hard-coded behaviour; they are overwritten from Platform
         // Settings at the start of every export/import via LoadSettingsAsync.
@@ -66,7 +68,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                                   IPropertyDictionaryItemService propertyDictionaryService, JsonSerializer jsonSerializer, IBlobStorageProvider blobStorageProvider, IAssociationService associationService,
                                   IProductConfigurationService configurationService, IProductConfigurationSearchService configurationSearchService,
                                   IMeasureService measureService, IMeasureSearchService measureSearchService, IPropertyGroupService propertyGroupService, IPropertyGroupSearchService propertyGroupSearchService,
-                                  ISettingsManager settingsManager)
+                                  ISettingsManager settingsManager, ILogger<CatalogExportImport> logger)
         {
             _catalogService = catalogService;
             _productSearchService = productSearchService;
@@ -88,6 +90,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             _propertyGroupService = propertyGroupService;
             _propertyGroupSearchService = propertyGroupSearchService;
             _settingsManager = settingsManager;
+            _logger = logger;
         }
 
         // Reads the import/export tuning knobs from Platform Settings, falling back to the
@@ -221,7 +224,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                     var searchResult = await _categorySearchService.SearchAsync(new CategorySearchCriteria { Skip = skip, Take = take });
                     return (GenericSearchResult<Category>)searchResult;
                 },
-                items => PrepareExportPageAsync(items, options, package, progressInfo, cancellationToken),
+                items => PrepareExportPageAsync(items, options, package, cancellationToken),
                 (processedCount, totalCount) =>
                 {
                     progressInfo.Description = $"{processedCount} of {totalCount} categories have been exported";
@@ -248,7 +251,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                     });
                     return (GenericSearchResult<CatalogProduct>)searchResult;
                 },
-                items => PrepareExportPageAsync(items, options, package, progressInfo, cancellationToken),
+                items => PrepareExportPageAsync(items, options, package, cancellationToken),
                 (processedCount, totalCount) =>
                 {
                     progressInfo.Description = $"{processedCount} of {totalCount} products have been exported";
@@ -295,7 +298,6 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             IList<T> items,
             ExportImportOptions options,
             CatalogExportPackage package,
-            ExportImportProgressInfo progressInfo,
             CancellationToken cancellationToken)
         {
             foreach (var item in items)
@@ -303,7 +305,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                 ResetRedundantReferences(item);
             }
 
-            await ExportBinaryDataAsync(items, options?.HandleBinaryData == true, package, progressInfo, cancellationToken);
+            await ExportBinaryDataAsync(items, options?.HandleBinaryData == true, package, cancellationToken);
         }
 
         private async Task ExportProductConfigurationsAsync(JsonTextWriter writer, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback, CancellationToken cancellationToken)
@@ -1033,7 +1035,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             }
         }
 
-        private async Task ExportBinaryDataAsync<T>(IEnumerable<T> entities, bool handleBinaryData, CatalogExportPackage package, ExportImportProgressInfo progressInfo, CancellationToken cancellationToken)
+        private async Task ExportBinaryDataAsync<T>(IEnumerable<T> entities, bool handleBinaryData, CatalogExportPackage package, CancellationToken cancellationToken)
         {
             foreach (var image in GetImages(entities))
             {
@@ -1048,7 +1050,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
 
                 if (handleBinaryData && !string.IsNullOrEmpty(sourceUrl))
                 {
-                    await ExportBinaryDataAsync(image, sourceUrl, package, progressInfo, cancellationToken);
+                    await ExportBinaryDataAsync(image, sourceUrl, package, cancellationToken);
                 }
             }
 
@@ -1061,12 +1063,12 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                 if (handleBinaryData && !string.IsNullOrEmpty(sourceUrl))
                 {
                     asset.Url = sourceUrl;
-                    await ExportBinaryDataAsync(asset, sourceUrl, package, progressInfo, cancellationToken);
+                    await ExportBinaryDataAsync(asset, sourceUrl, package, cancellationToken);
                 }
             }
         }
 
-        private async Task ExportBinaryDataAsync(AssetBase asset, string sourceUrl, CatalogExportPackage package, ExportImportProgressInfo progressInfo, CancellationToken cancellationToken)
+        private async Task ExportBinaryDataAsync(AssetBase asset, string sourceUrl, CatalogExportPackage package, CancellationToken cancellationToken)
         {
             try
             {
@@ -1077,8 +1079,12 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             }
             catch (Exception ex) when (ex is not OperationCanceledException)
             {
-                progressInfo.Errors ??= [];
-                progressInfo.Errors.Add(ex.Message);
+                _logger.LogWarning(
+                    ex,
+                    "Failed to export binary data for {AssetType} {AssetId} from {SourceUrl}. The catalog entity will be exported without binary data.",
+                    asset.GetType().Name,
+                    asset.Id,
+                    sourceUrl);
             }
         }
 
