@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -48,15 +49,7 @@ internal static class CatalogPackageFormat
             return false;
         }
 
-        foreach (var segment in relativePath.Split('/'))
-        {
-            if (!IsValidPathSegment(segment))
-            {
-                return false;
-            }
-        }
-
-        return true;
+        return relativePath.Split('/').All(IsValidPathSegment);
     }
 
     public static bool IsAllowedEntryName(string entryName)
@@ -85,14 +78,6 @@ internal static class CatalogPackageFormat
             return false;
         }
 
-        foreach (var character in segment)
-        {
-            if (char.IsControl(character))
-            {
-                return false;
-            }
-        }
-
-        return true;
+        return segment.All(character => !char.IsControl(character));
     }
 }
