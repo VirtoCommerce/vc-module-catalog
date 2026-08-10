@@ -213,29 +213,21 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             progressInfo.Description = "Categories exporting...";
             progressCallback(progressInfo);
 
-            var isCountQuery = true;
             await writer.WritePropertyNameAsync("Categories", cancellationToken);
-            await writer.SerializeArrayWithPagingAsync(_jsonSerializer, _batchSize, async (skip, take) =>
-            {
-                var searchResult = await _categorySearchService.SearchAsync(new CategorySearchCriteria { Skip = skip, Take = take });
-                if (isCountQuery)
+            await ExportArrayWithPagingAsync(
+                writer,
+                async (skip, take) =>
                 {
-                    isCountQuery = false;
+                    var searchResult = await _categorySearchService.SearchAsync(new CategorySearchCriteria { Skip = skip, Take = take });
                     return (GenericSearchResult<Category>)searchResult;
-                }
-
-                foreach (var item in searchResult.Results)
+                },
+                items => PrepareExportPageAsync(items, options, package, progressInfo, cancellationToken),
+                (processedCount, totalCount) =>
                 {
-                    ResetRedundantReferences(item);
-                }
-
-                await ExportBinaryDataAsync(searchResult.Results, options?.HandleBinaryData == true, package, progressInfo, cancellationToken);
-                return (GenericSearchResult<Category>)searchResult;
-            }, (processedCount, totalCount) =>
-            {
-                progressInfo.Description = $"{processedCount} of {totalCount} categories have been exported";
-                progressCallback(progressInfo);
-            }, cancellationToken);
+                    progressInfo.Description = $"{processedCount} of {totalCount} categories have been exported";
+                    progressCallback(progressInfo);
+                },
+                cancellationToken);
         }
 
         private async Task ExportProductsAsync(JsonTextWriter writer, ExportImportOptions options, CatalogExportPackage package, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback, CancellationToken cancellationToken)
@@ -243,29 +235,75 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             progressInfo.Description = "Products exporting...";
             progressCallback(progressInfo);
 
-            var isCountQuery = true;
             await writer.WritePropertyNameAsync("Products", cancellationToken);
-            await writer.SerializeArrayWithPagingAsync(_jsonSerializer, _batchSize, async (skip, take) =>
-            {
-                var searchResult = await _productSearchService.SearchAsync(new ProductSearchCriteria { Skip = skip, Take = take, ResponseGroup = ItemResponseGroup.Full.ToString() });
-                if (isCountQuery)
+            await ExportArrayWithPagingAsync(
+                writer,
+                async (skip, take) =>
                 {
-                    isCountQuery = false;
+                    var searchResult = await _productSearchService.SearchAsync(new ProductSearchCriteria
+                    {
+                        Skip = skip,
+                        Take = take,
+                        ResponseGroup = ItemResponseGroup.Full.ToString(),
+                    });
                     return (GenericSearchResult<CatalogProduct>)searchResult;
-                }
-
-                foreach (var item in searchResult.Results)
+                },
+                items => PrepareExportPageAsync(items, options, package, progressInfo, cancellationToken),
+                (processedCount, totalCount) =>
                 {
-                    ResetRedundantReferences(item);
+                    progressInfo.Description = $"{processedCount} of {totalCount} products have been exported";
+                    progressCallback(progressInfo);
+                },
+                cancellationToken);
+        }
+
+        private async Task ExportArrayWithPagingAsync<T>(
+            JsonTextWriter writer,
+            Func<int, int, Task<GenericSearchResult<T>>> searchAsync,
+            Func<IList<T>, Task> preparePageAsync,
+            Action<int, int> progressCallback,
+            CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            var countResult = await searchAsync(0, 1);
+            var totalCount = countResult.TotalCount;
+            var pageSize = _batchSize > 0 ? _batchSize : JsonSerializerExtensions.DefaultPageSize;
+
+            await writer.WriteStartArrayAsync(cancellationToken);
+
+            for (var skip = 0; skip < totalCount; skip += pageSize)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                var page = await searchAsync(skip, pageSize);
+                await preparePageAsync(page.Results);
+
+                foreach (var item in page.Results)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    _jsonSerializer.Serialize(writer, item);
                 }
 
-                await ExportBinaryDataAsync(searchResult.Results, options?.HandleBinaryData == true, package, progressInfo, cancellationToken);
-                return (GenericSearchResult<CatalogProduct>)searchResult;
-            }, (processedCount, totalCount) =>
+                await writer.FlushAsync(cancellationToken);
+                progressCallback(Math.Min(totalCount, skip + pageSize), totalCount);
+            }
+
+            await writer.WriteEndArrayAsync(cancellationToken);
+        }
+
+        private async Task PrepareExportPageAsync<T>(
+            IList<T> items,
+            ExportImportOptions options,
+            CatalogExportPackage package,
+            ExportImportProgressInfo progressInfo,
+            CancellationToken cancellationToken)
+        {
+            foreach (var item in items)
             {
-                progressInfo.Description = $"{processedCount} of {totalCount} products have been exported";
-                progressCallback(progressInfo);
-            }, cancellationToken);
+                ResetRedundantReferences(item);
+            }
+
+            await ExportBinaryDataAsync(items, options?.HandleBinaryData == true, package, progressInfo, cancellationToken);
         }
 
         private async Task ExportProductConfigurationsAsync(JsonTextWriter writer, ExportImportProgressInfo progressInfo, Action<ExportImportProgressInfo> progressCallback, CancellationToken cancellationToken)

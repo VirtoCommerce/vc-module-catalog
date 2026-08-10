@@ -181,6 +181,69 @@ public class CatalogExportImportBinaryPackageTests
     }
 
     [Fact]
+    public async Task DoExportAsync_MultiplePages_ExportsEachCategoryAndProductExactlyOnce()
+    {
+        // Arrange
+        var fixture = new CatalogExportImportTestFixture { BatchSize = 2 };
+        var categories = Enumerable.Range(1, 5)
+            .Select(index => new Category
+            {
+                Id = $"category-{index}",
+                CatalogId = "catalog",
+                Code = $"category-{index}",
+                Name = $"Category {index}",
+                Images = new List<Image>
+                {
+                    CreateImage($"category-image-{index}", $"catalog/category-{index}.jpg"),
+                },
+            })
+            .ToArray();
+        var products = Enumerable.Range(1, 5)
+            .Select(index => CreateProduct(
+                $"product-{index}",
+                new List<Image>
+                {
+                    CreateImage($"product-image-{index}", $"catalog/product-{index}.jpg"),
+                },
+                new List<Asset>()))
+            .ToArray();
+
+        foreach (var index in Enumerable.Range(1, 5))
+        {
+            fixture.AddBlob($"catalog/category-{index}.jpg", [(byte)index]);
+            fixture.AddBlob($"catalog/product-{index}.jpg", [(byte)(index + 5)]);
+        }
+
+        fixture.SetCategoryExportResults(categories);
+        fixture.SetProductExportResults(products);
+
+        using var output = new MemoryStream();
+
+        // Act
+        await fixture.CreateSut().DoExportAsync(
+            output,
+            new ExportImportOptions { HandleBinaryData = true },
+            fixture.CaptureProgress,
+            CancellationToken.None);
+
+        // Assert
+        var package = CatalogPackageTestHelper.Read(output.ToArray());
+        var exportedCategoryIds = package.Catalog["Categories"].Values<JObject>().Select(x => x.Value<string>("Id"));
+        var exportedProductIds = package.Catalog["Products"].Values<JObject>().Select(x => x.Value<string>("Id"));
+
+        exportedCategoryIds.Should().Equal(categories.Select(x => x.Id));
+        exportedProductIds.Should().Equal(products.Select(x => x.Id));
+        package.Entries.Keys.Count(x => x.StartsWith("assets/", StringComparison.Ordinal)).Should().Be(10);
+        fixture.BlobReadOpenCounts.Should().HaveCount(10).And.OnlyContain(x => x.Value == 1);
+        fixture.CategorySearchService.Verify(
+            x => x.SearchAsync(It.IsAny<CategorySearchCriteria>(), It.IsAny<bool>()),
+            Times.Exactly(4));
+        fixture.ProductSearchService.Verify(
+            x => x.SearchAsync(It.IsAny<ProductSearchCriteria>(), It.IsAny<bool>()),
+            Times.Exactly(4));
+    }
+
+    [Fact]
     public async Task DoExportAsync_AssociationObjectImage_DoesNotCreateOrphanSideCar()
     {
         // Arrange
