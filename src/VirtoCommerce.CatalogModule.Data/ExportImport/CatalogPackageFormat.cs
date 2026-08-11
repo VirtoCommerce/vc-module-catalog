@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -57,6 +58,18 @@ internal static class CatalogPackageFormat
         return entryName == CatalogEntryName
             || entryName == ManifestEntryName
             || IsValidBinaryDataReference(entryName);
+    }
+
+    public static bool IsLegacyBinaryDataReference(string reference, string sourceUrl)
+    {
+        if (!IsValidBinaryDataReference(reference))
+        {
+            return false;
+        }
+
+        var sourceUrlHash = SHA256.HashData(Encoding.UTF8.GetBytes(sourceUrl));
+        var expectedReference = $"{BinaryDataDirectory}{Convert.ToHexString(sourceUrlHash)}.bin";
+        return string.Equals(reference, expectedReference, StringComparison.OrdinalIgnoreCase);
     }
 
     public static byte[] CreateManifest()

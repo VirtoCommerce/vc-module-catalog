@@ -2,14 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Hangfire;
 using Microsoft.EntityFrameworkCore;
 using VirtoCommerce.CatalogModule.Core.Events;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Services;
+using VirtoCommerce.CatalogModule.Data.Jobs;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Events;
+using VirtoCommerce.Platform.Core.Jobs;
 
 namespace VirtoCommerce.CatalogModule.Data.Handlers
 {
@@ -24,24 +25,30 @@ namespace VirtoCommerce.CatalogModule.Data.Handlers
             _itemService = itemService;
         }
 
-        public Task Handle(CategoryChangedEvent message)
+        public async Task Handle(CategoryChangedEvent message)
         {
             var categoryIds = message.ChangedEntries
-                .Where(x =>
-                    x.EntryState == EntryState.Modified &&
-                    (x.OldEntry?.CatalogId != x.NewEntry?.CatalogId ||
-                    x.OldEntry?.ParentId != x.NewEntry?.ParentId ||
-                    x.OldEntry?.Links?.Count != x.NewEntry?.Links?.Count ||
-                    x.OldEntry?.IsActive != x.NewEntry?.IsActive))
+                .Where(IsHierarchyOrVisibilityChanged)
                 .Select(x => x.NewEntry.Id)
                 .ToList();
 
-            if (categoryIds.Any())
+            if (categoryIds.Count > 0)
             {
-                BackgroundJob.Enqueue(() => UpdateProductsAsync(categoryIds));
-            }
+                var payload = AbstractTypeFactory<UpdateProductsJobPayload>.TryCreateInstance();
+                payload.CategoryIds = categoryIds;
 
-            return Task.CompletedTask;
+                // Event handlers are resolved from the root provider, so avoid capturing a scoped job service.
+                await BackgroundJob.Enqueue<UpdateProductsJobHandler>(payload);
+            }
+        }
+
+        private static bool IsHierarchyOrVisibilityChanged(GenericChangedEntry<Category> entry)
+        {
+            return entry.EntryState == EntryState.Modified
+                && (entry.OldEntry?.CatalogId != entry.NewEntry?.CatalogId
+                    || entry.OldEntry?.ParentId != entry.NewEntry?.ParentId
+                    || entry.OldEntry?.Links?.Count != entry.NewEntry?.Links?.Count
+                    || entry.OldEntry?.IsActive != entry.NewEntry?.IsActive);
         }
 
         /// <summary>

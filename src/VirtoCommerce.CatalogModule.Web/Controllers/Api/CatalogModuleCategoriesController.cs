@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Hangfire;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
@@ -12,9 +11,10 @@ using VirtoCommerce.CatalogModule.Core;
 using VirtoCommerce.CatalogModule.Core.Extensions;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Services;
-using VirtoCommerce.CatalogModule.Data.BackgroundJobs;
+using VirtoCommerce.CatalogModule.Data.Jobs;
 using VirtoCommerce.CatalogModule.Web.Authorization;
 using VirtoCommerce.Platform.Core.Common;
+using VirtoCommerce.Platform.Core.Jobs;
 using VirtoCommerce.Platform.Core.PushNotifications;
 using VirtoCommerce.Platform.Core.Security;
 using VirtoCommerce.SearchModule.Core.BackgroundJobs;
@@ -290,18 +290,27 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
 
         [HttpPost("{id}/automatic-links")]
         [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
-        public ActionResult UpdateAutomaticLinks(string id)
+        public async Task<ActionResult> UpdateAutomaticLinks(string id)
         {
-            BackgroundJob.Enqueue<AutomaticLinksJob>(x => x.UpdateLinks(id, CancellationToken.None));
+            await EnqueueAutomaticLinksJob<UpdateAutomaticLinksJobHandler>(id);
             return NoContent();
         }
 
         [HttpDelete("{id}/automatic-links")]
         [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
-        public ActionResult DeleteAutomaticLinks(string id)
+        public async Task<ActionResult> DeleteAutomaticLinks(string id)
         {
-            BackgroundJob.Enqueue<AutomaticLinksJob>(x => x.DeleteLinks(id, CancellationToken.None));
+            await EnqueueAutomaticLinksJob<DeleteAutomaticLinksJobHandler>(id);
             return NoContent();
+        }
+
+        private static Task<string> EnqueueAutomaticLinksJob<THandler>(string categoryId)
+            where THandler : class
+        {
+            var payload = AbstractTypeFactory<AutomaticLinksJobPayload>.TryCreateInstance();
+            payload.CategoryId = categoryId;
+
+            return BackgroundJob.Enqueue<THandler>(payload);
         }
 
         /// <summary>

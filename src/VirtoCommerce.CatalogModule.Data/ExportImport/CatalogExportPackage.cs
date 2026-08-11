@@ -4,25 +4,29 @@ using System.IO;
 using System.IO.Compression;
 using System.Threading;
 using System.Threading.Tasks;
+using VirtoCommerce.Platform.Core.ExportImport;
 
 namespace VirtoCommerce.CatalogModule.Data.ExportImport;
 
 /// <summary>
-/// Writes the catalog payload and its binary sidecars to a nested package. The Platform export
-/// contract exposes one opaque module stream named with a .json suffix, so sidecars cannot be
-/// added to the outer archive without changing the Platform contract.
+/// Writes the catalog payload and its binary sidecars. A binary data writer stores sidecars next
+/// to the readable catalog JSON when the export orchestrator supports it. The nested package is
+/// retained as a fallback for older orchestrators that expose only one module stream.
 /// </summary>
 internal sealed class CatalogExportPackage : IDisposable
 {
     private readonly ZipArchive _archive;
     private readonly FileStream _catalogStream;
+    private readonly IExportBinaryDataWriter _binaryDataWriter;
     private readonly HashSet<string> _binaryDataEntries = new(StringComparer.Ordinal);
     private readonly HashSet<string> _failedBinaryDataEntries = new(StringComparer.Ordinal);
     private bool _isCompleted;
 
-    private CatalogExportPackage(Stream outputStream, bool includeBinaryData)
+    private CatalogExportPackage(Stream outputStream, bool includeBinaryData, IExportBinaryDataWriter binaryDataWriter)
     {
-        if (includeBinaryData)
+        _binaryDataWriter = binaryDataWriter;
+
+        if (includeBinaryData && binaryDataWriter == null)
         {
             var catalogStream = TemporaryFileStream.Create();
             try
@@ -46,11 +50,11 @@ internal sealed class CatalogExportPackage : IDisposable
 
     public Stream CatalogStream { get; }
 
-    public static CatalogExportPackage Create(Stream outputStream, bool includeBinaryData)
+    public static CatalogExportPackage Create(Stream outputStream, bool includeBinaryData, IExportBinaryDataWriter binaryDataWriter = null)
     {
         ArgumentNullException.ThrowIfNull(outputStream);
 
-        return new CatalogExportPackage(outputStream, includeBinaryData);
+        return new CatalogExportPackage(outputStream, includeBinaryData, binaryDataWriter);
     }
 
     public Task<string> WriteBinaryDataAsync(string sourceUrl, Func<Task<Stream>> openSourceStream, CancellationToken cancellationToken)
@@ -64,7 +68,7 @@ internal sealed class CatalogExportPackage : IDisposable
 
     private async Task<string> WriteBinaryDataInternalAsync(string sourceUrl, Func<Task<Stream>> openSourceStream, CancellationToken cancellationToken)
     {
-        if (_archive == null)
+        if (_archive == null && _binaryDataWriter == null)
         {
             throw new InvalidOperationException("The catalog export package is not configured to include binary data.");
         }
@@ -83,10 +87,16 @@ internal sealed class CatalogExportPackage : IDisposable
         try
         {
             await using var sourceStream = await openSourceStream();
-            var entry = _archive.CreateEntry(entryName, CompressionLevel.NoCompression);
-
-            await using var entryStream = entry.Open();
-            await sourceStream.CopyToAsync(entryStream, cancellationToken);
+            if (_binaryDataWriter != null)
+            {
+                await _binaryDataWriter.WriteAsync(entryName, sourceStream, cancellationToken);
+            }
+            else
+            {
+                var entry = _archive.CreateEntry(entryName, CompressionLevel.NoCompression);
+                await using var entryStream = entry.Open();
+                await sourceStream.CopyToAsync(entryStream, cancellationToken);
+            }
         }
         catch
         {

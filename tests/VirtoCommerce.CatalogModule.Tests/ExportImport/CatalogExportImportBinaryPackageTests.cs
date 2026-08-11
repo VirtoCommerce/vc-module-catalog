@@ -70,6 +70,133 @@ public class CatalogExportImportBinaryPackageTests
     }
 
     [Fact]
+    public async Task DoExportAsync_WithBinaryDataWriter_WritesReadableJsonAndExternalSidecars()
+    {
+        // Arrange
+        var fixture = new CatalogExportImportTestFixture();
+        var graph = CreateCatalogGraph();
+        RegisterBlobs(fixture, graph.Blobs);
+        fixture.SetCategoryExportResults(graph.Category);
+        fixture.SetProductExportResults(graph.Product);
+        var binaryDataStore = new TestBinaryDataStore();
+        using var output = new MemoryStream();
+
+        // Act
+        await fixture.CreateSut().DoExportAsync(
+            output,
+            binaryDataStore,
+            new ExportImportOptions { HandleBinaryData = true },
+            fixture.CaptureProgress,
+            CancellationToken.None);
+
+        // Assert
+        var exportedBytes = output.ToArray();
+        exportedBytes.Should().StartWith((byte)'{');
+
+        var catalog = JObject.Parse(Encoding.UTF8.GetString(exportedBytes));
+        var binaryObjects = GetBinaryObjects(catalog).ToArray();
+        binaryObjects.Should().HaveCount(6);
+
+        foreach (var (url, bytes) in graph.Blobs)
+        {
+            var reference = CatalogPackageTestHelper.CreateReference(url);
+            binaryObjects.Single(x => x.Value<string>("RelativeUrl") == url)
+                .Value<string>("BinaryDataReference").Should().Be(reference);
+            binaryDataStore.Entries[reference].Should().Equal(bytes);
+        }
+
+        fixture.Progress.SelectMany(x => x.Errors).Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task DoImportAsync_WithBinaryDataReader_RestoresExternalSidecars()
+    {
+        // Arrange
+        const string url = "catalog/external-sidecar.jpg";
+        var reference = CatalogPackageTestHelper.CreateReference(url);
+        var bytes = "GHIJ"u8.ToArray();
+        var product = CreateProduct(
+            "product",
+            [CreateImage("image", url, binaryReference: reference)],
+            []);
+        var catalog = JObject.FromObject(new { Products = new[] { product } });
+        var binaryDataStore = new TestBinaryDataStore();
+        binaryDataStore.Entries.Add(reference, bytes);
+        var fixture = new CatalogExportImportTestFixture();
+
+        // Act
+        await fixture.CreateSut().DoImportAsync(
+            new MemoryStream(Encoding.UTF8.GetBytes(catalog.ToString(Formatting.None)), writable: false),
+            binaryDataStore,
+            new ExportImportOptions { HandleBinaryData = true },
+            fixture.CaptureProgress,
+            CancellationToken.None);
+
+        // Assert
+        fixture.WrittenBlobs[url].Should().Equal(bytes);
+        binaryDataStore.ReadCounts[reference].Should().Be(1);
+        fixture.Progress.SelectMany(x => x.Errors).Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task DoImportAsync_LegacyHashedBinaryReference_RestoresNestedSidecar()
+    {
+        // Arrange
+        const string url = "catalog/v-accessories/1_5b4cfc96-3fe2-4ee2-a554-a57febd1c666_large.jpeg";
+        const string reference = "assets/e2884a07631f8b75262e8f64459a4dd238d12dffcb5574f240374f3619af275e.bin";
+        var bytes = "QRST"u8.ToArray();
+        var product = CreateProduct(
+            "product",
+            [CreateImage("image", url, binaryReference: reference)],
+            []);
+        var package = CatalogPackageTestHelper.Build(
+            JObject.FromObject(new { Products = new[] { product } }),
+            (reference, bytes));
+        var fixture = new CatalogExportImportTestFixture();
+
+        // Act
+        await fixture.CreateSut().DoImportAsync(
+            new MemoryStream(package, writable: false),
+            new ExportImportOptions { HandleBinaryData = true },
+            fixture.CaptureProgress,
+            CancellationToken.None);
+
+        // Assert
+        fixture.WrittenBlobs[url].Should().Equal(bytes);
+        fixture.Progress.SelectMany(x => x.Errors).Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task DoImportAsync_ExternalLegacyHashedBinaryReference_ReportsErrorWithoutReadingSidecar()
+    {
+        // Arrange
+        const string url = "catalog/v-accessories/1_5b4cfc96-3fe2-4ee2-a554-a57febd1c666_large.jpeg";
+        const string reference = "assets/e2884a07631f8b75262e8f64459a4dd238d12dffcb5574f240374f3619af275e.bin";
+        var product = CreateProduct(
+            "product",
+            [CreateImage("image", url, binaryReference: reference)],
+            []);
+        var catalog = JObject.FromObject(new { Products = new[] { product } });
+        var binaryDataStore = new TestBinaryDataStore();
+        binaryDataStore.Entries.Add(reference, "[\\]^"u8.ToArray());
+        var fixture = new CatalogExportImportTestFixture();
+
+        // Act
+        await fixture.CreateSut().DoImportAsync(
+            new MemoryStream(Encoding.UTF8.GetBytes(catalog.ToString(Formatting.None)), writable: false),
+            binaryDataStore,
+            new ExportImportOptions { HandleBinaryData = true },
+            fixture.CaptureProgress,
+            CancellationToken.None);
+
+        // Assert
+        fixture.BlobWriteOpenCounts.Should().BeEmpty();
+        binaryDataStore.ReadCounts.Should().NotContainKey(reference);
+        fixture.Progress.SelectMany(x => x.Errors)
+            .Should().Contain(x => x.Contains("does not match destination URL", StringComparison.Ordinal));
+    }
+
+    [Fact]
     public async Task DoExportAsync_DuplicateUrlAndExternalUrl_DeduplicatesAndSkipsExternalBinary()
     {
         // Arrange
@@ -180,6 +307,32 @@ public class CatalogExportImportBinaryPackageTests
         var package = CatalogPackageTestHelper.Read(output.ToArray());
         GetBinaryObjects(package.Catalog).Should().BeEmpty();
         package.Entries.Keys.Should().NotContain(x => x.StartsWith("assets/", StringComparison.Ordinal));
+        fixture.BlobReadOpenCounts.Should().BeEmpty();
+        fixture.Progress.SelectMany(x => x.Errors).Should().BeEmpty();
+        fixture.Logger.Invocations.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task DoExportAsync_WithBinaryDataWriterAndWithoutImagesOrAssets_WritesReadableJsonOnly()
+    {
+        // Arrange
+        var fixture = new CatalogExportImportTestFixture();
+        fixture.SetProductExportResults(CreateProduct("product", null, null));
+        var binaryDataStore = new TestBinaryDataStore();
+        using var output = new MemoryStream();
+
+        // Act
+        await fixture.CreateSut().DoExportAsync(
+            output,
+            binaryDataStore,
+            new ExportImportOptions { HandleBinaryData = true },
+            fixture.CaptureProgress,
+            CancellationToken.None);
+
+        // Assert
+        var catalog = JObject.Parse(Encoding.UTF8.GetString(output.ToArray()));
+        GetBinaryObjects(catalog).Should().BeEmpty();
+        binaryDataStore.Entries.Should().BeEmpty();
         fixture.BlobReadOpenCounts.Should().BeEmpty();
         fixture.Progress.SelectMany(x => x.Errors).Should().BeEmpty();
         fixture.Logger.Invocations.Should().BeEmpty();
@@ -1183,6 +1336,29 @@ public class CatalogExportImportBinaryPackageTests
         foreach (var (url, bytes) in blobs)
         {
             fixture.AddBlob(url, bytes);
+        }
+    }
+
+    private sealed class TestBinaryDataStore : IExportBinaryDataWriter, IImportBinaryDataReader
+    {
+        public Dictionary<string, byte[]> Entries { get; } = new(StringComparer.Ordinal);
+        public Dictionary<string, int> ReadCounts { get; } = new(StringComparer.Ordinal);
+
+        public async Task WriteAsync(string reference, Stream sourceStream, CancellationToken cancellationToken)
+        {
+            using var output = new MemoryStream();
+            await sourceStream.CopyToAsync(output, cancellationToken);
+            Entries.Add(reference, output.ToArray());
+        }
+
+        public Task<Stream> OpenReadAsync(string reference, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            ReadCounts.TryGetValue(reference, out var readCount);
+            ReadCounts[reference] = readCount + 1;
+            return Task.FromResult<Stream>(Entries.TryGetValue(reference, out var bytes)
+                ? new MemoryStream(bytes, writable: false)
+                : null);
         }
     }
 

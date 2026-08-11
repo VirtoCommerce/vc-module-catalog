@@ -111,7 +111,12 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             }
         }
 
-        public async Task DoExportAsync(Stream outStream, ExportImportOptions options, Action<ExportImportProgressInfo> progressCallback, CancellationToken cancellationToken)
+        public Task DoExportAsync(Stream outStream, ExportImportOptions options, Action<ExportImportProgressInfo> progressCallback, CancellationToken cancellationToken)
+        {
+            return DoExportAsync(outStream, null, options, progressCallback, cancellationToken);
+        }
+
+        public async Task DoExportAsync(Stream outStream, IExportBinaryDataWriter binaryDataWriter, ExportImportOptions options, Action<ExportImportProgressInfo> progressCallback, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
             await LoadSettingsAsync();
@@ -119,7 +124,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             var progressInfo = new ExportImportProgressInfo { Description = "loading data..." };
             progressCallback(progressInfo);
 
-            using var package = CatalogExportPackage.Create(outStream, options?.HandleBinaryData == true);
+            using var package = CatalogExportPackage.Create(outStream, options?.HandleBinaryData == true, binaryDataWriter);
             using (var streamWriter = new StreamWriter(package.CatalogStream, new UTF8Encoding(false), 1024, leaveOpen: true))
             using (var writer = new JsonTextWriter(streamWriter))
             {
@@ -367,7 +372,12 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             ProgressCallback = progressCallback,
         };
 
-        public async Task DoImportAsync(Stream inputStream, ExportImportOptions options, Action<ExportImportProgressInfo> progressCallback, CancellationToken cancellationToken)
+        public Task DoImportAsync(Stream inputStream, ExportImportOptions options, Action<ExportImportProgressInfo> progressCallback, CancellationToken cancellationToken)
+        {
+            return DoImportAsync(inputStream, null, options, progressCallback, cancellationToken);
+        }
+
+        public async Task DoImportAsync(Stream inputStream, IImportBinaryDataReader binaryDataReader, ExportImportOptions options, Action<ExportImportProgressInfo> progressCallback, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
             await LoadSettingsAsync();
@@ -377,7 +387,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
             var propertyGroupsWithForeignKeys = new List<PropertyGroup>();
             var propertiesWithForeignKeys = new List<Property>();
 
-            using var package = await CatalogImportPackage.OpenAsync(inputStream, cancellationToken);
+            using var package = await CatalogImportPackage.OpenAsync(inputStream, binaryDataReader, cancellationToken);
             using var streamReader = new StreamReader(package.CatalogStream, Encoding.UTF8, detectEncodingFromByteOrderMarks: true, 1024, leaveOpen: true);
             using var reader = new JsonTextReader(streamReader);
 
@@ -1133,8 +1143,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                         throw new InvalidDataException($"The binary data reference '{asset.BinaryDataReference}' is invalid.");
                     }
 
-                    var expectedReference = CatalogPackageFormat.CreateBinaryDataReference(url);
-                    if (!string.Equals(asset.BinaryDataReference, expectedReference, StringComparison.Ordinal))
+                    if (!package.IsBinaryDataReferenceForDestination(asset.BinaryDataReference, url))
                     {
                         throw new InvalidDataException($"Binary data reference '{asset.BinaryDataReference}' does not match destination URL '{url}'.");
                     }
@@ -1144,7 +1153,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                         return;
                     }
 
-                    await using (var sourceStream = package.OpenBinaryData(asset.BinaryDataReference))
+                    await using (var sourceStream = await package.OpenBinaryDataAsync(asset.BinaryDataReference, cancellationToken))
                     await using (var targetStream = await _blobStorageProvider.OpenWriteAsync(url))
                     {
                         await sourceStream.CopyToAsync(targetStream, cancellationToken);

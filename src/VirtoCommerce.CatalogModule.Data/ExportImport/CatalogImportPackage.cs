@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using VirtoCommerce.Platform.Core.ExportImport;
 
 namespace VirtoCommerce.CatalogModule.Data.ExportImport;
 
@@ -18,13 +19,15 @@ internal sealed class CatalogImportPackage : IDisposable
     private readonly Stream _inputStream;
     private readonly FileStream _temporaryStream;
     private readonly ZipArchive _archive;
+    private readonly IImportBinaryDataReader _binaryDataReader;
     private readonly HashSet<(string Reference, string DestinationUrl)> _importedBinaryData = [];
 
-    private CatalogImportPackage(Stream inputStream, Stream catalogStream, FileStream temporaryStream = null, ZipArchive archive = null)
+    private CatalogImportPackage(Stream inputStream, Stream catalogStream, IImportBinaryDataReader binaryDataReader, FileStream temporaryStream = null, ZipArchive archive = null)
     {
         _inputStream = inputStream;
         _temporaryStream = temporaryStream;
         _archive = archive;
+        _binaryDataReader = binaryDataReader;
         CatalogStream = catalogStream;
     }
 
@@ -32,13 +35,18 @@ internal sealed class CatalogImportPackage : IDisposable
 
     public static Task<CatalogImportPackage> OpenAsync(Stream inputStream, CancellationToken cancellationToken)
     {
+        return OpenAsync(inputStream, null, cancellationToken);
+    }
+
+    public static Task<CatalogImportPackage> OpenAsync(Stream inputStream, IImportBinaryDataReader binaryDataReader, CancellationToken cancellationToken)
+    {
         ArgumentNullException.ThrowIfNull(inputStream);
         cancellationToken.ThrowIfCancellationRequested();
 
-        return OpenInternalAsync(inputStream, cancellationToken);
+        return OpenInternalAsync(inputStream, binaryDataReader, cancellationToken);
     }
 
-    private static async Task<CatalogImportPackage> OpenInternalAsync(Stream inputStream, CancellationToken cancellationToken)
+    private static async Task<CatalogImportPackage> OpenInternalAsync(Stream inputStream, IImportBinaryDataReader binaryDataReader, CancellationToken cancellationToken)
     {
         FileStream temporaryStream = null;
         ZipArchive archive = null;
@@ -53,7 +61,7 @@ internal sealed class CatalogImportPackage : IDisposable
             if (!IsZipArchive(signature, signatureLength))
             {
                 var catalogStream = new PrefixReadStream(signature, signatureLength, inputStream, leaveOpen: true);
-                return new CatalogImportPackage(inputStream, catalogStream);
+                return new CatalogImportPackage(inputStream, catalogStream, binaryDataReader);
             }
 
             temporaryStream = TemporaryFileStream.Create();
@@ -68,7 +76,7 @@ internal sealed class CatalogImportPackage : IDisposable
             var catalogEntry = archive.GetEntry(CatalogPackageFormat.CatalogEntryName)
                 ?? throw new InvalidDataException($"The catalog export package does not contain '{CatalogPackageFormat.CatalogEntryName}'.");
 
-            return new CatalogImportPackage(inputStream, catalogEntry.Open(), temporaryStream, archive);
+            return new CatalogImportPackage(inputStream, catalogEntry.Open(), binaryDataReader, temporaryStream, archive);
         }
         catch
         {
@@ -92,27 +100,44 @@ internal sealed class CatalogImportPackage : IDisposable
         }
     }
 
-    public Stream OpenBinaryData(string reference)
+    public async Task<Stream> OpenBinaryDataAsync(string reference, CancellationToken cancellationToken)
     {
-        if (_archive == null)
-        {
-            throw new InvalidDataException("The catalog export is JSON and does not contain side-car binary data.");
-        }
-
         if (!CatalogPackageFormat.IsValidBinaryDataReference(reference))
         {
             throw new InvalidDataException($"The binary data reference '{reference}' is invalid.");
         }
 
-        var entry = _archive.GetEntry(reference)
-            ?? throw new InvalidDataException($"The catalog export package does not contain binary data entry '{reference}'.");
+        if (_archive != null)
+        {
+            var entry = _archive.GetEntry(reference)
+                ?? throw new InvalidDataException($"The catalog export package does not contain binary data entry '{reference}'.");
 
-        return entry.Open();
+            return entry.Open();
+        }
+
+        if (_binaryDataReader != null)
+        {
+            return await _binaryDataReader.OpenReadAsync(reference, cancellationToken)
+                ?? throw new InvalidDataException($"The catalog export package does not contain binary data entry '{reference}'.");
+        }
+
+        throw new InvalidDataException("The catalog export is JSON and does not contain side-car binary data.");
     }
 
     public bool IsBinaryDataImported(string reference, string destinationUrl)
     {
         return _importedBinaryData.Contains((reference, destinationUrl));
+    }
+
+    public bool IsBinaryDataReferenceForDestination(string reference, string destinationUrl)
+    {
+        var expectedReference = CatalogPackageFormat.CreateBinaryDataReference(destinationUrl);
+
+        // Packages produced before source URLs became visible used assets/<SHA256>.bin. Accept that
+        // URL-hash shape only inside a validated nested package; external sidecars must keep
+        // the strict source URL mapping so one top-level asset cannot be substituted for another.
+        return string.Equals(reference, expectedReference, StringComparison.Ordinal)
+            || _archive != null && CatalogPackageFormat.IsLegacyBinaryDataReference(reference, destinationUrl);
     }
 
     public void MarkBinaryDataImported(string reference, string destinationUrl)

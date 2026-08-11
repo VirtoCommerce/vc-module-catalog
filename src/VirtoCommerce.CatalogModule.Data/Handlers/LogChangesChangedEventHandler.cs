@@ -2,14 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Hangfire;
 using VirtoCommerce.CatalogModule.Core;
 using VirtoCommerce.CatalogModule.Core.Events;
 using VirtoCommerce.CatalogModule.Core.Model;
+using VirtoCommerce.CatalogModule.Data.Jobs;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.Platform.Core.ChangeLog;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Events;
+using VirtoCommerce.Platform.Core.Jobs;
 
 namespace VirtoCommerce.CatalogModule.Data.Handlers
 {
@@ -30,22 +31,27 @@ namespace VirtoCommerce.CatalogModule.Data.Handlers
 
         public virtual Task Handle(ProductChangedEvent @event)
         {
-            InnerHandle(@event);
-            return Task.CompletedTask;
+            return InnerHandle(@event);
         }
 
         public virtual Task Handle(CategoryChangedEvent @event)
         {
-            InnerHandle(@event);
-            return Task.CompletedTask;
+            return InnerHandle(@event);
         }
 
-        protected virtual void InnerHandle<T>(GenericChangedEntryEvent<T> @event) where T : IEntity
+        // Returns Task instead of void: enqueuing is asynchronous now. Breaking for an already-compiled override,
+        // which stops overriding the signature Handle calls and would be silently skipped.
+        protected virtual Task InnerHandle<T>(GenericChangedEntryEvent<T> @event) where T : IEntity
         {
             var logOperations = GetLogOperations(@event.ChangedEntries).ToArray();
 
+            var payload = AbstractTypeFactory<LogEntityChangesJobPayload>.TryCreateInstance();
+            payload.OperationLogs = logOperations;
+
             //Background task is used here for performance reasons
-            BackgroundJob.Enqueue(() => LogEntityChangesInBackgroundAsync(logOperations));
+            //The static facade, not an injected IBackgroundJob: RegisterEventHandler resolves this handler once from
+            //the root provider and holds it for the process lifetime, so it must not capture a Scoped dependency.
+            return BackgroundJob.Enqueue<LogEntityChangesJobHandler>(payload);
         }
 
         protected virtual IEnumerable<OperationLog> GetLogOperations<T>(IEnumerable<GenericChangedEntry<T>> changedEntries) where T : IEntity
