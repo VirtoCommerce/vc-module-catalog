@@ -44,11 +44,35 @@ namespace VirtoCommerce.CatalogModule.Data.Handlers
 
         private static bool IsHierarchyOrVisibilityChanged(GenericChangedEntry<Category> entry)
         {
-            return entry.EntryState == EntryState.Modified
-                && (entry.OldEntry?.CatalogId != entry.NewEntry?.CatalogId
-                    || entry.OldEntry?.ParentId != entry.NewEntry?.ParentId
-                    || entry.OldEntry?.Links?.Count != entry.NewEntry?.Links?.Count
-                    || entry.OldEntry?.IsActive != entry.NewEntry?.IsActive);
+            if (entry.EntryState != EntryState.Modified)
+            {
+                return false;
+            }
+
+            return IsCatalogChanged(entry)
+                || IsParentChanged(entry)
+                || IsLinksCountChanged(entry)
+                || IsActiveChanged(entry);
+        }
+
+        private static bool IsCatalogChanged(GenericChangedEntry<Category> entry)
+        {
+            return entry.OldEntry?.CatalogId != entry.NewEntry?.CatalogId;
+        }
+
+        private static bool IsParentChanged(GenericChangedEntry<Category> entry)
+        {
+            return entry.OldEntry?.ParentId != entry.NewEntry?.ParentId;
+        }
+
+        private static bool IsLinksCountChanged(GenericChangedEntry<Category> entry)
+        {
+            return entry.OldEntry?.Links?.Count != entry.NewEntry?.Links?.Count;
+        }
+
+        private static bool IsActiveChanged(GenericChangedEntry<Category> entry)
+        {
+            return entry.OldEntry?.IsActive != entry.NewEntry?.IsActive;
         }
 
         /// <summary>
