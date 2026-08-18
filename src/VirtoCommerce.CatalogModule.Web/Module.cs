@@ -29,7 +29,9 @@ using VirtoCommerce.CatalogModule.Core.Search.Sorting.Resolvers;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.Authorization;
 using VirtoCommerce.CatalogModule.Data.ExportImport;
+using VirtoCommerce.CatalogModule.Data.BackgroundJobs;
 using VirtoCommerce.CatalogModule.Data.Handlers;
+using VirtoCommerce.CatalogModule.Data.Jobs;
 using VirtoCommerce.CatalogModule.Data.MySql;
 using VirtoCommerce.CatalogModule.Data.PostgreSql;
 using VirtoCommerce.CatalogModule.Data.Repositories;
@@ -51,6 +53,7 @@ using VirtoCommerce.ExportModule.Data.Services;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Events;
 using VirtoCommerce.Platform.Core.ExportImport;
+using VirtoCommerce.Platform.Core.Jobs;
 using VirtoCommerce.Platform.Core.Modularity;
 using VirtoCommerce.Platform.Core.Security;
 using VirtoCommerce.Platform.Core.Settings;
@@ -175,6 +178,14 @@ namespace VirtoCommerce.CatalogModule.Web
             serviceCollection.AddTransient<IndexProductChangedEventHandler>();
             serviceCollection.AddTransient<VideoOwnerChangingEventHandler>();
             serviceCollection.AddTransient<TrackSpecialChangesEventHandler>();
+
+            serviceCollection.AddTransient<AutomaticLinksJob>();
+            serviceCollection.AddBackgroundJob<UpdateAutomaticLinksJobHandler, AutomaticLinksJobPayload>();
+            serviceCollection.AddBackgroundJob<DeleteAutomaticLinksJobHandler, AutomaticLinksJobPayload>();
+            serviceCollection.AddBackgroundJob<UpdateProductsJobHandler, UpdateProductsJobPayload>();
+            // Not triggerable by name: this job writes audit-log rows, and an OperationLog whose Id matches an existing
+            // row takes ChangeLogService.SaveChangesAsync's Patch branch, so a caller-supplied payload must never reach it.
+            serviceCollection.AddBackgroundJob<LogEntityChangesJobHandler, LogEntityChangesJobPayload>(triggerable: false);
 
             serviceCollection.AddTransient<ISeoResolver, CatalogSeoResolver>();
             serviceCollection.AddTransient<ISeoResolver, BrandSeoResolver>();

@@ -2,14 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Hangfire;
 using Microsoft.EntityFrameworkCore;
 using VirtoCommerce.CatalogModule.Core.Events;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Services;
+using VirtoCommerce.CatalogModule.Data.Jobs;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Events;
+using VirtoCommerce.Platform.Core.Jobs;
 
 namespace VirtoCommerce.CatalogModule.Data.Handlers
 {
@@ -24,7 +25,7 @@ namespace VirtoCommerce.CatalogModule.Data.Handlers
             _itemService = itemService;
         }
 
-        public Task Handle(CategoryChangedEvent message)
+        public async Task Handle(CategoryChangedEvent message)
         {
             var categoryIds = message.ChangedEntries
                 .Where(x =>
@@ -38,10 +39,13 @@ namespace VirtoCommerce.CatalogModule.Data.Handlers
 
             if (categoryIds.Any())
             {
-                BackgroundJob.Enqueue(() => UpdateProductsAsync(categoryIds));
-            }
+                var payload = AbstractTypeFactory<UpdateProductsJobPayload>.TryCreateInstance();
+                payload.CategoryIds = categoryIds;
 
-            return Task.CompletedTask;
+                //The static facade, not an injected IBackgroundJob: RegisterEventHandler resolves this handler once
+                //from the root provider and holds it for the process lifetime, so it must not capture a Scoped dependency.
+                await BackgroundJob.Enqueue<UpdateProductsJobHandler>(payload);
+            }
         }
 
         /// <summary>
