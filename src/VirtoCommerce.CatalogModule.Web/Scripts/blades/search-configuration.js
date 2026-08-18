@@ -4,6 +4,12 @@ angular.module('virtoCommerce.catalogModule')
     blade.isLoading = false;
     blade.headIcon = 'fas fa-sliders-h';
 
+    blade.refresh = function () {
+        if (blade.parentBlade && angular.isFunction(blade.parentBlade.refresh)) {
+            blade.parentBlade.refresh();
+        }
+    };
+
     function openSorting() {
         bladeNavigationService.showBlade({
             id: 'storeSortOrderings',
