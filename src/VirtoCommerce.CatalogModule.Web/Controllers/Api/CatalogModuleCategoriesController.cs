@@ -304,7 +304,9 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             return NoContent();
         }
 
-        private static Task<string> EnqueueAutomaticLinksJob<THandler>(string categoryId)
+        // The static facade, not an injected IBackgroundJob: keeps the controller's dependency list unchanged, and the
+        // facade opens its own scope per call, so nothing scoped is captured here.
+        private static Task EnqueueAutomaticLinksJob<THandler>(string categoryId)
             where THandler : class
         {
             var payload = AbstractTypeFactory<AutomaticLinksJobPayload>.TryCreateInstance();

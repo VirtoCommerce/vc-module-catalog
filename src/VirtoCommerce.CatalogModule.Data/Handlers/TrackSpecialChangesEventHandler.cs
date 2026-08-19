@@ -28,51 +28,24 @@ namespace VirtoCommerce.CatalogModule.Data.Handlers
         public async Task Handle(CategoryChangedEvent message)
         {
             var categoryIds = message.ChangedEntries
-                .Where(IsHierarchyOrVisibilityChanged)
+                .Where(x =>
+                    x.EntryState == EntryState.Modified &&
+                    (x.OldEntry?.CatalogId != x.NewEntry?.CatalogId ||
+                    x.OldEntry?.ParentId != x.NewEntry?.ParentId ||
+                    x.OldEntry?.Links?.Count != x.NewEntry?.Links?.Count ||
+                    x.OldEntry?.IsActive != x.NewEntry?.IsActive))
                 .Select(x => x.NewEntry.Id)
                 .ToList();
 
-            if (categoryIds.Count > 0)
+            if (categoryIds.Any())
             {
                 var payload = AbstractTypeFactory<UpdateProductsJobPayload>.TryCreateInstance();
                 payload.CategoryIds = categoryIds;
 
-                // Event handlers are resolved from the root provider, so avoid capturing a scoped job service.
+                //The static facade, not an injected IBackgroundJob: RegisterEventHandler resolves this handler once
+                //from the root provider and holds it for the process lifetime, so it must not capture a Scoped dependency.
                 await BackgroundJob.Enqueue<UpdateProductsJobHandler>(payload);
             }
-        }
-
-        private static bool IsHierarchyOrVisibilityChanged(GenericChangedEntry<Category> entry)
-        {
-            if (entry.EntryState != EntryState.Modified)
-            {
-                return false;
-            }
-
-            return IsCatalogChanged(entry)
-                || IsParentChanged(entry)
-                || IsLinksCountChanged(entry)
-                || IsActiveChanged(entry);
-        }
-
-        private static bool IsCatalogChanged(GenericChangedEntry<Category> entry)
-        {
-            return entry.OldEntry?.CatalogId != entry.NewEntry?.CatalogId;
-        }
-
-        private static bool IsParentChanged(GenericChangedEntry<Category> entry)
-        {
-            return entry.OldEntry?.ParentId != entry.NewEntry?.ParentId;
-        }
-
-        private static bool IsLinksCountChanged(GenericChangedEntry<Category> entry)
-        {
-            return entry.OldEntry?.Links?.Count != entry.NewEntry?.Links?.Count;
-        }
-
-        private static bool IsActiveChanged(GenericChangedEntry<Category> entry)
-        {
-            return entry.OldEntry?.IsActive != entry.NewEntry?.IsActive;
         }
 
         /// <summary>
