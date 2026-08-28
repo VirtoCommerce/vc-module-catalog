@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Newtonsoft.Json;
 using VirtoCommerce.AssetsModule.Core.Assets;
@@ -82,7 +83,8 @@ namespace VirtoCommerce.CatalogModule.Tests.ExportImport
                 measureSearchService.Object,
                 new Mock<IPropertyGroupService>().Object,
                 propertyGroupSearchService.Object,
-                new Mock<ISettingsManager>().Object);
+                new Mock<ISettingsManager>().Object,
+                NullLogger<CatalogExportImport>.Instance);
         }
 
         [Fact]
