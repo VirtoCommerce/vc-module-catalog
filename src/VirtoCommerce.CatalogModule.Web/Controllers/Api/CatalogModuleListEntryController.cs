@@ -124,7 +124,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             }
 
             var searchResult = await SearchAllAuthorizedListEntriesAsync(authorizedCriteria, cancellationToken);
-            var hasLinkEntries = await LoadCatalogEntriesAsync<IHasLinks>(searchResult.Select(x => x.Id).ToArray());
+            var hasLinkEntries = await LoadCatalogEntriesAsync<IHasLinks>(searchResult.Select(x => x.Id).ToArray(), excludeVariations: true);
 
             if (hasLinkEntries.Count == 0)
             {
@@ -195,7 +195,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         public async Task<ActionResult> DeleteLinks([FromBody] CategoryLink[] links)
         {
             var entryIds = links.Select(x => x.EntryId).ToArray();
-            var hasLinkEntries = await LoadCatalogEntriesAsync<IHasLinks>(entryIds);
+            var hasLinkEntries = await LoadCatalogEntriesAsync<IHasLinks>(entryIds, excludeVariations: true);
 
             if (!await authorizationService.AuthorizeEntitiesAsync(
                     User,
