@@ -689,6 +689,8 @@
         "sorting-type-labels": {
           "score": "スコア",
           "priority": "優先度",
+          "priorityAscending": "優先度（昇順）",
+          "priorityDescending": "優先度（降順）",
           "nameAscending": "名前（昇順）",
           "nameDescending": "名前（降順）",
           "numericAscending": "数値（昇順）",
