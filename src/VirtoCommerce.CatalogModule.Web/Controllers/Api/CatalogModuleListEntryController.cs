@@ -67,7 +67,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         public async Task<ActionResult> CreateLinks([FromBody] CategoryLink[] links)
         {
             var entryIds = links.Select(x => x.EntryId).ToArray();
-            var hasLinkEntries = await LoadCatalogEntriesAsync<IHasLinks>(entryIds);
+            var hasLinkEntries = await LoadCatalogEntriesAsync<IHasLinks>(entryIds, excludeVariations: true);
 
             if (!await authorizationService.AuthorizeEntitiesAsync(
                     User,
@@ -124,7 +124,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             }
 
             var searchResult = await SearchAllAuthorizedListEntriesAsync(authorizedCriteria, cancellationToken);
-            var hasLinkEntries = await LoadCatalogEntriesAsync<IHasLinks>(searchResult.Select(x => x.Id).ToArray());
+            var hasLinkEntries = await LoadCatalogEntriesAsync<IHasLinks>(searchResult.Select(x => x.Id).ToArray(), excludeVariations: true);
 
             if (hasLinkEntries.Count == 0)
             {
@@ -195,7 +195,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         public async Task<ActionResult> DeleteLinks([FromBody] CategoryLink[] links)
         {
             var entryIds = links.Select(x => x.EntryId).ToArray();
-            var hasLinkEntries = await LoadCatalogEntriesAsync<IHasLinks>(entryIds);
+            var hasLinkEntries = await LoadCatalogEntriesAsync<IHasLinks>(entryIds, excludeVariations: true);
 
             if (!await authorizationService.AuthorizeEntitiesAsync(
                     User,
@@ -387,12 +387,18 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             }
         }
 
-        private async Task<IList<T>> LoadCatalogEntriesAsync<T>(string[] ids)
+        private async Task<IList<T>> LoadCatalogEntriesAsync<T>(string[] ids, bool excludeVariations = false)
         {
+            var responseGroup = ItemResponseGroup.Links | ItemResponseGroup.ItemProperties;
 #pragma warning disable CS0618 // Variations can be used here
-            var products = await itemService.GetAsync(ids, (ItemResponseGroup.Links | ItemResponseGroup.ItemProperties | ItemResponseGroup.Variations).ToString());
+            if (!excludeVariations)
+            {
+                responseGroup |= ItemResponseGroup.Variations;
+            }
 #pragma warning restore CS0618
-            var categories = await categoryService.GetAsync(ids.Except(products.Select(x => x.Id)).ToList(), (CategoryResponseGroup.WithLinks).ToString());
+
+            var products = await itemService.GetAsync(ids, responseGroup.ToString());
+            var categories = await categoryService.GetAsync(ids.Except(products.Select(x => x.Id)).ToList(), CategoryResponseGroup.WithLinks.ToString());
             return products.OfType<T>().Concat(categories.OfType<T>()).ToList();
         }
     }
