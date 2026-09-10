@@ -689,6 +689,8 @@
         "sorting-type-labels": {
           "score": "评分",
           "priority": "优先级",
+          "priorityAscending": "优先级升序",
+          "priorityDescending": "优先级降序",
           "nameAscending": "名称升序",
           "nameDescending": "名称降序",
           "numericAscending": "数值升序",

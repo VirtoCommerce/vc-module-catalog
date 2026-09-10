@@ -689,6 +689,8 @@
         "sorting-type-labels": {
           "score": "Poäng",
           "priority": "Prioritet",
+          "priorityAscending": "Prioritet stigande",
+          "priorityDescending": "Prioritet fallande",
           "nameAscending": "Namn stigande",
           "nameDescending": "Namn fallande",
           "numericAscending": "Numerisk stigande",

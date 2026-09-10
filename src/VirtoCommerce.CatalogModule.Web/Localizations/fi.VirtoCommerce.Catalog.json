@@ -689,6 +689,8 @@
         "sorting-type-labels": {
           "score": "Pisteet",
           "priority": "Prioriteetti",
+          "priorityAscending": "Prioriteetti nouseva",
+          "priorityDescending": "Prioriteetti laskeva",
           "nameAscending": "Nimi nouseva",
           "nameDescending": "Nimi laskeva",
           "numericAscending": "Numeerinen nouseva",

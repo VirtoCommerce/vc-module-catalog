@@ -689,6 +689,8 @@
         "sorting-type-labels": {
           "score": "Wynik",
           "priority": "Priorytet",
+          "priorityAscending": "Priorytet rosnąco",
+          "priorityDescending": "Priorytet malejąco",
           "nameAscending": "Nazwa rosnąco",
           "nameDescending": "Nazwa malejąco",
           "numericAscending": "Numerycznie rosnąco",
