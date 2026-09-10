@@ -689,6 +689,8 @@
         "sorting-type-labels": {
           "score": "Pontuação",
           "priority": "Prioridade",
+          "priorityAscending": "Prioridade ascendente",
+          "priorityDescending": "Prioridade descendente",
           "nameAscending": "Nome ascendente",
           "nameDescending": "Nome descendente",
           "numericAscending": "Numérico ascendente",

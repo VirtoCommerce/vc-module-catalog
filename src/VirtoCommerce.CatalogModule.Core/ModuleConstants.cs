@@ -19,7 +19,15 @@ namespace VirtoCommerce.CatalogModule.Core
         public const string ConfigurationSectionFilesScope = "product-configuration";
 
         public const string TermValuesSortingTypeScore = "Score";
+
+        /// <summary>
+        /// Kept for stores configured before priority sorting was split into an explicit direction.
+        /// Behaves as <see cref="TermValuesSortingTypePriorityAscending"/>.
+        /// </summary>
         public const string TermValuesSortingTypePriority = "Priority";
+
+        public const string TermValuesSortingTypePriorityAscending = "PriorityAscending";
+        public const string TermValuesSortingTypePriorityDescending = "PriorityDescending";
         public const string TermValuesSortingTypeNameAscending = "NameAscending";
         public const string TermValuesSortingTypeNameDescending = "NameDescending";
         public const string TermValuesSortingTypeNumericAscending = "NumericAscending";

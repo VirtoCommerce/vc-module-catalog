@@ -689,6 +689,8 @@
         "sorting-type-labels": {
           "score": "Poeng",
           "priority": "Prioritet",
+          "priorityAscending": "Prioritet stigende",
+          "priorityDescending": "Prioritet synkende",
           "nameAscending": "Navn stigende",
           "nameDescending": "Navn synkende",
           "numericAscending": "Numerisk stigende",

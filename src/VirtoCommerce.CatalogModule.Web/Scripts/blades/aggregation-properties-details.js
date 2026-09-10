@@ -17,8 +17,12 @@ angular.module('virtoCommerce.catalogModule')
                     nameKey: "catalog.blades.aggregation-properties-details.sorting-type-labels.score",
                 },
                 {
-                    id: "Priority",
-                    nameKey: "catalog.blades.aggregation-properties-details.sorting-type-labels.priority",
+                    id: "PriorityAscending",
+                    nameKey: "catalog.blades.aggregation-properties-details.sorting-type-labels.priorityAscending",
+                },
+                {
+                    id: "PriorityDescending",
+                    nameKey: "catalog.blades.aggregation-properties-details.sorting-type-labels.priorityDescending",
                 },
                 {
                     id: "NameAscending",
@@ -39,6 +43,13 @@ angular.module('virtoCommerce.catalogModule')
 
             function initializeBlade() {
                 $scope.isValid = true;
+
+                // Stores configured before priority sorting was split into an explicit direction hold a
+                // bare "Priority", which now means ascending. Show it as such instead of a blank dropdown.
+                if (blade.property.termValuesSortingType === 'Priority') {
+                    blade.property.termValuesSortingType = 'PriorityAscending';
+                }
+
                 blade.originalProperty = blade.property;
                 blade.property = angular.copy(blade.property);
 

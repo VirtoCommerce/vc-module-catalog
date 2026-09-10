@@ -689,6 +689,8 @@
         "sorting-type-labels": {
           "score": "Оценка",
           "priority": "Приоритет",
+          "priorityAscending": "Приоритет по возрастанию",
+          "priorityDescending": "Приоритет по убыванию",
           "nameAscending": "Имя по возрастанию",
           "nameDescending": "Имя по убыванию",
           "numericAscending": "Числовое по возрастанию",
