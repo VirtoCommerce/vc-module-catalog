@@ -13,6 +13,7 @@
     <dependency id="VirtoCommerce.Search" version="3.1004.0" />
     <dependency id="VirtoCommerce.Seo" version="3.1004.0" />
     <dependency id="VirtoCommerce.Store" version="3.1005.0" />
+    <dependency id="VirtoCommerce.ElasticSearch9" version="3.1004.0" />
   </dependencies>
 
   <title>Catalog</title>
