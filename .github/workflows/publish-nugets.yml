@@ -1,5 +1,5 @@
-# v3.800.42
-# https://virtocommerce.atlassian.net/browse/VCST-5373
+# v3.800.43
+# https://virtocommerce.atlassian.net/browse/VCST-5146
 name: Publish nuget
 
 on:
@@ -17,12 +17,12 @@ permissions:
 
 jobs:
   test:
-    uses: VirtoCommerce/.github/.github/workflows/test-and-sonar.yml@v3.800.42
+    uses: VirtoCommerce/.github/.github/workflows/test-and-sonar.yml@v3.800.43
     secrets:
       sonarToken: ${{ secrets.SONAR_TOKEN }}
 
   build:
-    uses: VirtoCommerce/.github/.github/workflows/build.yml@v3.800.42
+    uses: VirtoCommerce/.github/.github/workflows/build.yml@v3.800.43
     with:
       uploadPackage: 'true'
       uploadDocker: 'false'
@@ -46,7 +46,7 @@ jobs:
       - name: Install VirtoCommerce.GlobalTool
         uses: VirtoCommerce/vc-github-actions/setup-vcbuild@master
 
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
@@ -90,7 +90,7 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
-    uses: VirtoCommerce/.github/.github/workflows/publish-github.yml@v3.800.42
+    uses: VirtoCommerce/.github/.github/workflows/publish-github.yml@v3.800.43
     with:
       fullKey: ${{ needs.build.outputs.packageFullKey }}
       forceGithub: false

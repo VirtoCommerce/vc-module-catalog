@@ -1,5 +1,5 @@
-# v3.800.42
-# https://virtocommerce.atlassian.net/browse/VCST-5373
+# v3.800.43
+# https://virtocommerce.atlassian.net/browse/VCST-5146
 name: Module CI
 
 on:
@@ -42,7 +42,7 @@ jobs:
     outputs:
       version-only: ${{ steps.detect.outputs.version-only }}
     steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
           persist-credentials: false
@@ -110,16 +110,17 @@ jobs:
       matrix: ${{ steps.deployment-matrix.outputs.matrix }}
       deployment-folder-exists: ${{ steps.check_deployment_folder.outputs.exists }}
       requiredModulesListUrl: ${{ steps.extract_required_modules_list_url_from_pr.outputs.url }}
+      moduleDependencies: ${{ steps.module_dependencies.outputs.ids }}
 
     steps:
 
       - name: Set up Node 24
-        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
             node-version: '24'
 
       - name: Set up Java 17
-        uses: actions/setup-java@1bcf9fb12cf4aa7d266a90ae39939e61372fe520 # v5.4.0
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
         with:
           distribution: 'temurin'
           java-version: '17'
@@ -129,7 +130,7 @@ jobs:
         run: |
           echo "RELEASE_STATUS=true" >> $GITHUB_ENV
 
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
           persist-credentials: false
@@ -147,6 +148,35 @@ jobs:
       - name: Get Artifact Version
         uses: VirtoCommerce/vc-github-actions/get-image-version@master
         id: artifact_ver
+
+      # Read here because this job already has the checkout: module.manifest is the only place
+      # naming the engine the module needs (the packages manifest comes from the PR body and is
+      # empty on a dispatch). Ids only — the test workflow owns the id -> engine mapping.
+      - name: Read module dependencies
+        id: module_dependencies
+        shell: pwsh
+        run: |
+          # samples ship their own manifests and are not what is being tested
+          $manifests = @(Get-ChildItem -Path . -Filter module.manifest -Recurse -File |
+                         Where-Object { $_.FullName -notmatch '[\\/](samples|tests)[\\/]' })
+
+          $declared = @(foreach ($manifest in $manifests) {
+            try { $xml = [xml](Get-Content -Raw $manifest.FullName) }
+            catch {
+              Write-Host "::warning title=Module dependencies::$($manifest.FullName) is not valid XML; its dependencies are ignored."
+              continue
+            }
+            # Optional dependencies are not installed: an engine named by one would be picked
+            # for testing and then not be there.
+            $xml.module.dependencies.dependency |
+              Where-Object { $_.id -and $_.optional -ne 'true' } | ForEach-Object { $_.id }
+          })
+          $ids = @($declared | Sort-Object -Unique)
+
+          Write-Host "Module dependencies: $(if ($ids) { $ids -join ', ' } else { 'none' })"
+          # ConvertTo-Json on an empty array yields nothing, and the consumer parses this
+          $json = if ($ids.Count -gt 0) { $ids | ConvertTo-Json -Compress -AsArray } else { '[]' }
+          Add-Content -Path $env:GITHUB_OUTPUT -Value "ids=$json"
 
       - name: Check if .deployment folder exists
         id: check_deployment_folder
@@ -368,16 +398,17 @@ jobs:
         ((github.ref == 'refs/heads/dev') && (github.event_name == 'push')) ||
         (github.event_name == 'workflow_dispatch') || ((github.base_ref == 'dev') && (github.event_name == 'pull_request'))) }}
     needs: ci
-    uses: VirtoCommerce/.github/.github/workflows/pytest-tests.yml@v3.800.42
+    uses: VirtoCommerce/.github/.github/workflows/pytest-tests.yml@v3.800.43
     with:
       installModules: 'false'
       installCustomModule: 'true'
       customModuleId:  ${{ needs.ci.outputs.moduleId }}
       customModuleUrl:  ${{ needs.ci.outputs.artifactUrl }}
       requiredModulesListUrl: ${{ needs.ci.outputs.requiredModulesListUrl }}
+      moduleDependencies: ${{ needs.ci.outputs.moduleDependencies }}
       vctestingRepoBranch: 'dev'
       frontendZipUrl: 'latest'
-      testSuites: 'graphql,restapi,e2e'   
+      testSuites: 'graphql,restapi,e2e'
     secrets:
       appInsightsInstrumentationKey: ${{ secrets.E2E_APPINSIGHTSINSTRUMENTATIONKEY }}
       envPAT: ${{ secrets.REPO_TOKEN }}
@@ -425,7 +456,7 @@ jobs:
     permissions:
       contents: read
       deployments: write
-    uses: VirtoCommerce/.github/.github/workflows/deploy-cloud.yml@v3.800.42
+    uses: VirtoCommerce/.github/.github/workflows/deploy-cloud.yml@v3.800.43
     with:
       releaseSource: module
       moduleId: ${{ needs.ci.outputs.moduleId }}
@@ -433,4 +464,4 @@ jobs:
       moduleBlob: ${{ needs.ci.outputs.blobId }}
       jiraKeys: ${{ needs.ci.outputs.jira-keys }}
       matrix: '{"include":${{ needs.ci.outputs.matrix }}}'
-    secrets: inherit # zizmor: ignore[secrets-inherit] deploy-cloud.yml@v3.800.42 reads undeclared org secrets; explicit passing needs a new release + tag bump
+    secrets: inherit # zizmor: ignore[secrets-inherit] deploy-cloud.yml@v3.800.43 reads undeclared org secrets; explicit passing needs a new release + tag bump
