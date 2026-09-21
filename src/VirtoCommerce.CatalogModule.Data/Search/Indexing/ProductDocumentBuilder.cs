@@ -155,9 +155,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
         /// </summary>
         protected virtual async Task<IndexDocument> CreateDocumentAsync(CatalogProduct variation, CatalogProduct mainProduct)
         {
-#pragma warning disable VC0010 // Type or member is obsolete
-            var document = CreateDocument(variation, mainProduct);
-#pragma warning restore VC0010 // Type or member is obsolete
+            var document = BuildProductDocument(variation);
 
             if (_measureService != null)
             {
@@ -169,9 +167,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 
         protected virtual async Task<IndexDocument> CreateDocumentAsync(CatalogProduct product)
         {
-#pragma warning disable VC0010 // Type or member is obsolete
-            var document = CreateDocument(product);
-#pragma warning restore VC0010 // Type or member is obsolete
+            var document = BuildProductDocument(product);
 
             if (_measureService != null)
             {
@@ -181,14 +177,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             return document;
         }
 
-        [Obsolete("Use CreateDocumentAsync(CatalogProduct variation, CatalogProduct mainProduct)", DiagnosticId = "VC0010", UrlFormat = "https://docs.virtocommerce.org/platform/user-guide/versions/virto3-products-versions/")]
-        protected virtual IndexDocument CreateDocument(CatalogProduct variation, CatalogProduct mainProduct)
-        {
-            return CreateDocument(variation);
-        }
-
-        [Obsolete("Use CreateDocumentAsync(CatalogProduct product)", DiagnosticId = "VC0010", UrlFormat = "https://docs.virtocommerce.org/platform/user-guide/versions/virto3-products-versions/")]
-        protected virtual IndexDocument CreateDocument(CatalogProduct product)
+        private IndexDocument BuildProductDocument(CatalogProduct product)
         {
             var document = new IndexDocument(product.Id);
 
@@ -325,19 +314,6 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             IndexCustomProperties(document, variation.Properties, [PropertyType.Variation]);
             IndexDescriptions(document, variation.Reviews);
             IndexSeoInformation(document, variation.SeoInfos);
-        }
-
-        [Obsolete("Use IndexLocalizedName(IndexDocument document, LocalizedString localizedString, LocalizedString localizedString, string fallbackValue)", DiagnosticId = "VC0011", UrlFormat = "https://docs.virtocommerce.org/platform/user-guide/versions/virto3-products-versions/")]
-        protected virtual void IndexLocalizedName(IndexDocument document, LocalizedString localizedString)
-        {
-            if (localizedString != null)
-            {
-                foreach (var languageCode in localizedString.Values.Keys)
-                {
-                    document.AddSuggestableString($"name_{languageCode}", localizedString.GetValue(languageCode));
-                    document.AddContentString(localizedString.GetValue(languageCode), languageCode);
-                }
-            }
         }
 
         protected virtual void IndexTypeProperty(IndexDocument document, string value)
