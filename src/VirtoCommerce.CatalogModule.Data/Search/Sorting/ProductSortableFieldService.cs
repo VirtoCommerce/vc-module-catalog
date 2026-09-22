@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using VirtoCommerce.CatalogModule.Core.Search.Sorting;
-using VirtoCommerce.SearchModule.Core.Extensions;
+using VirtoCommerce.CatalogModule.Data.Search.Indexing;
 using VirtoCommerce.SearchModule.Core.Model;
-using VirtoCommerce.SearchModule.Core.Services;
 
 namespace VirtoCommerce.CatalogModule.Data.Search.Sorting;
 
@@ -55,20 +54,8 @@ public class ProductSortableFieldService : IProductSortableFieldService
         return result;
     }
 
-    protected virtual async Task<IndexDocument> BuildProductSchemaAsync()
+    protected virtual Task<IndexDocument> BuildProductSchemaAsync()
     {
-        var schema = new IndexDocument(Guid.NewGuid().ToString("N"));
-
-        var schemaBuilders = _configurations
-            .GetDocumentSources(KnownDocumentTypes.Product)
-            .Select(x => x.DocumentBuilder)
-            .OfType<IIndexSchemaBuilder>();
-
-        foreach (var schemaBuilder in schemaBuilders)
-        {
-            await schemaBuilder.BuildSchemaAsync(schema);
-        }
-
-        return schema;
+        return _configurations.BuildProductSchemaAsync();
     }
 }
