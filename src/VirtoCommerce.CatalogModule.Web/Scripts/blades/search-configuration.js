@@ -33,8 +33,21 @@ angular.module('virtoCommerce.catalogModule')
         }, blade);
     }
 
+    function openBarcodeScanner() {
+        bladeNavigationService.showBlade({
+            id: 'storeBarcodeSearch',
+            storeId: blade.storeId,
+            store: blade.store,
+            title: 'catalog.blades.barcode-search.title',
+            subtitle: 'catalog.blades.barcode-search.subtitle',
+            controller: 'virtoCommerce.catalogModule.barcodeSearchController',
+            template: 'Modules/$(VirtoCommerce.Catalog)/Scripts/blades/barcode-search.tpl.html'
+        }, blade);
+    }
+
     blade.menuItems = [
         { name: 'catalog.blades.search-configuration.menu.facets', icon: 'fab fa-buffer', action: openFacets },
-        { name: 'catalog.blades.search-configuration.menu.sorting', icon: 'fas fa-sort-amount-down', action: openSorting }
+        { name: 'catalog.blades.search-configuration.menu.sorting', icon: 'fas fa-sort-amount-down', action: openSorting },
+        { name: 'catalog.blades.search-configuration.menu.barcode-scanner', icon: 'fas fa-barcode', action: openBarcodeScanner }
     ];
 }]);

@@ -1,0 +1,98 @@
+<div class="blade-content __medium-wide">
+  <div class="blade-inner">
+    <div class="inner-block">
+      <div class="sub-t __border">{{ 'catalog.blades.barcode-search.subtitle' | translate }}</div>
+
+      <form class="form" name="formScope">
+        <fieldset>
+
+          <div class="form-group">
+            <label class="form-label">{{ 'catalog.blades.barcode-search.labels.scanner-enabled' | translate }}</label>
+            <div class="form-input">
+              <label class="form-label __switch">
+                <input type="checkbox" ng-model="blade.currentEntity.scannerEnabled" ng-disabled="!blade.hasUpdatePermission()">
+                <span class="switch"></span>
+              </label>
+            </div>
+            <div class="form-help">{{ 'catalog.blades.barcode-search.help.scanner-enabled' | translate }}</div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">{{ 'catalog.blades.barcode-search.labels.match-mode' | translate }}</label>
+            <div class="form-input barcode-search-modes">
+              <label class="barcode-search-mode">
+                <input type="radio" ng-model="blade.matchMode" ng-value="blade.matchFullText" ng-change="blade.onMatchModeChanged()" ng-disabled="!blade.hasUpdatePermission()">
+                <span>{{ 'catalog.blades.barcode-search.modes.full-text' | translate }}</span>
+              </label>
+              <label class="barcode-search-mode">
+                <input type="radio" ng-model="blade.matchMode" ng-value="blade.matchExact" ng-change="blade.onMatchModeChanged()" ng-disabled="!blade.hasUpdatePermission()">
+                <span>{{ 'catalog.blades.barcode-search.modes.exact' | translate }}</span>
+              </label>
+            </div>
+            <div class="form-help">{{ 'catalog.blades.barcode-search.help.match-mode' | translate }}</div>
+          </div>
+
+          <div ng-if="blade.matchMode === blade.matchExact">
+
+            <div class="form-group">
+              <label class="form-label required">{{ 'catalog.blades.barcode-search.labels.product-fields' | translate }}</label>
+              <ul class="list __items">
+                <li class="list-item barcode-search-field" ng-repeat="field in blade.productFields">
+                  <label class="barcode-search-field__row">
+                    <input type="checkbox" ng-model="blade.selection[field.name]" ng-change="blade.onFieldSelectionChanged()" ng-disabled="!blade.hasUpdatePermission()">
+                    <span class="barcode-search-field__name">{{ ('catalog.blades.barcode-search.fields.' + field.name) | translate }}</span>
+                    <code class="barcode-search-field__code">{{ field.name }}</code>
+                  </label>
+                </li>
+              </ul>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">{{ 'catalog.blades.barcode-search.labels.catalog-properties' | translate }}</label>
+              <ul class="list __items" ng-if="blade.propertyFields.length">
+                <li class="list-item barcode-search-field" ng-repeat="field in blade.propertyFields">
+                  <label class="barcode-search-field__row">
+                    <input type="checkbox" ng-model="blade.selection[field.name]" ng-change="blade.onFieldSelectionChanged()" ng-disabled="!blade.hasUpdatePermission()">
+                    <code class="barcode-search-field__code">{{ field.name }}</code>
+                    <span class="barcode-search-badge __multi" ng-if="field.isCollection">{{ 'catalog.blades.barcode-search.badges.multi-value' | translate }}</span>
+                  </label>
+                </li>
+              </ul>
+              <p class="text" ng-if="!blade.propertyFields.length">{{ 'catalog.blades.barcode-search.empty-properties' | translate }}</p>
+            </div>
+
+            <div class="form-group" ng-if="blade.missingFields.length">
+              <label class="form-label">{{ 'catalog.blades.barcode-search.labels.missing-fields' | translate }}</label>
+              <ul class="list __items">
+                <li class="list-item barcode-search-field" ng-repeat="name in blade.missingFields">
+                  <span class="barcode-search-field__row">
+                    <input type="checkbox" checked disabled>
+                    <code class="barcode-search-field__code">{{ name }}</code>
+                    <span class="barcode-search-badge __missing">{{ 'catalog.blades.barcode-search.badges.missing' | translate }}</span>
+                  </span>
+                </li>
+              </ul>
+              <p class="note">{{ 'catalog.blades.barcode-search.help.missing-fields' | translate }}</p>
+            </div>
+
+          </div>
+
+          <div class="form-group">
+            <div class="barcode-search-hint">
+              <div class="barcode-search-hint__title">{{ 'catalog.blades.barcode-search.hint.title' | translate }}</div>
+              <ul>
+                <li>{{ 'catalog.blades.barcode-search.hint.gtin' | translate }}</li>
+                <li>{{ 'catalog.blades.barcode-search.hint.mpn' | translate }}</li>
+                <li>{{ 'catalog.blades.barcode-search.hint.sku' | translate }}</li>
+                <li>{{ 'catalog.blades.barcode-search.hint.property' | translate }}</li>
+                <li>{{ 'catalog.blades.barcode-search.hint.reindex' | translate }}</li>
+                <li>{{ 'catalog.blades.barcode-search.hint.matching' | translate }}</li>
+              </ul>
+            </div>
+          </div>
+
+        </fieldset>
+      </form>
+    </div>
+  </div>
+</div>

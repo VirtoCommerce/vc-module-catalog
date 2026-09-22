@@ -56,6 +56,8 @@ The module's behavior can be tuned through Platform Settings (**Settings > Catal
 | `VirtoCommerce.Search.IndexingJobs.IndexationDate.Category` | Date/time | — | Date and time the category indexing task starts. |
 | `Catalog.BrowseFilters.FilteredBrowsing` | JSON | — | Per-store faceted browsing filter configuration. Edited through the *Filtering properties* widget on the store page. Store-level. |
 | `Catalog.BrowseFilters.FilteredBrowsingMigrated` | Boolean | `false` | Internal flag marking that legacy filtered-browsing configuration has been migrated. Hidden; not intended for manual editing. |
+| `Catalog.Search.BarcodeScannerEnabled` | Boolean | `true` | Show the barcode scanner button in the storefront search bar. Store-level, public. See [Barcode scanner search](#barcode-scanner-search). |
+| `Catalog.Search.BarcodeSearchFields` | JSON | — | Product index fields a scanned code is matched against; empty/`null` means full-text search. Edited through the *Search configuration → Barcode scanner* widget on the store page. Store-level, public. See [Barcode scanner search](#barcode-scanner-search). |
 | `Catalog.Search.ProductSortings` | JSON | — | Per-store product sorting ("sort by") options — admin overrides of the built-in orderings plus any custom orderings. `null` means "use the code defaults". Edited through the *Search configuration → Sorting* widget on the store page. Store-level. See [Configurable product sorting](#configurable-product-sorting). |
 
 ### Backup & Restore
@@ -106,6 +108,61 @@ For an ordering whose expression depends on the request (e.g. a different order 
 
 - **REST (admin):** `GET`/`PUT api/catalog/product-sortings/store/{storeId}` (plus `GET .../fields` for the clause-field picker, derived from the product index schema). Guarded by the `catalog:BrowseFilters:Read` / `catalog:BrowseFilters:Update` permissions.
 - **GraphQL (storefront):** the `products` connection exposes `sortings { id name isDefault selected }`. An empty `sort` applies the store default, a known `code` applies that ordering, and an unknown token / raw expression passes through to the search engine unchanged.
+
+## Barcode scanner search
+
+The storefront search bar can scan a barcode with the device camera. Each store decides whether the scanner button is
+shown at all and how a scanned code is matched: by **full-text search** (the default, the scanned value is searched in
+the whole product text) or by an **exact match** on selected product index fields.
+
+### Configuring in the admin UI
+
+Open **Store → Search configuration → Barcode scanner**:
+
+- **Enable barcode scanner in the storefront** — hides/shows the scanner button (`Catalog.Search.BarcodeScannerEnabled`).
+- **Match scanned code by** — *Full-text search* or *Exact match on selected fields*.
+- The field picker offers only fields that exist in the **product search index**: the built-in `code` (SKU), `gtin` and
+  `manufacturerPartNumber` (MPN) plus every **short text** catalog property of type *Product* or *Variation*. Free text
+  is not accepted and the server re-validates the selection on save. A previously saved field that is no longer in the
+  index is shown with a *missing from index* badge and dropped on the next save.
+
+`Catalog.Search.BarcodeSearchFields` is meant to be edited through this widget, which is the only place that validates
+the selection against the live product index schema. Values written directly through the generic settings API are not
+validated: an unknown field name is stored as-is and simply matches nothing (the widget then shows it as *missing from
+index* and drops it on the next save).
+
+### Filling barcode data
+
+- **GTIN** — the packaging barcode: UPC, EAN, ISBN or JAN.
+- **MPN** — the manufacturer part number.
+- **SKU** — the product code.
+- Any other code, or several codes of the same kind: create a **short text** catalog property for products or variations
+  (long text is not indexed as a filterable field) and select it in the blade. Mark the property **multi-value** to store
+  several codes in one property — the term filter matches any of its values.
+- Several *kinds* of code (e.g. GTIN and a custom property) can be selected at once; they are matched with OR.
+- Products must be **re-indexed** after the values or the property definitions change. Matching is exact and
+  case-insensitive.
+- Stores on a schema-driven search provider (Azure Search, Elastic App Search) must rebuild the product index after
+  upgrading, so that the aligned `gtin` / `manufacturerPartNumber` schema declarations (which now also feed `__content`)
+  take effect; Lucene and Elasticsearch need no action.
+
+### How the storefront searches
+
+The storefront sends the scanned value as the `barcode:"<value>"` filter of the `products` GraphQL query. The XCatalog
+module expands that virtual filter into a term filter over the configured fields (OR across them, variations included);
+with no configured field the scanned value stays an ordinary full-text keyword.
+
+That expansion lives in the **XCatalog** module, not here: this module owns the settings, the REST API and the admin UI
+only. Because of that cross-repo dependency the changes must be merged in the order catalog -> x-catalog -> storefront
+theme.
+
+### API
+
+- **REST (admin):** `GET`/`PUT api/catalog/barcode-search/store/{storeId}` (plus `GET .../store/{storeId}/fields` for the
+  field picker, derived from the product index schema). Guarded by the `catalog:BrowseFilters:Read` /
+  `catalog:BrowseFilters:Update` permissions; saving an unknown field returns `400`.
+- **Storefront:** both settings are public, so they are exposed as store module settings and drive the scanner button
+  and the matching mode.
 
 ## Documentation
 * [Catalog module user documentation](https://docs.virtocommerce.org/platform/user-guide/catalog/overview/)

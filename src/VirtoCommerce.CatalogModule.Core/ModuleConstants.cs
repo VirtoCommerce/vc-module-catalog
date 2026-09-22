@@ -299,6 +299,26 @@ namespace VirtoCommerce.CatalogModule.Core
                     DefaultValue = null,
                 };
 
+                // Store-level switch that shows/hides the barcode scanner button in the storefront.
+                public static SettingDescriptor BarcodeScannerEnabled { get; } = new SettingDescriptor
+                {
+                    Name = "Catalog.Search.BarcodeScannerEnabled",
+                    GroupName = "Catalog|Search",
+                    ValueType = SettingValueType.Boolean,
+                    DefaultValue = true,
+                    IsPublic = true,
+                };
+
+                // JSON array of product index field names a scanned code is matched against, e.g. ["gtin","code"].
+                // Empty/null means the scanned code is matched by full-text search.
+                public static SettingDescriptor BarcodeSearchFields { get; } = new SettingDescriptor
+                {
+                    Name = "Catalog.Search.BarcodeSearchFields",
+                    GroupName = "Catalog|Search",
+                    ValueType = SettingValueType.Json,
+                    IsPublic = true,
+                };
+
                 public static IEnumerable<SettingDescriptor> AllSettings
                 {
                     get
@@ -312,6 +332,8 @@ namespace VirtoCommerce.CatalogModule.Core
                         yield return FilteredBrowsing;
                         yield return FilteredBrowsingMigrated;
                         yield return ProductSortings;
+                        yield return BarcodeScannerEnabled;
+                        yield return BarcodeSearchFields;
                     }
                 }
             }
@@ -362,6 +384,8 @@ namespace VirtoCommerce.CatalogModule.Core
                     yield return General.BrandPropertyName;
                     yield return Search.FilteredBrowsing;
                     yield return Search.ProductSortings;
+                    yield return Search.BarcodeScannerEnabled;
+                    yield return Search.BarcodeSearchFields;
                 }
             }
 #pragma warning restore S3218
