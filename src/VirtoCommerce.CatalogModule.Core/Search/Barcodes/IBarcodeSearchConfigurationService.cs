@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace VirtoCommerce.CatalogModule.Core.Search.Barcodes;
 
-public interface IBarcodeSearchService
+public interface IBarcodeSearchConfigurationService
 {
     Task<BarcodeSearchSettings> GetSettingsAsync(string storeId);
 

@@ -583,11 +583,25 @@ vc-item-search {
 
 .barcode-search-mode {
     display: flex;
+    flex: 1 1 0;
+    min-width: 0;
     align-items: center;
     gap: 6px;
     cursor: pointer;
     font-size: 13px;
     color: #5a6b7b;
+}
+
+.barcode-search-mode input[type="radio"] {
+    flex: 0 0 auto;
+    width: 16px;
+    height: 16px;
+    margin: 0;
+}
+
+.barcode-search-mode span {
+    flex: 1 1 auto;
+    min-width: 0;
 }
 
 .barcode-search-field {
@@ -599,6 +613,13 @@ vc-item-search {
     align-items: center;
     gap: 10px;
     cursor: pointer;
+}
+
+.barcode-search-field__check {
+    flex: 0 0 13px;
+    width: 13px;
+    height: 13px;
+    top: 0;
 }
 
 .barcode-search-field__name {
@@ -656,6 +677,10 @@ vc-item-search {
     margin: 0;
     padding-left: 18px;
     list-style: disc;
+}
+
+.blade-content .barcode-search-hint ul li::before {
+    content: none;
 }
 
 /* Disable the grid's "select all" checkbox when nothing on the current page can be mapped/linked */

@@ -21,7 +21,7 @@ using static VirtoCommerce.CatalogModule.Core.ModuleConstants.Settings.Search;
 
 namespace VirtoCommerce.CatalogModule.Data.Search.Barcodes;
 
-public class BarcodeSearchService : IBarcodeSearchService
+public class BarcodeSearchConfigurationService : IBarcodeSearchConfigurationService
 {
     // Product fields that always carry a scannable code, offered first and in this order.
     private static readonly string[] _builtInFieldNames = ["code", "gtin", "manufacturerPartNumber"];
@@ -32,13 +32,13 @@ public class BarcodeSearchService : IBarcodeSearchService
     private readonly IEnumerable<IndexDocumentConfiguration> _configurations;
     private readonly IPropertySearchService _propertySearchService;
     private readonly IStoreService _storeService;
-    private readonly ILogger<BarcodeSearchService> _logger;
+    private readonly ILogger<BarcodeSearchConfigurationService> _logger;
 
-    public BarcodeSearchService(
+    public BarcodeSearchConfigurationService(
         IEnumerable<IndexDocumentConfiguration> configurations,
         IPropertySearchService propertySearchService,
         IStoreService storeService,
-        ILogger<BarcodeSearchService> logger)
+        ILogger<BarcodeSearchConfigurationService> logger)
     {
         _configurations = configurations;
         _propertySearchService = propertySearchService;

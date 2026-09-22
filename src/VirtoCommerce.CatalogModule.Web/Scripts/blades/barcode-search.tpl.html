@@ -14,7 +14,6 @@
                 <span class="switch"></span>
               </label>
             </div>
-            <div class="form-help">{{ 'catalog.blades.barcode-search.help.scanner-enabled' | translate }}</div>
           </div>
 
           <div class="form-group">
@@ -29,7 +28,16 @@
                 <span>{{ 'catalog.blades.barcode-search.modes.exact' | translate }}</span>
               </label>
             </div>
-            <div class="form-help">{{ 'catalog.blades.barcode-search.help.match-mode' | translate }}</div>
+          </div>
+
+          <div class="form-group">
+            <div class="barcode-search-hint">
+              <div class="barcode-search-hint__title">{{ 'catalog.blades.barcode-search.mode-hint.title' | translate }}</div>
+              <ul>
+                <li>{{ 'catalog.blades.barcode-search.mode-hint.full-text' | translate }}</li>
+                <li>{{ 'catalog.blades.barcode-search.mode-hint.exact' | translate }}</li>
+              </ul>
+            </div>
           </div>
 
           <div ng-if="blade.matchMode === blade.matchExact">
@@ -39,7 +47,10 @@
               <ul class="list __items">
                 <li class="list-item barcode-search-field" ng-repeat="field in blade.productFields">
                   <label class="barcode-search-field__row">
-                    <input type="checkbox" ng-model="blade.selection[field.name]" ng-change="blade.onFieldSelectionChanged()" ng-disabled="!blade.hasUpdatePermission()">
+                    <span class="form-control __checkbox barcode-search-field__check">
+                      <input type="checkbox" ng-model="blade.selection[field.name]" ng-change="blade.onFieldSelectionChanged()" ng-disabled="!blade.hasUpdatePermission()">
+                      <span class="check"></span>
+                    </span>
                     <span class="barcode-search-field__name">{{ ('catalog.blades.barcode-search.fields.' + field.name) | translate }}</span>
                     <code class="barcode-search-field__code">{{ field.name }}</code>
                   </label>
@@ -52,7 +63,10 @@
               <ul class="list __items" ng-if="blade.propertyFields.length">
                 <li class="list-item barcode-search-field" ng-repeat="field in blade.propertyFields">
                   <label class="barcode-search-field__row">
-                    <input type="checkbox" ng-model="blade.selection[field.name]" ng-change="blade.onFieldSelectionChanged()" ng-disabled="!blade.hasUpdatePermission()">
+                    <span class="form-control __checkbox barcode-search-field__check">
+                      <input type="checkbox" ng-model="blade.selection[field.name]" ng-change="blade.onFieldSelectionChanged()" ng-disabled="!blade.hasUpdatePermission()">
+                      <span class="check"></span>
+                    </span>
                     <code class="barcode-search-field__code">{{ field.name }}</code>
                     <span class="barcode-search-badge __multi" ng-if="field.isCollection">{{ 'catalog.blades.barcode-search.badges.multi-value' | translate }}</span>
                   </label>
@@ -66,7 +80,10 @@
               <ul class="list __items">
                 <li class="list-item barcode-search-field" ng-repeat="name in blade.missingFields">
                   <span class="barcode-search-field__row">
-                    <input type="checkbox" checked disabled>
+                    <span class="form-control __checkbox barcode-search-field__check">
+                      <input type="checkbox" checked disabled>
+                      <span class="check"></span>
+                    </span>
                     <code class="barcode-search-field__code">{{ name }}</code>
                     <span class="barcode-search-badge __missing">{{ 'catalog.blades.barcode-search.badges.missing' | translate }}</span>
                   </span>

@@ -15,18 +15,18 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api;
 [Route("api/catalog/barcode-search")]
 public class CatalogModuleBarcodeSearchController : Controller
 {
-    private readonly IBarcodeSearchService _barcodeSearchService;
+    private readonly IBarcodeSearchConfigurationService _barcodeSearchConfigurationService;
 
-    public CatalogModuleBarcodeSearchController(IBarcodeSearchService barcodeSearchService)
+    public CatalogModuleBarcodeSearchController(IBarcodeSearchConfigurationService barcodeSearchConfigurationService)
     {
-        _barcodeSearchService = barcodeSearchService;
+        _barcodeSearchConfigurationService = barcodeSearchConfigurationService;
     }
 
     [HttpGet("store/{storeId}")]
     [Authorize(ModuleConstants.Security.Permissions.CatalogBrowseFiltersRead)]
     public async Task<ActionResult<BarcodeSearchSettings>> GetSettings([FromRoute] string storeId)
     {
-        var settings = await _barcodeSearchService.GetSettingsAsync(storeId);
+        var settings = await _barcodeSearchConfigurationService.GetSettingsAsync(storeId);
         return Ok(settings);
     }
 
@@ -34,7 +34,7 @@ public class CatalogModuleBarcodeSearchController : Controller
     [Authorize(ModuleConstants.Security.Permissions.CatalogBrowseFiltersRead)]
     public async Task<ActionResult<IList<BarcodeSearchField>>> GetAvailableFields([FromRoute] string storeId)
     {
-        var fields = await _barcodeSearchService.GetAvailableFieldsAsync(storeId);
+        var fields = await _barcodeSearchConfigurationService.GetAvailableFieldsAsync(storeId);
         return Ok(fields);
     }
 
@@ -50,7 +50,7 @@ public class CatalogModuleBarcodeSearchController : Controller
 
         try
         {
-            await _barcodeSearchService.SaveSettingsAsync(storeId, settings);
+            await _barcodeSearchConfigurationService.SaveSettingsAsync(storeId, settings);
         }
         catch (ValidationException ex)
         {

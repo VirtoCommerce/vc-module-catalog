@@ -65,11 +65,14 @@
           "missing": "MISSING FROM INDEX"
         },
         "help": {
-          "scanner-enabled": "Show the barcode scanner button in the storefront search bar",
-          "match-mode": "Full-text search looks the scanned value up in the whole product text. Exact match compares it with the selected fields only",
           "missing-fields": "These fields are no longer in the product index, so they never match. They are removed the next time you save"
         },
         "empty-properties": "No short text catalog properties are available. Create one for products or variations and re-index the catalog to use it here.",
+        "mode-hint": {
+          "title": "How match modes work",
+          "full-text": "Full-text search looks the scanned value up in the whole product text.",
+          "exact": "Exact match compares it with the selected fields only."
+        },
         "hint": {
           "title": "How to fill barcode data",
           "gtin": "GTIN: the packaging barcode (UPC, EAN, ISBN, JAN).",

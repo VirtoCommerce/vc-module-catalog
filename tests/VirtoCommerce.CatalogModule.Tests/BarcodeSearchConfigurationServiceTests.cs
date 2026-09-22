@@ -19,7 +19,7 @@ using static VirtoCommerce.CatalogModule.Core.ModuleConstants.Settings.Search;
 
 namespace VirtoCommerce.CatalogModule.Tests
 {
-    public class BarcodeSearchServiceTests
+    public class BarcodeSearchConfigurationServiceTests
     {
         private const string StoreId = "Store-Test";
 
@@ -190,9 +190,9 @@ namespace VirtoCommerce.CatalogModule.Tests
 
         // ---- helpers ----
 
-        private static TestBarcodeSearchService CreateService(Store store, IndexDocument schema = null, IList<Property> properties = null)
+        private static TestBarcodeSearchConfigurationService CreateService(Store store, IndexDocument schema = null, IList<Property> properties = null)
         {
-            return new TestBarcodeSearchService(
+            return new TestBarcodeSearchConfigurationService(
                 CreateStoreServiceMock(store).Object,
                 CreatePropertySearchServiceMock(properties ?? DefaultProperties()).Object,
                 schema ?? DefaultSchema());
@@ -272,12 +272,12 @@ namespace VirtoCommerce.CatalogModule.Tests
         }
 
         // Stubs the index schema so the projection logic is tested without index configurations / schema builders.
-        private sealed class TestBarcodeSearchService : BarcodeSearchService
+        private sealed class TestBarcodeSearchConfigurationService : BarcodeSearchConfigurationService
         {
             private readonly IndexDocument _schema;
 
-            public TestBarcodeSearchService(IStoreService storeService, IPropertySearchService propertySearchService, IndexDocument schema)
-                : base(new List<IndexDocumentConfiguration>(), propertySearchService, storeService, NullLogger<BarcodeSearchService>.Instance)
+            public TestBarcodeSearchConfigurationService(IStoreService storeService, IPropertySearchService propertySearchService, IndexDocument schema)
+                : base(new List<IndexDocumentConfiguration>(), propertySearchService, storeService, NullLogger<BarcodeSearchConfigurationService>.Instance)
             {
                 _schema = schema;
             }

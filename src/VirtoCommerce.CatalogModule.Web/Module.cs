@@ -324,7 +324,7 @@ namespace VirtoCommerce.CatalogModule.Web
             serviceCollection.AddTransient<IProductSortableFieldService, ProductSortableFieldService>();
 
             // Store-level barcode scanner configuration (on/off switch + product index fields a scanned code is matched against).
-            serviceCollection.AddTransient<IBarcodeSearchService, BarcodeSearchService>();
+            serviceCollection.AddTransient<IBarcodeSearchConfigurationService, BarcodeSearchConfigurationService>();
 
             serviceCollection.AddTransient<IAutomaticLinkQueryService, AutomaticLinkQueryService>();
             serviceCollection.AddTransient<IAutomaticLinkQuerySearchService, AutomaticLinkQuerySearchService>();
