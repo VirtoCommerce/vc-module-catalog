@@ -47,9 +47,7 @@
         "labels": {
           "scanner-enabled": "Enable barcode scanner in the storefront",
           "match-mode": "Match scanned code by",
-          "product-fields": "Product fields",
-          "catalog-properties": "Catalog properties",
-          "missing-fields": "Saved fields missing from the index"
+          "fields": "Fields to match"
         },
         "modes": {
           "full-text": "Full-text search",
@@ -67,7 +65,6 @@
         "help": {
           "missing-fields": "These fields are no longer in the product index, so they never match. They are removed the next time you save"
         },
-        "empty-properties": "No short text catalog properties are available. Create one for products or variations and re-index the catalog to use it here.",
         "mode-hint": {
           "title": "How match modes work",
           "full-text": "Full-text search looks the scanned value up in the whole product text.",

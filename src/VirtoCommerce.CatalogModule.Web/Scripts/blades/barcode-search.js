@@ -1,13 +1,14 @@
 angular.module('virtoCommerce.catalogModule')
 .controller('virtoCommerce.catalogModule.barcodeSearchController',
-    ['$scope', 'platformWebApp.bladeNavigationService', 'virtoCommerce.catalogModule.barcodeSearch',
-    function ($scope, bladeNavigationService, barcodeSearch) {
+    ['$scope', '$translate', 'platformWebApp.bladeNavigationService', 'virtoCommerce.catalogModule.barcodeSearch',
+    function ($scope, $translate, bladeNavigationService, barcodeSearch) {
         var blade = $scope.blade;
         blade.updatePermission = 'catalog:BrowseFilters:Update';
         blade.headIcon = 'fas fa-barcode';
 
         var MATCH_FULL_TEXT = 'fullText';
         var MATCH_EXACT = 'exact';
+        var FIELD_LABEL_PREFIX = 'catalog.blades.barcode-search.fields.';
 
         blade.matchFullText = MATCH_FULL_TEXT;
         blade.matchExact = MATCH_EXACT;
@@ -32,7 +33,7 @@ angular.module('virtoCommerce.catalogModule')
                     fields: angular.copy(data.fields || [])
                 };
                 blade.currentEntity = angular.copy(blade.origEntity);
-                buildFieldGroups();
+                buildFieldList();
                 blade.isLoading = false;
             }, function (error) {
                 blade.isLoading = false;
@@ -44,12 +45,12 @@ angular.module('virtoCommerce.catalogModule')
             return (error && error.data && error.data.message) || ('Error ' + (error ? error.status : ''));
         }
 
-        function buildFieldGroups() {
+        // Builds the single flat row list and freezes its order: the fields of the saved selection first,
+        // then the rest, alphabetically by the text each row shows. Only a data load rebuilds it, so
+        // checking or unchecking a row never makes it jump.
+        function buildFieldList() {
             var available = blade.availableFields || [];
             var savedNames = blade.currentEntity.fields || [];
-
-            blade.productFields = _.filter(available, function (x) { return x.isProductField; });
-            blade.propertyFields = _.filter(available, function (x) { return !x.isProductField; });
 
             blade.selection = {};
             _.each(available, function (field) {
@@ -58,15 +59,65 @@ angular.module('virtoCommerce.catalogModule')
 
             refreshMissingFields();
 
+            var rows = _.map(available, function (field) {
+                return {
+                    name: field.name,
+                    isProductField: field.isProductField,
+                    isCollection: field.isCollection,
+                    isMissing: false,
+                    isVisible: true,
+                    text: getRowText(field)
+                };
+            });
+
+            _.each(blade.missingFields, function (name) {
+                blade.selection[name] = true;
+                rows.push({
+                    name: name,
+                    isProductField: false,
+                    isCollection: false,
+                    isMissing: true,
+                    isVisible: true,
+                    text: name
+                });
+            });
+
+            blade.fields = sortRows(rows);
+
             blade.matchMode = savedNames.length ? MATCH_EXACT : MATCH_FULL_TEXT;
         }
 
+        // Built-in fields are ordered by the label the row shows (SKU / GTIN / MPN), properties by their index name.
+        function getRowText(field) {
+            if (!field.isProductField) {
+                return field.name;
+            }
+
+            var key = FIELD_LABEL_PREFIX + field.name;
+            var label = $translate.instant(key);
+            return label && label !== key ? label : field.name;
+        }
+
+        function sortRows(rows) {
+            // _.sortBy is stable, so the checked/unchecked split keeps the alphabetical order inside each part.
+            var sorted = _.sortBy(rows, function (row) { return (row.text || '').toLowerCase(); });
+            var isChecked = function (row) { return !!blade.selection[row.name]; };
+            return _.filter(sorted, isChecked).concat(_.reject(sorted, isChecked));
+        }
+
         // Selected fields the product index no longer exposes (property renamed/removed, or not re-indexed yet).
-        // They are shown as checked rows and disappear as soon as they leave the selection (any save drops them).
+        // They are shown as checked, disabled rows and stop being rendered as soon as they leave the selection
+        // (any save drops them); hiding a row never reorders the others.
         function refreshMissingFields() {
             var availableNames = _.pluck(blade.availableFields || [], 'name');
             blade.missingFields = _.filter(blade.currentEntity.fields || [], function (name) {
                 return !containsName(availableNames, name);
+            });
+
+            _.each(blade.fields || [], function (row) {
+                if (row.isMissing) {
+                    row.isVisible = containsName(blade.missingFields, row.name);
+                }
             });
         }
 
@@ -119,7 +170,7 @@ angular.module('virtoCommerce.catalogModule')
 
         blade.toolbarCommands = [
             {
-                name: 'platform.commands.ok', icon: 'fas fa-check',
+                name: 'platform.commands.save', icon: 'fas fa-save',
                 executeMethod: $scope.saveChanges,
                 canExecuteMethod: function () { return isDirty() && isValid(); },
                 permission: blade.updatePermission
@@ -128,7 +179,7 @@ angular.module('virtoCommerce.catalogModule')
                 name: 'platform.commands.reset', icon: 'fa fa-undo',
                 executeMethod: function () {
                     blade.currentEntity = angular.copy(blade.origEntity);
-                    buildFieldGroups();
+                    buildFieldList();
                 },
                 canExecuteMethod: isDirty
             }
