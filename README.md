@@ -141,8 +141,8 @@ index* and drops it from the selection at the first change).
   (long text is not indexed as a filterable field) and select it in the blade. Mark the property **multi-value** to store
   several codes in one property — the term filter matches any of its values.
 - Several *kinds* of code (e.g. GTIN and a custom property) can be selected at once; they are matched with OR.
-- Products must be **re-indexed** after the values or the property definitions change. Matching is exact and
-  case-insensitive.
+- Products must be **re-indexed** after the values or the property definitions change. Matching is exact: the
+  scanned value must equal the stored value.
 
 ### How the storefront searches
 

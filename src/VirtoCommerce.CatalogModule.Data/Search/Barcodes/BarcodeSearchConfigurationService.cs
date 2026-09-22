@@ -186,7 +186,7 @@ public class BarcodeSearchConfigurationService : IBarcodeSearchConfigurationServ
             throw new ValidationException(
             [
                 new ValidationFailure(nameof(BarcodeSearchSettings.Fields),
-                    $"These fields cannot be used for barcode search: {string.Join(", ", unknownNames)}. Only the product code, GTIN, manufacturer part number and short text catalog properties present in the product index are allowed."),
+                    $"These fields cannot be used for barcode search: {string.Join(", ", unknownNames)}. Only the product code, GTIN, manufacturer part number and short text catalog properties that are defined in the catalog and present in the product index are allowed."),
             ]);
         }
 

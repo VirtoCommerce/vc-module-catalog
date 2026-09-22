@@ -77,7 +77,7 @@
           "sku": "SKU: the product code.",
           "property": "Any other code, or several codes of the same kind: create a short text catalog property for products or variations (multi-value is allowed, long text is not) and select it here.",
           "reindex": "Products must be re-indexed after the values or the property definitions change.",
-          "matching": "Matching is exact and case-insensitive; the selected fields are matched with OR."
+          "matching": "Matching is exact: the scanned value must equal the stored value; the selected fields are matched with OR."
         }
       },
       "product-sorting-list": {

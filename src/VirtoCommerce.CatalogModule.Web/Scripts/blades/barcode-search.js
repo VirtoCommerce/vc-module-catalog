@@ -165,7 +165,7 @@ angular.module('virtoCommerce.catalogModule')
         };
 
         blade.onClose = function (closeCallback) {
-            bladeNavigationService.showConfirmationIfNeeded(isDirty() && isValid(), true, blade, $scope.saveChanges, closeCallback,
+            bladeNavigationService.showConfirmationIfNeeded(isDirty(), isValid(), blade, $scope.saveChanges, closeCallback,
                 "catalog.dialogs.barcode-search-save.title", "catalog.dialogs.barcode-search-save.message");
         };
 
