@@ -63,7 +63,7 @@
           "missing": "MISSING FROM INDEX"
         },
         "help": {
-          "missing-fields": "These fields are no longer in the product index, so they never match. They are removed the next time you save"
+          "missing-fields": "These fields are no longer in the product index, so they never match. They are removed from the selection as soon as you change any field or the match mode"
         },
         "mode-hint": {
           "title": "How match modes work",

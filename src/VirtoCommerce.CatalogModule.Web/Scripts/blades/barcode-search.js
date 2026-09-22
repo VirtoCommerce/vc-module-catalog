@@ -106,8 +106,9 @@ angular.module('virtoCommerce.catalogModule')
         }
 
         // Selected fields the product index no longer exposes (property renamed/removed, or not re-indexed yet).
-        // They are shown as checked, disabled rows and stop being rendered as soon as they leave the selection
-        // (any save drops them); hiding a row never reorders the others.
+        // They are shown as checked, disabled rows, but collectSelectedFields reads availableFields only, so the
+        // first change of any row or of the match mode drops them from the selection (they are never saved again)
+        // and stops rendering them; hiding a row never reorders the others.
         function refreshMissingFields() {
             var availableNames = _.pluck(blade.availableFields || [], 'name');
             blade.missingFields = _.filter(blade.currentEntity.fields || [], function (name) {

@@ -124,12 +124,13 @@ Open **Store → Search configuration → Barcode scanner**:
 - The field picker offers only fields that exist in the **product search index**: the built-in `code` (SKU), `gtin` and
   `manufacturerPartNumber` (MPN) plus every **short text** catalog property of type *Product* or *Variation*. Free text
   is not accepted and the server re-validates the selection on save. A previously saved field that is no longer in the
-  index is shown with a *missing from index* badge and dropped on the next save.
+  index is shown with a *missing from index* badge and is removed from the selection as soon as any field or the
+  match mode is changed, so it is never saved again.
 
 `Catalog.Search.BarcodeSearchFields` is meant to be edited through this widget, which is the only place that validates
 the selection against the live product index schema. Values written directly through the generic settings API are not
 validated: an unknown field name is stored as-is and simply matches nothing (the widget then shows it as *missing from
-index* and drops it on the next save).
+index* and drops it from the selection at the first change).
 
 ### Filling barcode data
 
@@ -142,9 +143,6 @@ index* and drops it on the next save).
 - Several *kinds* of code (e.g. GTIN and a custom property) can be selected at once; they are matched with OR.
 - Products must be **re-indexed** after the values or the property definitions change. Matching is exact and
   case-insensitive.
-- Stores on a schema-driven search provider (Azure Search, Elastic App Search) must rebuild the product index after
-  upgrading, so that the aligned `gtin` / `manufacturerPartNumber` schema declarations (which now also feed `__content`)
-  take effect; Lucene and Elasticsearch need no action.
 
 ### How the storefront searches
 

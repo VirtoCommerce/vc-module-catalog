@@ -10,11 +10,10 @@ using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.Search;
 using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CatalogModule.Core.Search.Barcodes;
+using VirtoCommerce.CatalogModule.Data.Search.Indexing;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Settings;
-using VirtoCommerce.SearchModule.Core.Extensions;
 using VirtoCommerce.SearchModule.Core.Model;
-using VirtoCommerce.SearchModule.Core.Services;
 using VirtoCommerce.StoreModule.Core.Model;
 using VirtoCommerce.StoreModule.Core.Services;
 using static VirtoCommerce.CatalogModule.Core.ModuleConstants.Settings.Search;
@@ -121,21 +120,9 @@ public class BarcodeSearchConfigurationService : IBarcodeSearchConfigurationServ
         return result;
     }
 
-    protected virtual async Task<IndexDocument> BuildProductSchemaAsync()
+    protected virtual Task<IndexDocument> BuildProductSchemaAsync()
     {
-        var schema = new IndexDocument(Guid.NewGuid().ToString("N"));
-
-        var schemaBuilders = _configurations
-            .GetDocumentSources(KnownDocumentTypes.Product)
-            .Select(x => x.DocumentBuilder)
-            .OfType<IIndexSchemaBuilder>();
-
-        foreach (var schemaBuilder in schemaBuilders)
-        {
-            await schemaBuilder.BuildSchemaAsync(schema);
-        }
-
-        return schema;
+        return _configurations.BuildProductSchemaAsync();
     }
 
     // Short text catalog properties are indexed globally (one product index for all catalogs) under their lowercased
@@ -171,9 +158,12 @@ public class BarcodeSearchConfigurationService : IBarcodeSearchConfigurationServ
             return [];
         }
 
-        var availableNames = (await GetAvailableFieldsAsync(storeId))
-            .Select(x => x.Name)
-            .ToDictionary(x => x, StringComparer.OrdinalIgnoreCase);
+        // An override of GetAvailableFieldsAsync may return the same name twice; the first one wins.
+        var availableNames = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var availableField in await GetAvailableFieldsAsync(storeId))
+        {
+            availableNames.TryAdd(availableField.Name, availableField.Name);
+        }
 
         var result = new List<string>();
         var addedNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -214,7 +204,6 @@ public class BarcodeSearchConfigurationService : IBarcodeSearchConfigurationServ
 
         return result;
     }
-
 
     private static BarcodeSearchField ToBarcodeSearchField(IndexDocumentField field, bool isProductField)
     {

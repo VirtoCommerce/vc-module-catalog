@@ -51,7 +51,7 @@
                       <input type="checkbox" ng-model="blade.selection[field.name]" ng-change="blade.onFieldSelectionChanged()" ng-disabled="field.isMissing || !blade.hasUpdatePermission()">
                       <span class="check"></span>
                     </span>
-                    <span class="barcode-search-field__name" ng-if="field.isProductField">{{ ('catalog.blades.barcode-search.fields.' + field.name) | translate }}</span>
+                    <span class="barcode-search-field__name" ng-if="field.isProductField">{{ field.text }}</span>
                     <code class="barcode-search-field__code">{{ field.name }}</code>
                     <span class="barcode-search-badge __multi" ng-if="field.isCollection">{{ 'catalog.blades.barcode-search.badges.multi-value' | translate }}</span>
                     <span class="barcode-search-badge __missing" ng-if="field.isMissing">{{ 'catalog.blades.barcode-search.badges.missing' | translate }}</span>
