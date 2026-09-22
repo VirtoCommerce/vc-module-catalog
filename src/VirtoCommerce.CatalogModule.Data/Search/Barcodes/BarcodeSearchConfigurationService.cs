@@ -207,7 +207,7 @@ public class BarcodeSearchConfigurationService : IBarcodeSearchConfigurationServ
     {
         var result = new Dictionary<string, IndexDocumentField>(StringComparer.OrdinalIgnoreCase);
 
-        foreach (var field in schema.Fields.Where(IsUsableField))
+        foreach (var field in schema.Fields.Where(x => x.IsFilterable && x.ValueType == IndexDocumentFieldValueType.String))
         {
             result.TryAdd(field.Name, field);
         }
@@ -215,14 +215,6 @@ public class BarcodeSearchConfigurationService : IBarcodeSearchConfigurationServ
         return result;
     }
 
-    private static bool IsUsableField(IndexDocumentField field)
-    {
-        return field != null &&
-               field.IsFilterable &&
-               field.ValueType == IndexDocumentFieldValueType.String &&
-               !string.IsNullOrEmpty(field.Name) &&
-               !field.Name.StartsWith("__", StringComparison.Ordinal);
-    }
 
     private static BarcodeSearchField ToBarcodeSearchField(IndexDocumentField field, bool isProductField)
     {
