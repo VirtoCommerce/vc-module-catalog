@@ -37,6 +37,60 @@ namespace VirtoCommerce.CatalogModule.Tests
             Assert.Equal("Brand", attribute.Key);
         }
 
+        [Theory]
+        [InlineData(ModuleConstants.TermValuesSortingTypeScore)]
+        [InlineData(ModuleConstants.TermValuesSortingTypePriority)]
+        [InlineData(ModuleConstants.TermValuesSortingTypePriorityAscending)]
+        [InlineData(ModuleConstants.TermValuesSortingTypePriorityDescending)]
+        [InlineData(ModuleConstants.TermValuesSortingTypeNameAscending)]
+        [InlineData(ModuleConstants.TermValuesSortingTypeNameDescending)]
+        [InlineData(ModuleConstants.TermValuesSortingTypeNumericAscending)]
+        [InlineData(ModuleConstants.TermValuesSortingTypeNumericDescending)]
+        public async Task GetStoreAggregations_RoundTripsTermValuesSortingTypeVerbatim(string sortingType)
+        {
+            // The sorting type is persisted as a free-form string, so every value has to survive
+            // the save/load cycle byte for byte, including the legacy bare "Priority".
+            var store = CreateStoreWithSetting();
+            var storeService = CreateStoreServiceMock(store);
+
+            var service = new BrowseFilterService(storeService.Object);
+
+            var filters = new List<IBrowseFilter>
+            {
+                new AttributeFilter { Key = "Color", TermValuesSortingType = sortingType },
+            };
+
+            await service.SaveStoreAggregationsAsync(StoreId, filters);
+            var result = await service.GetStoreAggregationsAsync(StoreId);
+
+            var attribute = Assert.Single(result.OfType<AttributeFilter>());
+            Assert.Equal(sortingType, attribute.TermValuesSortingType);
+        }
+
+        [Fact]
+        public async Task GetStoreAggregations_LegacyXmlPriority_DeserializesVerbatim()
+        {
+            // Stores configured before the ascending/descending split can still hold the XML format
+            // with a bare "Priority". It has to reach the aggregation converter unchanged.
+            var store = CreateStoreWithSetting(
+                """
+                <browsing>
+                  <attribute key="Color">
+                    <termValuesSortingType>Priority</termValuesSortingType>
+                  </attribute>
+                </browsing>
+                """);
+            var storeService = CreateStoreServiceMock(store);
+
+            var service = new BrowseFilterService(storeService.Object);
+
+            var result = await service.GetStoreAggregationsAsync(StoreId);
+
+            var attribute = Assert.Single(result.OfType<AttributeFilter>());
+            Assert.Equal("Color", attribute.Key);
+            Assert.Equal(ModuleConstants.TermValuesSortingTypePriority, attribute.TermValuesSortingType);
+        }
+
         [Fact]
         public async Task GetStoreAggregations_WhenStoreMissing_ReturnsNull()
         {

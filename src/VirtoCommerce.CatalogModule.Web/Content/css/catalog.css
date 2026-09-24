@@ -575,3 +575,9 @@ vc-item-search {
     color: #a8b3bc;
 }
 
+/* Disable the grid's "select all" checkbox when nothing on the current page can be mapped/linked */
+.table-wrapper.__no-select-all .ui-grid-header-cell .ui-grid-selection-row-header-buttons {
+    opacity: 0.4;
+    pointer-events: none;
+}
+

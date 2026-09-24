@@ -19,7 +19,15 @@ namespace VirtoCommerce.CatalogModule.Core
         public const string ConfigurationSectionFilesScope = "product-configuration";
 
         public const string TermValuesSortingTypeScore = "Score";
+
+        /// <summary>
+        /// Kept for stores configured before priority sorting was split into an explicit direction.
+        /// Behaves as <see cref="TermValuesSortingTypePriorityAscending"/>.
+        /// </summary>
         public const string TermValuesSortingTypePriority = "Priority";
+
+        public const string TermValuesSortingTypePriorityAscending = "PriorityAscending";
+        public const string TermValuesSortingTypePriorityDescending = "PriorityDescending";
         public const string TermValuesSortingTypeNameAscending = "NameAscending";
         public const string TermValuesSortingTypeNameDescending = "NameDescending";
         public const string TermValuesSortingTypeNumericAscending = "NumericAscending";
@@ -57,11 +65,13 @@ namespace VirtoCommerce.CatalogModule.Core
                 public const string CategoriesRead = "catalog:categories:read";
                 public const string CategoriesUpdate = "catalog:categories:update";
                 public const string CategoriesDelete = "catalog:categories:delete";
+                public const string CategoriesLink = "catalog:categories:link";
 
                 public const string ProductsCreate = "catalog:products:create";
                 public const string ProductsRead = "catalog:products:read";
                 public const string ProductsUpdate = "catalog:products:update";
                 public const string ProductsDelete = "catalog:products:delete";
+                public const string ProductsLink = "catalog:products:link";
 
                 public static string[] AllPermissions { get; } =
                 {
@@ -91,10 +101,12 @@ namespace VirtoCommerce.CatalogModule.Core
                     CategoriesRead,
                     CategoriesUpdate,
                     CategoriesDelete,
+                    CategoriesLink,
                     ProductsCreate,
                     ProductsRead,
                     ProductsUpdate,
                     ProductsDelete,
+                    ProductsLink,
                 };
             }
         }

@@ -4,8 +4,11 @@ using VirtoCommerce.CatalogModule.Core.Model;
 
 namespace VirtoCommerce.CatalogModule.Data.Validation
 {
-    public class PropertyValidator : AbstractValidator<Property>
+    public partial class PropertyValidator : AbstractValidator<Property>
     {
+        [GeneratedRegex(@"^\b[0-9a-z]+(_[0-9a-z]+)*\b$", RegexOptions.IgnoreCase)]
+        private static partial Regex NameRegex();
+
         private readonly string _nameValidationMessage = "Property name {0} must start with a letter or number, and can contain only Latin letters, digits, underscore ('_'). Every underscore('_') character must be immediately preceded and followed by a letter or number.";
 
         public PropertyValidator()
@@ -14,7 +17,7 @@ namespace VirtoCommerce.CatalogModule.Data.Validation
                 .NotNull().NotEmpty()
                 .WithMessage(x => $"Name is null or empty")
                 .MaximumLength(128)
-                .Matches(@"^\b[0-9a-z]+(_[0-9a-z]+)*\b$", RegexOptions.Compiled | RegexOptions.IgnoreCase)
+                .Matches(NameRegex())
                 .WithMessage(property => string.Format(_nameValidationMessage, property.Name));
 
             RuleFor(property => property.Dictionary).NotEqual(true).When(property => property.ValueType == PropertyValueType.Boolean);

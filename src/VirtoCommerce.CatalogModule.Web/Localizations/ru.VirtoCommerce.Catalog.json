@@ -110,6 +110,10 @@
         },
         "descr": {
           "title-mapping": "Это сопоставлено с этой виртуальной локацией"
+        },
+        "notifications": {
+          "categories-not-linkable": "Категории нельзя выбрать — у вашей роли нет прав на их связывание.",
+          "products-not-linkable": "Товары/элементы нельзя выбрать — у вашей роли нет прав на их связывание."
         }
       },
       "category-detail": {
@@ -685,6 +689,8 @@
         "sorting-type-labels": {
           "score": "Оценка",
           "priority": "Приоритет",
+          "priorityAscending": "Приоритет по возрастанию",
+          "priorityDescending": "Приоритет по убыванию",
           "nameAscending": "Имя по возрастанию",
           "nameDescending": "Имя по убыванию",
           "numericAscending": "Числовое по возрастанию",
@@ -738,6 +744,7 @@
       },
       "links-list": {
         "title": "Ссылки",
+        "no-link-permission": "У вас нет прав на создание этой ссылки.",
         "labels": {
           "no-data": "Пока нет ссылок",
           "add-links": "Добавить новую ссылку",
@@ -1293,10 +1300,12 @@
     "catalog:categories:read": "Просмотр категорий",
     "catalog:categories:update": "Редактирование категорий",
     "catalog:categories:delete": "Удаление категорий",
+    "catalog:categories:link": "Связывание категорий с другими категориями/каталогами",
     "catalog:products:create": "Создание продуктов",
     "catalog:products:read": "Просмотр продуктов",
     "catalog:products:update": "Редактирование продуктов",
-    "catalog:products:delete": "Удаление продуктов"
+    "catalog:products:delete": "Удаление продуктов",
+    "catalog:products:link": "Связывание продуктов/вариантов с категориями/каталогами"
   },
   "settings": {
     "Catalog": {

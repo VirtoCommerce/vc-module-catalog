@@ -40,6 +40,8 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
         private readonly IStoreService _storeService;
         private readonly ICatalogService _catalogService;
 
+        private sealed record PrioritySortingRequest(Aggregation Aggregation, string PropertyName, bool Descending);
+
         public AggregationConverter(
             IBrowseFilterService browseFilterService,
             IPropertyService propertyService,
@@ -543,7 +545,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             }
 
             var attributeFilters = browseFilters.OfType<AttributeFilter>().ToList();
-            var prioritySortingMap = new List<Tuple<Aggregation, string>>();
+            var prioritySortingRequests = new List<PrioritySortingRequest>();
 
             foreach (var aggregation in result.Where(x => x.AggregationType == "attr" && !x.Items.IsNullOrEmpty()))
             {
@@ -555,14 +557,19 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
 
                 if (!TryApplySimpleSorting(aggregation, attributeFilter.TermValuesSortingType))
                 {
-                    // special case: defer priority sorting until dictionary items are loaded
-                    prioritySortingMap.Add(new Tuple<Aggregation, string>(aggregation, attributeFilter.Key ?? aggregation.Field));
+                    // special case: defer priority sorting until dictionary items are loaded.
+                    // The switch above matched one of the priority constants exactly, so a plain
+                    // comparison is enough here and stays consistent with its ordinal matching.
+                    prioritySortingRequests.Add(new PrioritySortingRequest(
+                        aggregation,
+                        attributeFilter.Key ?? aggregation.Field,
+                        attributeFilter.TermValuesSortingType == ModuleConstants.TermValuesSortingTypePriorityDescending));
                 }
             }
 
-            if (prioritySortingMap.Count > 0)
+            if (prioritySortingRequests.Count > 0)
             {
-                await SortByPriorityAsync(prioritySortingMap, catalogId);
+                await SortByPriorityAsync(prioritySortingRequests, catalogId);
             }
         }
 
@@ -571,6 +578,8 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             switch (sortingType)
             {
                 case ModuleConstants.TermValuesSortingTypePriority:
+                case ModuleConstants.TermValuesSortingTypePriorityAscending:
+                case ModuleConstants.TermValuesSortingTypePriorityDescending:
                     return false;
                 case ModuleConstants.TermValuesSortingTypeNameAscending:
                     aggregation.Items = [.. aggregation.Items.OrderBy(x => x.Value)];
@@ -606,23 +615,25 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                 : null;
         }
 
-        private async Task SortByPriorityAsync(List<Tuple<Aggregation, string>> prioritySortingMap, string catalogId)
+        private async Task SortByPriorityAsync(List<PrioritySortingRequest> prioritySortingRequests, string catalogId)
         {
             var allCatalogProperties = await _propertyService.GetAllCatalogPropertiesAsync(catalogId);
-            var propertyNames = prioritySortingMap.Select(x => x.Item2).ToList();
-            var propertiesMap = allCatalogProperties
+            var propertyNames = prioritySortingRequests.Select(x => x.PropertyName).ToList();
+
+            // There can be many properties with the same name. A virtual catalog reports one per linked
+            // catalog, and only some of them carry the dictionary items, so all of them have to be collected.
+            var properties = allCatalogProperties
                 .Where(p => propertyNames.ContainsIgnoreCase(p.Name))
-                .Select(x => new KeyValue { Key = x.Id, Value = x.Name })
                 .ToArray();
 
-            if (propertiesMap.Length == 0)
+            if (properties.Length == 0)
             {
                 return;
             }
 
             var dictionaryItems = await _propDictItemsSearchService.SearchAllNoCloneAsync(new PropertyDictionaryItemSearchCriteria
             {
-                PropertyIds = [.. propertiesMap.Select(x => x.Key)],
+                PropertyIds = [.. properties.Select(x => x.Id)],
             });
 
             if (dictionaryItems.Count == 0)
@@ -630,26 +641,56 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                 return;
             }
 
-            var dictionaryItemsMap = dictionaryItems
-                .GroupBy(x => x.PropertyId)
-                .ToDictionary(x => x.Key, x => x.ToList());
+            var sortOrdersByPropertyName = properties
+                .GroupBy(p => p.Name, StringComparer.OrdinalIgnoreCase)
+                .ToDictionary(
+                    g => g.Key,
+                    g => GetSortOrdersByAlias(g.Select(p => p.Id).ToHashSet(StringComparer.OrdinalIgnoreCase), dictionaryItems),
+                    StringComparer.OrdinalIgnoreCase);
 
-            foreach (var (aggregation, propertyName) in prioritySortingMap.Select(t => (t.Item1, t.Item2)))
+            foreach (var request in prioritySortingRequests)
             {
-                var propertyMap = propertiesMap.FirstOrDefault(x => x.Value.EqualsIgnoreCase(propertyName));
-                if (propertyMap == null || !dictionaryItemsMap.TryGetValue(propertyMap.Key, out var items))
+                if (!sortOrdersByPropertyName.TryGetValue(request.PropertyName, out var sortOrders) || sortOrders.Count == 0)
                 {
                     continue;
                 }
 
-                // alias is value
-                aggregation.Items = [.. aggregation.Items.OrderByDescending(x =>
-                {
-                    var item = items.FirstOrDefault(i => i.Alias.EqualsIgnoreCase(x.Value?.ToString()));
-                    return item?.SortOrder ?? 0;
-                })];
+                // alias is value; values with no dictionary item have no priority and always go last
+                var keyed = request.Aggregation.Items.Select(x => (Item: x, SortOrder: GetSortOrder(sortOrders, x.Value)));
+                var ordered = keyed.OrderBy(t => t.SortOrder.HasValue ? 0 : 1);
+                ordered = request.Descending
+                    ? ordered.ThenByDescending(t => t.SortOrder)
+                    : ordered.ThenBy(t => t.SortOrder);
+
+                request.Aggregation.Items =
+                    [.. ordered.ThenBy(t => t.Item.Value?.ToString(), StringComparer.OrdinalIgnoreCase).Select(t => t.Item)];
             }
         }
+
+        private static Dictionary<string, int> GetSortOrdersByAlias(HashSet<string> propertyIds, IList<PropertyDictionaryItem> dictionaryItems)
+        {
+            // The same alias can arrive from several same-named properties, and often only one of the
+            // copies has priorities filled in. Prefer the strongest priority that was actually set,
+            // treating the default 0 as "not set" while any duplicate carries an explicit value.
+            return dictionaryItems
+                .Where(x => propertyIds.Contains(x.PropertyId) && !string.IsNullOrEmpty(x.Alias))
+                .GroupBy(x => x.Alias, StringComparer.OrdinalIgnoreCase)
+                .ToDictionary(
+                    g => g.Key,
+                    g => g.Select(x => x.SortOrder).Where(x => x != 0).DefaultIfEmpty(0).Min(),
+                    StringComparer.OrdinalIgnoreCase);
+        }
+
+        private static int? GetSortOrder(Dictionary<string, int> sortOrders, object value)
+        {
+            var alias = value?.ToString();
+
+            return !string.IsNullOrEmpty(alias) && sortOrders.TryGetValue(alias, out var sortOrder)
+                ? sortOrder
+                : null;
+        }
+
+
 
         protected virtual async Task AddLabelsAsync(IList<Aggregation> aggregations, string catalogId, IList<IBrowseFilter> browseFilters)
         {
