@@ -90,8 +90,6 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
-    needs:
-      [build, test]
     uses: VirtoCommerce/.github/.github/workflows/publish-github.yml@VCST-5414
     with:
       fullKey: ${{ needs.build.outputs.packageFullKey }}
