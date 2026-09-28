@@ -22,19 +22,19 @@ jobs:
     steps:
       - name: Read deployment config
         if: contains(github.event.pull_request.labels.*.name, 'deploy-qa')
-        uses: VirtoCommerce/.github/actions/get-deploy-param@VCST-5414
+        uses: VirtoCommerce/.github/actions/get-deploy-param@v3.1000.1
         id: deployConfig
 
       - name: Gets artifact link
         if: contains(github.event.pull_request.labels.*.name, 'deploy-qa')
-        uses: VirtoCommerce/.github/actions/get-artifact-link@VCST-5414
+        uses: VirtoCommerce/.github/actions/get-artifact-link@v3.1000.1
         id: artifactLink
         with:
           downloadComment: 'Artifact URL:'
 
       - name: Create deploy PR in QA
         if: github.event.action != 'closed' && contains(github.event.pull_request.labels.*.name, 'deploy-qa')
-        uses: VirtoCommerce/.github/actions/create-deploy-pr@VCST-5414
+        uses: VirtoCommerce/.github/actions/create-deploy-pr@v3.1000.1
         with:
           deployRepo: ${{ steps.deployConfig.outputs.deployRepo }}
           deployBranch: ${{ fromJSON(steps.deployConfig.outputs.deployConfig).qa.deployBranch }}
