@@ -1280,6 +1280,16 @@
       "automatic": "Lien automatique"
     }
   },
+  "seo": {
+    "candidate-reasons": {
+      "ObjectInactive": "La catégorie ou le produit est inactif",
+      "NotInStoreCatalog": "La catégorie ou le produit n'est pas dans le catalogue de la boutique",
+      "NoSeoPath": "La boutique ne peut pas créer de lien: un parent n'a pas de slug, ou il s'agit d'une catégorie liée avec des liens Collapsed",
+      "PermalinkMismatch": "Le lien de la boutique est différent",
+      "ParentNotResolved": "Le chemin parent n'est pas résolu",
+      "ParentMismatch": "Il ne se trouve pas sous le parent demandé"
+    }
+  },
   "permissions": {
     "catalog:access": "Ouvrir le menu du catalogue",
     "catalog:create": "Créer des données liées au catalogue",

@@ -1280,6 +1280,16 @@
       "automatic": "Automatischer Link"
     }
   },
+  "seo": {
+    "candidate-reasons": {
+      "ObjectInactive": "Die Kategorie oder das Produkt ist inaktiv",
+      "NotInStoreCatalog": "Die Kategorie oder das Produkt befindet sich nicht im Katalog des Shops",
+      "NoSeoPath": "Der Shop kann keinen Link dafür erstellen: Ein übergeordnetes Element hat keinen Slug, oder es ist eine verknüpfte Kategorie mit Collapsed-Links",
+      "PermalinkMismatch": "Der Link des Shops dafür lautet anders",
+      "ParentNotResolved": "Der übergeordnete Pfad wird nicht aufgelöst",
+      "ParentMismatch": "Es befindet sich nicht unter dem angeforderten übergeordneten Element"
+    }
+  },
   "permissions": {
     "catalog:access": "Katalogmenü öffnen",
     "catalog:create": "Katalogbezogene Daten erstellen",

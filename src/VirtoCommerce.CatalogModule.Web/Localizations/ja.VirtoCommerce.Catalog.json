@@ -1280,6 +1280,16 @@
       "automatic": "自動リンク"
     }
   },
+  "seo": {
+    "candidate-reasons": {
+      "ObjectInactive": "カテゴリまたは商品が無効です",
+      "NotInStoreCatalog": "カテゴリまたは商品が店舗のカタログにありません",
+      "NoSeoPath": "店舗はこのリンクを作成できません：親にスラッグがないか、Collapsedリンクのリンクされたカテゴリです",
+      "PermalinkMismatch": "店舗でのリンクが異なります",
+      "ParentNotResolved": "親パスが解決されません",
+      "ParentMismatch": "要求された親の下にありません"
+    }
+  },
   "permissions": {
     "catalog:access": "カタログメニューを開く",
     "catalog:create": "カタログ関連データを作成",

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using VirtoCommerce.CatalogModule.Core.Extensions;
@@ -11,10 +12,13 @@ using VirtoCommerce.CatalogModule.Data.Model;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Seo.Core.Models;
+using VirtoCommerce.Seo.Core.Models.Explain;
 using VirtoCommerce.Seo.Core.Services;
 using VirtoCommerce.StoreModule.Core.Extensions;
 using VirtoCommerce.StoreModule.Core.Model;
 using VirtoCommerce.StoreModule.Core.Services;
+using static VirtoCommerce.CatalogModule.Core.ModuleConstants.SeoCandidateReasons;
+using static VirtoCommerce.Seo.Core.ModuleConstants.CandidateReasons;
 using static VirtoCommerce.StoreModule.Core.ModuleConstants.Settings.SEO;
 using SeoExtensions = VirtoCommerce.CatalogModule.Core.Extensions.SeoExtensions;
 
@@ -41,6 +45,38 @@ public class CatalogSeoResolver : ISeoResolver
 
     public virtual async Task<IList<SeoInfo>> FindSeoAsync(SeoSearchCriteria criteria)
     {
+        var candidates = await ResolveAsync(criteria, explain: false);
+
+        return candidates
+            .Where(x => x.IsResolved)
+            .Select(x => x.SeoInfo)
+            .ToList();
+    }
+
+    public virtual async Task<IList<SeoCandidate>> GetCandidatesAsync(SeoSearchCriteria criteria)
+    {
+        var candidates = await ResolveAsync(criteria, explain: true);
+
+        // FindSeoAsync decides what is resolved: a subclass may override it without touching the explanation
+        var seoInfos = (await FindSeoAsync(criteria)).ToHashSet();
+
+        foreach (var candidate in candidates)
+        {
+            if (seoInfos.Remove(candidate.SeoInfo))
+            {
+                candidate.Reasons.Clear();
+            }
+            else if (candidate.IsResolved)
+            {
+                Reject(candidate, NotReturnedByResolver);
+            }
+        }
+
+        return [.. candidates, .. seoInfos.Select(x => new SeoCandidate(x))];
+    }
+
+    protected virtual async Task<IList<SeoCandidate>> ResolveAsync(SeoSearchCriteria criteria, bool explain)
+    {
         ArgumentNullException.ThrowIfNull(criteria);
 
         var permalink = criteria.Permalink ?? string.Empty;
@@ -58,22 +94,23 @@ public class CatalogSeoResolver : ISeoResolver
         }
 
         var currentEntitySeoInfos = await SearchSeoInfos(permalink, store, criteria);
+        var currentEntityCandidates = currentEntitySeoInfos.Select(x => new SeoCandidate(x)).ToList();
 
-        if (currentEntitySeoInfos.Count == 0)
+        IList<SeoCandidate> candidates = explain
+            ? [.. currentEntityCandidates, .. await SearchRejectedSeoCandidates(permalink, store, criteria, currentEntitySeoInfos)]
+            : currentEntityCandidates;
+
+        if (currentEntityCandidates.Count == 0 || store.GetSeoLinksType() == SeoShort)
         {
-            return [];
+            return candidates;
         }
 
-        if (store.GetSeoLinksType() == SeoShort)
-        {
-            return currentEntitySeoInfos;
-        }
-
-        var groups = currentEntitySeoInfos.GroupBy(x => new { x.ObjectType, x.ObjectId }).ToList();
+        var groups = currentEntityCandidates.GroupBy(x => (x.SeoInfo.ObjectType, x.SeoInfo.ObjectId)).ToList();
 
         if (groups.Count == 1)
         {
-            return [currentEntitySeoInfos.First()];
+            Reject(currentEntityCandidates.Skip(1), NotBestMatch);
+            return candidates;
         }
 
         var parentIds = new List<string>();
@@ -92,28 +129,49 @@ public class CatalogSeoResolver : ISeoResolver
 
             if (parentSeoInfos.Count == 0)
             {
-                return [];
+                Reject(currentEntityCandidates, ParentNotResolved, parentSearchCriteria.Permalink);
+                return candidates;
             }
 
             parentIds.AddRange(parentSeoInfos.Select(x => x.ObjectId).Distinct());
         }
 
+        (string ObjectType, string ObjectId)? selectedObject = null;
+        HashSet<SeoCandidate> misplacedCandidates = [];
+
         foreach (var group in groups)
         {
-            var objectType = group.Key.ObjectType;
-            var objectId = group.Key.ObjectId;
+            var outlines = await GetOutlines(group.Key.ObjectType, group.Key.ObjectId, group.Select(x => x.SeoInfo).ToList());
 
-            var outlines = await GetOutlines(objectType, objectId, group.ToList());
-
-            if (LongestOutlineContainsAnyParentId(outlines, store.Catalog, parentIds))
+            if (!LongestOutlineContainsAnyParentId(outlines, store.Catalog, parentIds))
             {
-                return currentEntitySeoInfos
-                    .Where(x => x.ObjectId.EqualsIgnoreCase(objectId) && x.ObjectType.EqualsIgnoreCase(objectType))
-                    .ToList();
+                misplacedCandidates.UnionWith(group);
+            }
+            else if (selectedObject == null)
+            {
+                selectedObject = group.Key;
+
+                // Explain checks the remaining objects too, to tell a misplaced one from one that lost to the selected object
+                if (!explain)
+                {
+                    break;
+                }
             }
         }
 
-        return [];
+        foreach (var candidate in currentEntityCandidates)
+        {
+            var seoInfo = candidate.SeoInfo;
+
+            if (selectedObject is { } selected && seoInfo.ObjectId.EqualsIgnoreCase(selected.ObjectId) && seoInfo.ObjectType.EqualsIgnoreCase(selected.ObjectType))
+            {
+                continue;
+            }
+
+            Reject(candidate, misplacedCandidates.Contains(candidate) ? ParentMismatch : NotBestMatch);
+        }
+
+        return candidates;
     }
 
 
@@ -186,58 +244,63 @@ public class CatalogSeoResolver : ISeoResolver
 
         var slug = segments.Last();
         var entities = await GetSeoInfoEntities(slug, store, criteria, isActive);
+        var seoPaths = await GetObjectSeoPaths(entities, store, criteria);
+        List<SeoInfo> result = [];
 
-        var categoryIds = entities.Select(x => x.CategoryId).Where(x => x != null).Distinct().ToArray();
-        var seoList = new List<(string SeoPath, string OutlinePath, string Id)>();
-
-        if (categoryIds.Length > 0)
+        foreach (var entity in entities)
         {
-            var categories = (await _categoryService.GetByIdsAsync(categoryIds, $"{CategoryResponseGroup.WithOutlines},{CategoryResponseGroup.WithSeo}", store.Catalog))?.Where(x => (x.IsActive ?? true) && x.Outlines != null).ToArray();
-            var seo = FilterByPermalink(categories);
-            categoryIds = seo.Select(x => x.Id).Distinct().ToArray();
-            seoList.AddRange(seo);
+            var seoPath = FindSeoPath(GetSeoPaths(seoPaths, entity), permalink);
+
+            if (entity.CatalogId != null || seoPath.SeoPath != null)
+            {
+                result.Add(ToSeoInfo(entity, seoPath.OutlinePath));
+            }
         }
-
-        var itemIds = entities.Select(x => x.ItemId).Where(x => x != null).Distinct().ToArray();
-
-        if (itemIds.Length > 0)
-        {
-            var items = (await _itemService.GetByIdsAsync(itemIds, $"{ItemResponseGroup.WithOutlines},{ItemResponseGroup.WithSeo}", store.Catalog))?.Where(x => (x.IsActive ?? true) && x.Outlines != null).ToArray();
-            var seo = FilterByPermalink(items);
-            itemIds = seo.Select(x => x.Id).Distinct().ToArray();
-            seoList.AddRange(seo);
-        }
-
-        var result = entities
-            .Where(x => x.CatalogId != null || categoryIds.Contains(x.CategoryId) || itemIds.Contains(x.ItemId))
-            .ToArray();
 
         return result
-            .Select(x =>
-            {
-                var item = x.ToModel(AbstractTypeFactory<SeoInfo>.TryCreateInstance());
-                var outline = seoList.Where(s => s.Id == x.CategoryId || s.Id == x.ItemId).Select(s => s.OutlinePath).FirstOrDefault();
-                item.Outline = outline;
-                return item;
-            })
             .OrderByDescending(x => GetSeoScore(x, store, criteria))
             .ToList();
+    }
 
-        // returns seo info from the given categories or products that match the permalink
-        (string SeoPath, string OutlinePath, string Id)[] FilterByPermalink<T>(IEnumerable<T> elements) where T : IHasOutlines, ISeoSupport
+    protected virtual async Task<IList<SeoCandidate>> SearchRejectedSeoCandidates(string permalink, Store store, SeoSearchCriteria criteria, IList<SeoInfo> resolvedSeoInfos)
+    {
+        using var repository = _repositoryFactory();
+        var query = GetSeoCandidatesQuery(repository, permalink.Split('/', StringSplitOptions.RemoveEmptyEntries).Last());
+        var resolvedIds = resolvedSeoInfos.Select(x => x.Id).ToList();
+
+        var entities = await query
+            .Where(x => !resolvedIds.Contains(x.Id))
+            .OrderBy(x => x.Id)
+            .Take(criteria.Take)
+            .ToListAsync();
+
+        if (entities.Count == 0)
         {
-            return elements
-                ?.SelectMany(x => x.Outlines.Select(o => new
-                {
-                    SeoPath = o.Items.GetSeoPath(store, criteria.LanguageCode),
-                    OutlinePath = o.Items.GetOutlinePath(),
-                    x.Id
-                }))
-                .Where(x => x.SeoPath == permalink)
-                .Distinct()
-                .Select(x => (x.SeoPath, x.OutlinePath, x.Id))
-                .ToArray() ?? [];
+            return [];
         }
+
+        var ids = entities.Select(x => x.Id).ToList();
+        var candidates = entities.Select(x => new SeoCandidate(ToSeoInfo(x, outlinePath: null))).ToList();
+
+        foreach (var (code, filter) in GetSeoInfoFilters(store, criteria, isActive: true))
+        {
+            var passedIds = await query.Where(x => ids.Contains(x.Id)).Where(filter).Select(x => x.Id).ToListAsync();
+            Reject(candidates.Where(x => !passedIds.Contains(x.SeoInfo.Id)), code);
+        }
+
+        var seoPaths = await GetObjectSeoPaths(entities, store, criteria);
+
+        foreach (var (entity, candidate) in entities.Zip(candidates))
+        {
+            var objectSeoPaths = GetSeoPaths(seoPaths, entity);
+
+            if (entity.CatalogId == null && FindSeoPath(objectSeoPaths, permalink).SeoPath == null)
+            {
+                RejectBySeoPath(candidate, objectSeoPaths);
+            }
+        }
+
+        return candidates;
     }
 
     protected virtual async Task<IList<SeoInfoEntity>> GetSeoInfoEntities(string slug, Store store, SeoSearchCriteria criteria, bool isActive)
@@ -248,12 +311,24 @@ public class CatalogSeoResolver : ISeoResolver
 
     protected virtual IQueryable<SeoInfoEntity> GetSeoInfoQuery(ICatalogRepository repository, string slug, Store store, SeoSearchCriteria criteria, bool isActive)
     {
-        return repository.SeoInfos.Where(x =>
-            x.IsActive == isActive &&
-            x.Keyword == slug &&
-            (x.Category != null && x.Category.IsActive || x.Item != null && x.Item.IsActive || x.Catalog != null) &&
-            (string.IsNullOrEmpty(x.StoreId) || x.StoreId == store.Id) &&
-            (string.IsNullOrEmpty(x.Language) || x.Language == criteria.LanguageCode || x.Language == store.DefaultLanguage));
+        return GetSeoInfoFilters(store, criteria, isActive).Values
+            .Aggregate(GetSeoCandidatesQuery(repository, slug), (query, filter) => query.Where(filter));
+    }
+
+    protected virtual IQueryable<SeoInfoEntity> GetSeoCandidatesQuery(ICatalogRepository repository, string slug)
+    {
+        return repository.SeoInfos.Where(x => x.Keyword == slug);
+    }
+
+    protected virtual IDictionary<string, Expression<Func<SeoInfoEntity, bool>>> GetSeoInfoFilters(Store store, SeoSearchCriteria criteria, bool isActive)
+    {
+        return new Dictionary<string, Expression<Func<SeoInfoEntity, bool>>>
+        {
+            [Inactive] = x => x.IsActive == isActive,
+            [ObjectInactive] = x => x.Category != null && x.Category.IsActive || x.Item != null && x.Item.IsActive || x.Catalog != null,
+            [StoreMismatch] = x => string.IsNullOrEmpty(x.StoreId) || x.StoreId == store.Id,
+            [LanguageMismatch] = x => string.IsNullOrEmpty(x.Language) || x.Language == criteria.LanguageCode || x.Language == store.DefaultLanguage,
+        };
     }
 
     protected static int GetSeoScore(SeoInfo seoInfo, Store store, SeoSearchCriteria criteria)
@@ -272,5 +347,93 @@ public class CatalogSeoResolver : ISeoResolver
         }
 
         return score;
+    }
+
+    private async Task<Dictionary<string, (string SeoPath, string OutlinePath)[]>> GetObjectSeoPaths(IList<SeoInfoEntity> entities, Store store, SeoSearchCriteria criteria)
+    {
+        var result = new Dictionary<string, (string SeoPath, string OutlinePath)[]>();
+
+        var categoryIds = entities.Select(x => x.CategoryId).Where(x => x != null).Distinct().ToArray();
+
+        if (categoryIds.Length > 0)
+        {
+            var categories = await _categoryService.GetByIdsAsync(categoryIds, $"{CategoryResponseGroup.WithOutlines},{CategoryResponseGroup.WithSeo}", store.Catalog);
+            AddSeoPaths(categories?.Where(x => (x.IsActive ?? true) && x.Outlines != null));
+        }
+
+        var itemIds = entities.Select(x => x.ItemId).Where(x => x != null).Distinct().ToArray();
+
+        if (itemIds.Length > 0)
+        {
+            var items = await _itemService.GetByIdsAsync(itemIds, $"{ItemResponseGroup.WithOutlines},{ItemResponseGroup.WithSeo}", store.Catalog);
+            AddSeoPaths(items?.Where(x => (x.IsActive ?? true) && x.Outlines != null));
+        }
+
+        return result;
+
+        void AddSeoPaths<T>(IEnumerable<T> elements) where T : IHasOutlines, ISeoSupport
+        {
+            foreach (var element in elements ?? [])
+            {
+                result[element.Id] = element.Outlines
+                    .Select(x => (x.Items.GetSeoPath(store, criteria.LanguageCode), x.Items.GetOutlinePath()))
+                    .ToArray();
+            }
+        }
+    }
+
+    private static (string SeoPath, string OutlinePath)[] GetSeoPaths(Dictionary<string, (string SeoPath, string OutlinePath)[]> seoPaths, SeoInfoEntity entity)
+    {
+        return seoPaths.GetValueSafe(entity.CategoryId ?? entity.ItemId);
+    }
+
+    private static (string SeoPath, string OutlinePath) FindSeoPath((string SeoPath, string OutlinePath)[] objectSeoPaths, string permalink)
+    {
+        return objectSeoPaths?.FirstOrDefault(x => x.SeoPath == permalink) ?? default;
+    }
+
+    private static void RejectBySeoPath(SeoCandidate candidate, (string SeoPath, string OutlinePath)[] objectSeoPaths)
+    {
+        var storeSeoPaths = objectSeoPaths?.Select(x => x.SeoPath).Where(x => x != null).Distinct().ToArray();
+
+        if (objectSeoPaths == null)
+        {
+            Reject(candidate, ObjectInactive);
+        }
+        else if (objectSeoPaths.Length == 0)
+        {
+            Reject(candidate, NotInStoreCatalog);
+        }
+        else if (storeSeoPaths.Length == 0)
+        {
+            Reject(candidate, NoSeoPath);
+        }
+        else
+        {
+            Reject(candidate, PermalinkMismatch, string.Join(", ", storeSeoPaths));
+        }
+    }
+
+    private static SeoInfo ToSeoInfo(SeoInfoEntity entity, string outlinePath)
+    {
+        var seoInfo = entity.ToModel(AbstractTypeFactory<SeoInfo>.TryCreateInstance());
+        seoInfo.Outline = outlinePath;
+        return seoInfo;
+    }
+
+    private static void Reject(IEnumerable<SeoCandidate> candidates, string code, string details = null)
+    {
+        foreach (var candidate in candidates)
+        {
+            Reject(candidate, code, details);
+        }
+    }
+
+    private static void Reject(SeoCandidate candidate, string code, string details = null)
+    {
+        if (candidate.Reasons.All(x => x.Code != code))
+        {
+            candidate.Reasons.Add(new SeoCandidateReason(code, details));
+        }
     }
 }

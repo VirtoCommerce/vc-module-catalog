@@ -1280,6 +1280,16 @@
       "automatic": "Collegamento automatico"
     }
   },
+  "seo": {
+    "candidate-reasons": {
+      "ObjectInactive": "La categoria o il prodotto è inattivo",
+      "NotInStoreCatalog": "La categoria o il prodotto non è nel catalogo del negozio",
+      "NoSeoPath": "Il negozio non può creare un link: un elemento padre non ha slug, oppure è una categoria collegata con link Collapsed",
+      "PermalinkMismatch": "Il link del negozio è diverso",
+      "ParentNotResolved": "Il percorso padre non viene risolto",
+      "ParentMismatch": "Non si trova sotto l'elemento padre richiesto"
+    }
+  },
   "permissions": {
     "catalog:access": "Apri menu del catalogo",
     "catalog:create": "Crea dati relativi al catalogo",
