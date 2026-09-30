@@ -198,6 +198,38 @@ namespace VirtoCommerce.CatalogModule.Tests
         }
 
         [Fact]
+        public async Task GetCandidatesAsync_MoreRecordsThanTake_ListsThisStoresRecordsFirst()
+        {
+            // Explain lists at most criteria.Take rejected records. When many stores share a slug (VP-9295: 150+ stores,
+            // a record per store), the records this store could use must come first, or the limit would hide them:
+            // this store's or store-less records first, then the requested language, then Id, so the order never changes.
+            // The ids are chosen so that Id order alone would put the other stores' records first.
+            var helper = new CatalogHierarchyHelper(CatalogId);
+
+            AddRejectedRecord("a1", "other-store-1", "Other-store", LanguageCode);
+            AddRejectedRecord("a2", "other-store-2", "Other-store", LanguageCode);
+            AddRejectedRecord("b", "this-store-other-language", StoreId, "de-DE");
+            AddRejectedRecord("c", "this-store", StoreId, LanguageCode);
+
+            var criteria = new SeoSearchCriteria { Permalink = "slug", StoreId = StoreId, LanguageCode = LanguageCode, Take = 3 };
+            var resolver = helper.CreateCatalogSeoResolver();
+
+            var candidates = await AssertCandidatesExplainFindSeoAsync(resolver, criteria);
+            var candidatesAgain = await resolver.GetCandidatesAsync(criteria);
+
+            Assert.Equal(["this-store", "this-store-other-language", "other-store-1"], candidates.Select(x => x.SeoInfo.ObjectId));
+            Assert.Equal(candidates.Select(x => x.SeoInfo.Id), candidatesAgain.Select(x => x.SeoInfo.Id));
+
+            // Categories without outlines are outside the store catalog, so every record is rejected
+            void AddRejectedRecord(string id, string categoryId, string storeId, string languageCode)
+            {
+                helper.AddSeoInfo(categoryId, CategoryType, "slug", true, storeId, languageCode);
+                helper.SeoInfos[^1].Id = id;
+                helper.AddCategory(categoryId);
+            }
+        }
+
+        [Fact]
         public async Task GetCandidatesAsync_SubclassOverridingFindSeoAsync_FollowsItsResult()
         {
             // A project may subclass CatalogSeoResolver and override only FindSeoAsync, the historical extension point.
@@ -220,7 +252,7 @@ namespace VirtoCommerce.CatalogModule.Tests
         /// <summary>
         /// The invariant behind explain: the resolved candidates are FindSeoAsync's result, in the same order.
         /// </summary>
-        private static async Task<IList<SeoCandidate>> AssertCandidatesExplainFindSeoAsync(CatalogSeoResolver resolver, SeoSearchCriteria criteria)
+        private static async Task<IList<SeoExplainItem>> AssertCandidatesExplainFindSeoAsync(CatalogSeoResolver resolver, SeoSearchCriteria criteria)
         {
             var seoInfos = await resolver.FindSeoAsync(criteria);
             var candidates = await resolver.GetCandidatesAsync(criteria);
@@ -232,7 +264,7 @@ namespace VirtoCommerce.CatalogModule.Tests
             return candidates;
         }
 
-        private static string[] ReasonCodes(SeoCandidate candidate)
+        private static string[] ReasonCodes(SeoExplainItem candidate)
         {
             return candidate.Reasons.Select(x => x.Code).ToArray();
         }

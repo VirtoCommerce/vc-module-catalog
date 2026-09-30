@@ -26,6 +26,10 @@ namespace VirtoCommerce.CatalogModule.Data.Services;
 
 public class CatalogSeoResolver : ISeoResolver
 {
+    private static readonly IEqualityComparer<(string ObjectType, string ObjectId)> _objectComparer = EqualityComparer<(string ObjectType, string ObjectId)>.Create(
+        (x, y) => x.ObjectType.EqualsIgnoreCase(y.ObjectType) && x.ObjectId.EqualsIgnoreCase(y.ObjectId),
+        x => HashCode.Combine(StringComparer.OrdinalIgnoreCase.GetHashCode(x.ObjectType ?? string.Empty), StringComparer.OrdinalIgnoreCase.GetHashCode(x.ObjectId ?? string.Empty)));
+
     private readonly Func<ICatalogRepository> _repositoryFactory;
     private readonly ICategoryService _categoryService;
     private readonly IItemService _itemService;
@@ -53,16 +57,17 @@ public class CatalogSeoResolver : ISeoResolver
             .ToList();
     }
 
-    public virtual async Task<IList<SeoCandidate>> GetCandidatesAsync(SeoSearchCriteria criteria)
+    public virtual async Task<IList<SeoExplainItem>> GetCandidatesAsync(SeoSearchCriteria criteria)
     {
         var candidates = await ResolveAsync(criteria, explain: true);
 
         // FindSeoAsync decides what is resolved: a subclass may override it without touching the explanation
-        var seoInfos = (await FindSeoAsync(criteria)).ToHashSet();
+        var seoInfos = await FindSeoAsync(criteria);
+        var unlistedIds = seoInfos.Select(x => x.Id).ToHashSet(StringComparer.OrdinalIgnoreCase);
 
         foreach (var candidate in candidates)
         {
-            if (seoInfos.Remove(candidate.SeoInfo))
+            if (unlistedIds.Remove(candidate.SeoInfo.Id))
             {
                 candidate.Reasons.Clear();
             }
@@ -72,10 +77,10 @@ public class CatalogSeoResolver : ISeoResolver
             }
         }
 
-        return [.. candidates, .. seoInfos.Select(x => new SeoCandidate(x))];
+        return [.. candidates, .. seoInfos.Where(x => unlistedIds.Contains(x.Id)).Select(x => new SeoExplainItem(x))];
     }
 
-    protected virtual async Task<IList<SeoCandidate>> ResolveAsync(SeoSearchCriteria criteria, bool explain)
+    protected virtual async Task<IList<SeoExplainItem>> ResolveAsync(SeoSearchCriteria criteria, bool explain)
     {
         ArgumentNullException.ThrowIfNull(criteria);
 
@@ -94,9 +99,9 @@ public class CatalogSeoResolver : ISeoResolver
         }
 
         var currentEntitySeoInfos = await SearchSeoInfos(permalink, store, criteria);
-        var currentEntityCandidates = currentEntitySeoInfos.Select(x => new SeoCandidate(x)).ToList();
+        var currentEntityCandidates = currentEntitySeoInfos.Select(x => new SeoExplainItem(x)).ToList();
 
-        IList<SeoCandidate> candidates = explain
+        IList<SeoExplainItem> candidates = explain
             ? [.. currentEntityCandidates, .. await SearchRejectedSeoCandidates(permalink, store, criteria, currentEntitySeoInfos)]
             : currentEntityCandidates;
 
@@ -105,7 +110,7 @@ public class CatalogSeoResolver : ISeoResolver
             return candidates;
         }
 
-        var groups = currentEntityCandidates.GroupBy(x => (x.SeoInfo.ObjectType, x.SeoInfo.ObjectId)).ToList();
+        var groups = currentEntityCandidates.GroupBy(x => (x.SeoInfo.ObjectType, x.SeoInfo.ObjectId), _objectComparer).ToList();
 
         if (groups.Count == 1)
         {
@@ -136,8 +141,8 @@ public class CatalogSeoResolver : ISeoResolver
             parentIds.AddRange(parentSeoInfos.Select(x => x.ObjectId).Distinct());
         }
 
-        (string ObjectType, string ObjectId)? selectedObject = null;
-        HashSet<SeoCandidate> misplacedCandidates = [];
+        HashSet<SeoExplainItem> selectedCandidates = [];
+        HashSet<SeoExplainItem> misplacedCandidates = [];
 
         foreach (var group in groups)
         {
@@ -147,9 +152,9 @@ public class CatalogSeoResolver : ISeoResolver
             {
                 misplacedCandidates.UnionWith(group);
             }
-            else if (selectedObject == null)
+            else if (selectedCandidates.Count == 0)
             {
-                selectedObject = group.Key;
+                selectedCandidates.UnionWith(group);
 
                 // Explain checks the remaining objects too, to tell a misplaced one from one that lost to the selected object
                 if (!explain)
@@ -159,15 +164,8 @@ public class CatalogSeoResolver : ISeoResolver
             }
         }
 
-        foreach (var candidate in currentEntityCandidates)
+        foreach (var candidate in currentEntityCandidates.Where(x => !selectedCandidates.Contains(x)))
         {
-            var seoInfo = candidate.SeoInfo;
-
-            if (selectedObject is { } selected && seoInfo.ObjectId.EqualsIgnoreCase(selected.ObjectId) && seoInfo.ObjectType.EqualsIgnoreCase(selected.ObjectType))
-            {
-                continue;
-            }
-
             Reject(candidate, misplacedCandidates.Contains(candidate) ? ParentMismatch : NotBestMatch);
         }
 
@@ -262,15 +260,19 @@ public class CatalogSeoResolver : ISeoResolver
             .ToList();
     }
 
-    protected virtual async Task<IList<SeoCandidate>> SearchRejectedSeoCandidates(string permalink, Store store, SeoSearchCriteria criteria, IList<SeoInfo> resolvedSeoInfos)
+    protected virtual async Task<IList<SeoExplainItem>> SearchRejectedSeoCandidates(string permalink, Store store, SeoSearchCriteria criteria, IList<SeoInfo> resolvedSeoInfos)
     {
         using var repository = _repositoryFactory();
         var query = GetSeoCandidatesQuery(repository, permalink.Split('/', StringSplitOptions.RemoveEmptyEntries).Last());
         var resolvedIds = resolvedSeoInfos.Select(x => x.Id).ToList();
+        var filters = GetSeoInfoFilters(store, criteria, isActive: true);
 
+        // Records this store could use come first, so the Take limit never hides them; Id keeps the order stable
         var entities = await query
             .Where(x => !resolvedIds.Contains(x.Id))
-            .OrderBy(x => x.Id)
+            .OrderByDescending(filters[StoreMismatch])
+            .ThenByDescending(filters[LanguageMismatch])
+            .ThenBy(x => x.Id)
             .Take(criteria.Take)
             .ToListAsync();
 
@@ -280,11 +282,12 @@ public class CatalogSeoResolver : ISeoResolver
         }
 
         var ids = entities.Select(x => x.Id).ToList();
-        var candidates = entities.Select(x => new SeoCandidate(ToSeoInfo(x, outlinePath: null))).ToList();
+        var candidates = entities.Select(x => new SeoExplainItem(ToSeoInfo(x, outlinePath: null))).ToList();
 
-        foreach (var (code, filter) in GetSeoInfoFilters(store, criteria, isActive: true))
+        foreach (var (code, filter) in filters)
         {
-            var passedIds = await query.Where(x => ids.Contains(x.Id)).Where(filter).Select(x => x.Id).ToListAsync();
+            var passedIds = (await query.Where(x => ids.Contains(x.Id)).Where(filter).Select(x => x.Id).ToListAsync())
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
             Reject(candidates.Where(x => !passedIds.Contains(x.SeoInfo.Id)), code);
         }
 
@@ -351,7 +354,7 @@ public class CatalogSeoResolver : ISeoResolver
 
     private async Task<Dictionary<string, (string SeoPath, string OutlinePath)[]>> GetObjectSeoPaths(IList<SeoInfoEntity> entities, Store store, SeoSearchCriteria criteria)
     {
-        var result = new Dictionary<string, (string SeoPath, string OutlinePath)[]>();
+        var result = new Dictionary<string, (string SeoPath, string OutlinePath)[]>(StringComparer.OrdinalIgnoreCase);
 
         var categoryIds = entities.Select(x => x.CategoryId).Where(x => x != null).Distinct().ToArray();
 
@@ -392,7 +395,7 @@ public class CatalogSeoResolver : ISeoResolver
         return objectSeoPaths?.FirstOrDefault(x => x.SeoPath == permalink) ?? default;
     }
 
-    private static void RejectBySeoPath(SeoCandidate candidate, (string SeoPath, string OutlinePath)[] objectSeoPaths)
+    private static void RejectBySeoPath(SeoExplainItem candidate, (string SeoPath, string OutlinePath)[] objectSeoPaths)
     {
         var storeSeoPaths = objectSeoPaths?.Select(x => x.SeoPath).Where(x => x != null).Distinct().ToArray();
 
@@ -421,7 +424,7 @@ public class CatalogSeoResolver : ISeoResolver
         return seoInfo;
     }
 
-    private static void Reject(IEnumerable<SeoCandidate> candidates, string code, string details = null)
+    private static void Reject(IEnumerable<SeoExplainItem> candidates, string code, string details = null)
     {
         foreach (var candidate in candidates)
         {
@@ -429,7 +432,7 @@ public class CatalogSeoResolver : ISeoResolver
         }
     }
 
-    private static void Reject(SeoCandidate candidate, string code, string details = null)
+    private static void Reject(SeoExplainItem candidate, string code, string details = null)
     {
         if (candidate.Reasons.All(x => x.Code != code))
         {
