@@ -1,4 +1,4 @@
-﻿{
+{
   "catalog": {
     "main-menu-title": "Catalog",
     "main-blade-title": "Catalog",
@@ -34,10 +34,50 @@
     "blades": {
       "search-configuration": {
         "title": "Search configuration",
-        "subtitle": "Sorting and facets for storefront search",
+        "subtitle": "Sorting, facets and barcode scanner for storefront search",
         "menu": {
           "sorting": "Sorting",
-          "facets": "Facets"
+          "facets": "Facets",
+          "barcode-scanner": "Barcode scanner"
+        }
+      },
+      "barcode-search": {
+        "title": "Barcode scanner",
+        "subtitle": "Choose how a scanned code is matched against products",
+        "labels": {
+          "scanner-enabled": "Enable barcode scanner in the storefront",
+          "match-mode": "Match scanned code by",
+          "fields": "Fields to match"
+        },
+        "modes": {
+          "full-text": "Full-text search",
+          "exact": "Exact match on selected fields"
+        },
+        "fields": {
+          "code": "SKU",
+          "gtin": "GTIN",
+          "manufacturerPartNumber": "MPN"
+        },
+        "badges": {
+          "multi-value": "MULTI-VALUE",
+          "missing": "MISSING FROM INDEX"
+        },
+        "help": {
+          "missing-fields": "These fields are no longer in the product index, so they never match. They are removed from the selection as soon as you change any field or the match mode"
+        },
+        "mode-hint": {
+          "title": "How match modes work",
+          "full-text": "Full-text search looks the scanned value up in the whole product text.",
+          "exact": "Exact match compares it with the selected fields only."
+        },
+        "hint": {
+          "title": "How to fill barcode data",
+          "gtin": "GTIN: the packaging barcode (UPC, EAN, ISBN, JAN).",
+          "mpn": "MPN: the manufacturer part number.",
+          "sku": "SKU: the product code.",
+          "property": "Any other code, or several codes of the same kind: create a short text catalog property for products or variations (multi-value is allowed, long text is not) and select it here.",
+          "reindex": "Products must be re-indexed after the values or the property definitions change.",
+          "matching": "Matching is exact: the scanned value must equal the stored value; the selected fields are matched with OR."
         }
       },
       "product-sorting-list": {
@@ -1045,6 +1085,10 @@
         "title": "Apply changes",
         "message": "The ordering has been modified. Apply the changes?"
       },
+      "barcode-search-save": {
+        "title": "Save changes",
+        "message": "The barcode scanner settings have been modified. Do you want to save the changes?"
+      },
       "catalog-save": {
         "title": "Save changes",
         "message": "This catalog has been modified. Do you want to save the changes?"
@@ -1427,6 +1471,14 @@
         "ProductSortings": {
           "title": "Product sorting",
           "description": "Per-store product sorting (\"sort by\") options. Edit through the Search configuration widget on the store page"
+        },
+        "BarcodeScannerEnabled": {
+          "title": "Barcode scanner",
+          "description": "Show the barcode scanner button in the storefront search bar. Edit through the Search configuration widget on the store page"
+        },
+        "BarcodeSearchFields": {
+          "title": "Barcode search fields",
+          "description": "Product index fields a scanned code is matched against; empty means full-text search. Fill GTIN with the packaging barcode (UPC, EAN, ISBN, JAN), MPN with the manufacturer part number, SKU is the product code; for any other or multiple codes use a short text (optionally multi-value) catalog property. Re-index products after the values change. Edit through the Search configuration widget on the store page"
         }
       },
       "ProductConfigurationMaximumFiles": {
