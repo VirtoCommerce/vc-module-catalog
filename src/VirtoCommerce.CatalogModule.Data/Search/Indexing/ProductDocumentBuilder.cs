@@ -57,8 +57,8 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
             schema.AddFilterableString("productType");
             schema.AddFilterableString("mainProductId");
             schema.AddFilterableString("productFamilyId");
-            schema.AddFilterableString("gtin");
-            schema.AddFilterableString("manufacturerPartNumber");
+            schema.AddFilterableStringAndContentString("gtin");
+            schema.AddFilterableStringAndContentString("manufacturerPartNumber");
             schema.AddFilterableString("availability");
             schema.AddFilterableString("weightUnit");
             schema.AddFilterableDecimal("weight");

@@ -23,6 +23,7 @@ using VirtoCommerce.CatalogModule.Core.Model.Export;
 using VirtoCommerce.CatalogModule.Core.Model.OutlinePart;
 using VirtoCommerce.CatalogModule.Core.Options;
 using VirtoCommerce.CatalogModule.Core.Search;
+using VirtoCommerce.CatalogModule.Core.Search.Barcodes;
 using VirtoCommerce.CatalogModule.Core.Search.Indexed;
 using VirtoCommerce.CatalogModule.Core.Search.Sorting;
 using VirtoCommerce.CatalogModule.Core.Search.Sorting.Resolvers;
@@ -36,6 +37,7 @@ using VirtoCommerce.CatalogModule.Data.MySql;
 using VirtoCommerce.CatalogModule.Data.PostgreSql;
 using VirtoCommerce.CatalogModule.Data.Repositories;
 using VirtoCommerce.CatalogModule.Data.Search;
+using VirtoCommerce.CatalogModule.Data.Search.Barcodes;
 using VirtoCommerce.CatalogModule.Data.Search.BrowseFilters;
 using VirtoCommerce.CatalogModule.Data.Search.Indexing;
 using VirtoCommerce.CatalogModule.Data.Search.Sorting;
@@ -320,6 +322,9 @@ namespace VirtoCommerce.CatalogModule.Web
             serviceCollection.AddSingleton<IProductSortingResolverRegistry, ProductSortingResolverRegistry>();
             serviceCollection.AddTransient<IProductSortingService, ProductSortingService>();
             serviceCollection.AddTransient<IProductSortableFieldService, ProductSortableFieldService>();
+
+            // Store-level barcode scanner configuration (on/off switch + product index fields a scanned code is matched against).
+            serviceCollection.AddTransient<IBarcodeSearchConfigurationService, BarcodeSearchConfigurationService>();
 
             serviceCollection.AddTransient<IAutomaticLinkQueryService, AutomaticLinkQueryService>();
             serviceCollection.AddTransient<IAutomaticLinkQuerySearchService, AutomaticLinkQuerySearchService>();
