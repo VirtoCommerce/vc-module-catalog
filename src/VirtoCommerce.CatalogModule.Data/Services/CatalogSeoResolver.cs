@@ -118,29 +118,38 @@ public class CatalogSeoResolver : ISeoResolver
             return candidates;
         }
 
-        var parentIds = new List<string>();
+        // We found multiple SEO records, need to choose the correct one by checking the parents recursively.
+        var parentPermalink = string.Join('/', segments.SkipLast(1));
+        var parentIds = await FindParentIds(parentPermalink, store, criteria);
 
+        if (parentIds.Count == 0)
+        {
+            Reject(currentEntityCandidates, ParentNotResolved, parentPermalink);
+            return candidates;
+        }
+
+        await RejectByParent(groups, parentIds, store, explain);
+
+        return candidates;
+    }
+
+    private async Task<IList<string>> FindParentIds(string parentPermalink, Store store, SeoSearchCriteria criteria)
+    {
         // It's not possible to resolve because we don't have parent segment
-        if (segments.Length == 1)
+        if (parentPermalink.Length == 0)
         {
-            parentIds.Add(store.Catalog);
-        }
-        else
-        {
-            // We found multiple SEO records, need to choose the correct one by checking the parents recursively.
-            var parentSearchCriteria = criteria.CloneTyped();
-            parentSearchCriteria.Permalink = string.Join('/', segments.Take(segments.Length - 1));
-            var parentSeoInfos = await FindSeoAsync(parentSearchCriteria);
-
-            if (parentSeoInfos.Count == 0)
-            {
-                Reject(currentEntityCandidates, ParentNotResolved, parentSearchCriteria.Permalink);
-                return candidates;
-            }
-
-            parentIds.AddRange(parentSeoInfos.Select(x => x.ObjectId).Distinct());
+            return [store.Catalog];
         }
 
+        var parentSearchCriteria = criteria.CloneTyped();
+        parentSearchCriteria.Permalink = parentPermalink;
+        var parentSeoInfos = await FindSeoAsync(parentSearchCriteria);
+
+        return parentSeoInfos.Select(x => x.ObjectId).Distinct().ToList();
+    }
+
+    private async Task RejectByParent(IList<IGrouping<(string ObjectType, string ObjectId), SeoExplainItem>> groups, IList<string> parentIds, Store store, bool explain)
+    {
         HashSet<SeoExplainItem> selectedCandidates = [];
         HashSet<SeoExplainItem> misplacedCandidates = [];
 
@@ -164,14 +173,11 @@ public class CatalogSeoResolver : ISeoResolver
             }
         }
 
-        foreach (var candidate in currentEntityCandidates.Where(x => !selectedCandidates.Contains(x)))
+        foreach (var candidate in groups.SelectMany(x => x).Where(x => !selectedCandidates.Contains(x)))
         {
             Reject(candidate, misplacedCandidates.Contains(candidate) ? ParentMismatch : NotBestMatch);
         }
-
-        return candidates;
     }
-
 
     private async Task<IList<Outline>> GetOutlines(string objectType, string objectId, IList<SeoInfo> infos)
     {
@@ -328,7 +334,7 @@ public class CatalogSeoResolver : ISeoResolver
         return new Dictionary<string, Expression<Func<SeoInfoEntity, bool>>>
         {
             [Inactive] = x => x.IsActive == isActive,
-            [ObjectInactive] = x => x.Category != null && x.Category.IsActive || x.Item != null && x.Item.IsActive || x.Catalog != null,
+            [ObjectInactive] = x => x.Catalog != null || (x.Category != null ? x.Category.IsActive : x.Item != null && x.Item.IsActive),
             [StoreMismatch] = x => string.IsNullOrEmpty(x.StoreId) || x.StoreId == store.Id,
             [LanguageMismatch] = x => string.IsNullOrEmpty(x.Language) || x.Language == criteria.LanguageCode || x.Language == store.DefaultLanguage,
         };
@@ -361,7 +367,7 @@ public class CatalogSeoResolver : ISeoResolver
         if (categoryIds.Length > 0)
         {
             var categories = await _categoryService.GetByIdsAsync(categoryIds, $"{CategoryResponseGroup.WithOutlines},{CategoryResponseGroup.WithSeo}", store.Catalog);
-            AddSeoPaths(categories?.Where(x => (x.IsActive ?? true) && x.Outlines != null));
+            AddSeoPaths(categories, x => x.IsActive);
         }
 
         var itemIds = entities.Select(x => x.ItemId).Where(x => x != null).Distinct().ToArray();
@@ -369,14 +375,14 @@ public class CatalogSeoResolver : ISeoResolver
         if (itemIds.Length > 0)
         {
             var items = await _itemService.GetByIdsAsync(itemIds, $"{ItemResponseGroup.WithOutlines},{ItemResponseGroup.WithSeo}", store.Catalog);
-            AddSeoPaths(items?.Where(x => (x.IsActive ?? true) && x.Outlines != null));
+            AddSeoPaths(items, x => x.IsActive);
         }
 
         return result;
 
-        void AddSeoPaths<T>(IEnumerable<T> elements) where T : IHasOutlines, ISeoSupport
+        void AddSeoPaths<T>(IEnumerable<T> elements, Func<T, bool?> isActive) where T : IHasOutlines, ISeoSupport
         {
-            foreach (var element in elements ?? [])
+            foreach (var element in (elements ?? []).Where(x => (isActive(x) ?? true) && x.Outlines != null))
             {
                 result[element.Id] = element.Outlines
                     .Select(x => (x.Items.GetSeoPath(store, criteria.LanguageCode), x.Items.GetOutlinePath()))
