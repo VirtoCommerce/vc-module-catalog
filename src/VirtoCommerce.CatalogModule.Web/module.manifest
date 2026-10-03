@@ -4,7 +4,7 @@
   <version>3.1047.0</version>
   <version-tag />
 
-  <platformVersion>3.1062.0</platformVersion>
+  <platformVersion>3.1076.0</platformVersion>
   <dependencies>
     <dependency id="VirtoCommerce.Assets" version="3.1005.0" />
     <dependency id="VirtoCommerce.BackupRestore" version="3.1005.0" />
