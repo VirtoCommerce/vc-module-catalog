@@ -68,7 +68,7 @@ namespace VirtoCommerce.CatalogModule.Data.Handlers
                 }
             }
 
-            _indexingJobService.EnqueueIndexAndDeleteDocuments(indexEntries, JobPriority.Normal,
+            await _indexingJobService.EnqueueIndexAndDeleteDocumentsAsync(indexEntries, JobPriority.Normal,
                 _configurations.GetDocumentBuilders(KnownDocumentTypes.Product, typeof(ProductDocumentChangesProvider)).ToList());
         }
 
