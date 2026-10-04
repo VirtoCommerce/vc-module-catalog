@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Security.Claims;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -74,7 +75,7 @@ namespace VirtoCommerce.CatalogModule.Tests
 
             // Assert
             Assert.IsType<NotFoundResult>(result.Result);
-            _indexingJobServiceMock.Verify(x => x.Enqueue(It.IsAny<string>(), It.IsAny<IndexingOptions[]>()), Times.Never);
+            _indexingJobServiceMock.Verify(x => x.EnqueueAsync(It.IsAny<string>(), It.IsAny<IndexingOptions[]>(), It.IsAny<CancellationToken>()), Times.Never);
         }
 
         [Fact]
@@ -96,7 +97,7 @@ namespace VirtoCommerce.CatalogModule.Tests
 
             // Assert
             Assert.IsType<ForbidResult>(result.Result);
-            _indexingJobServiceMock.Verify(x => x.Enqueue(It.IsAny<string>(), It.IsAny<IndexingOptions[]>()), Times.Never);
+            _indexingJobServiceMock.Verify(x => x.EnqueueAsync(It.IsAny<string>(), It.IsAny<IndexingOptions[]>(), It.IsAny<CancellationToken>()), Times.Never);
         }
 
         [Fact]
@@ -118,8 +119,8 @@ namespace VirtoCommerce.CatalogModule.Tests
 
             _userNameResolverMock.Setup(x => x.GetCurrentUserName()).Returns("testuser");
             _indexingJobServiceMock
-                .Setup(x => x.Enqueue(It.IsAny<string>(), It.IsAny<IndexingOptions[]>()))
-                .Returns(new IndexProgressPushNotification("testuser"));
+                .Setup(x => x.EnqueueAsync(It.IsAny<string>(), It.IsAny<IndexingOptions[]>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new IndexProgressPushNotification("testuser"));
 
             var controller = CreateController();
 
@@ -128,11 +129,11 @@ namespace VirtoCommerce.CatalogModule.Tests
 
             // Assert
             Assert.IsType<OkObjectResult>(result.Result);
-            _indexingJobServiceMock.Verify(x => x.Enqueue(
+            _indexingJobServiceMock.Verify(x => x.EnqueueAsync(
                 "testuser",
                 It.Is<IndexingOptions[]>(opts =>
                     opts.Length == 1 &&
-                    opts[0].DocumentIds == productIds)),
+                    opts[0].DocumentIds == productIds), It.IsAny<CancellationToken>()),
                 Times.Once);
             _pushNotifierMock.Verify(x => x.Send(It.IsAny<IndexProgressPushNotification>()), Times.Once);
         }
@@ -155,8 +156,8 @@ namespace VirtoCommerce.CatalogModule.Tests
 
             _userNameResolverMock.Setup(x => x.GetCurrentUserName()).Returns("testuser");
             _indexingJobServiceMock
-                .Setup(x => x.Enqueue(It.IsAny<string>(), It.IsAny<IndexingOptions[]>()))
-                .Returns(new IndexProgressPushNotification("testuser"));
+                .Setup(x => x.EnqueueAsync(It.IsAny<string>(), It.IsAny<IndexingOptions[]>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new IndexProgressPushNotification("testuser"));
 
             var controller = CreateController();
 
@@ -165,9 +166,9 @@ namespace VirtoCommerce.CatalogModule.Tests
 
             // Assert
             Assert.IsType<OkObjectResult>(result.Result);
-            _indexingJobServiceMock.Verify(x => x.Enqueue(
+            _indexingJobServiceMock.Verify(x => x.EnqueueAsync(
                 It.IsAny<string>(),
-                It.Is<IndexingOptions[]>(opts => opts[0].DocumentIds.Count == 0)),
+                It.Is<IndexingOptions[]>(opts => opts[0].DocumentIds.Count == 0), It.IsAny<CancellationToken>()),
                 Times.Once);
         }
     }

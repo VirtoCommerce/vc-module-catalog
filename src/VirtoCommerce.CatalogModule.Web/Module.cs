@@ -47,7 +47,6 @@ using VirtoCommerce.CatalogModule.Data.Validation;
 using VirtoCommerce.CatalogModule.Data.Vimeo;
 using VirtoCommerce.CatalogModule.Data.YouTube;
 using VirtoCommerce.CatalogModule.Web.Authorization;
-using VirtoCommerce.CoreModule.Core.Seo;
 using VirtoCommerce.ExportModule.Core.Model;
 using VirtoCommerce.ExportModule.Core.Services;
 using VirtoCommerce.ExportModule.Data.Extensions;
