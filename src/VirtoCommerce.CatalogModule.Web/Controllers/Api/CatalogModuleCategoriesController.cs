@@ -338,7 +338,7 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             var allProductIds = await categoryProductResolver.GetCategoryProductIds(id);
 
             var currentUserName = userNameResolver.GetCurrentUserName();
-            var notification = indexingJobService.Enqueue(currentUserName,
+            var notification = await indexingJobService.EnqueueAsync(currentUserName,
             [
                 new IndexingOptions
                 {
