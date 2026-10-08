@@ -1,4 +1,4 @@
-﻿{
+{
   "catalog": {
     "main-menu-title": "Catálogo",
     "main-blade-title": "Catálogo",
@@ -1278,6 +1278,16 @@
     "link-types": {
       "manual": "Link",
       "automatic": "Link automático"
+    }
+  },
+  "seo": {
+    "candidate-reasons": {
+      "ObjectInactive": "A categoria ou o produto está inativo",
+      "NotInStoreCatalog": "A categoria ou o produto não está no catálogo da loja",
+      "NoSeoPath": "A loja não consegue criar um link: um item pai não tem slug, ou é uma categoria vinculada com links Collapsed",
+      "PermalinkMismatch": "O link da loja é diferente",
+      "ParentNotResolved": "O caminho pai não é resolvido",
+      "ParentMismatch": "Não está sob o item pai solicitado"
     }
   },
   "permissions": {

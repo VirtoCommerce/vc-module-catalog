@@ -168,6 +168,7 @@ namespace VirtoCommerce.CatalogModule.Tests
 
             var seoInfoEntities = SeoInfos.Select(x => new SeoInfoEntity
             {
+                Id = x.Id,
                 ItemId = x.ObjectType == "CatalogProduct" ? x.ObjectId : null,
                 CategoryId = x.ObjectType == "Category" ? x.ObjectId : null,
                 CatalogId = x.ObjectType == "Catalog" ? x.ObjectId : null,

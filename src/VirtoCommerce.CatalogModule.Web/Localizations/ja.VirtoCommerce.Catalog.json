@@ -1,4 +1,4 @@
-﻿{
+{
   "catalog": {
     "main-menu-title": "カタログ",
     "main-blade-title": "カタログ",
@@ -1278,6 +1278,16 @@
     "link-types": {
       "manual": "リンク",
       "automatic": "自動リンク"
+    }
+  },
+  "seo": {
+    "candidate-reasons": {
+      "ObjectInactive": "カテゴリまたは商品が無効です",
+      "NotInStoreCatalog": "カテゴリまたは商品が店舗のカタログにありません",
+      "NoSeoPath": "店舗はこのリンクを作成できません：親にスラッグがないか、Collapsedリンクのリンクされたカテゴリです",
+      "PermalinkMismatch": "店舗でのリンクが異なります",
+      "ParentNotResolved": "親パスが解決されません",
+      "ParentMismatch": "要求された親の下にありません"
     }
   },
   "permissions": {

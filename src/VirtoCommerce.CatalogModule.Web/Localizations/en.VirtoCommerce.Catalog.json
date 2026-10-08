@@ -1378,6 +1378,16 @@
       "automatic": "Automatic link"
     }
   },
+  "seo": {
+    "candidate-reasons": {
+      "ObjectInactive": "The category or product is inactive",
+      "NotInStoreCatalog": "The category or product isn't in the store's catalog",
+      "NoSeoPath": "The store can't build a link to it: a parent has no slug, or it's a linked category with Collapsed links",
+      "PermalinkMismatch": "The store's link to it is different",
+      "ParentNotResolved": "The parent path doesn't resolve",
+      "ParentMismatch": "It isn't under the requested parent"
+    }
+  },
   "permissions": {
     "catalog:access": "Open catalog menu",
     "catalog:create": "Create catalog related data",
