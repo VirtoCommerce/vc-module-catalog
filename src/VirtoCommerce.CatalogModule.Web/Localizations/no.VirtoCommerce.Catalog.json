@@ -1,4 +1,4 @@
-﻿{
+{
   "catalog": {
     "main-menu-title": "Katalog",
     "main-blade-title": "Katalog",
@@ -1273,6 +1273,16 @@
     "link-types": {
       "manual": "Lenke",
       "automatic": "Automatisk lenke"
+    }
+  },
+  "seo": {
+    "candidate-reasons": {
+      "ObjectInactive": "Kategorien eller produktet er inaktivt",
+      "NotInStoreCatalog": "Kategorien eller produktet er ikke i butikkens katalog",
+      "NoSeoPath": "Butikken kan ikke lage en lenke: et overordnet element mangler slug, eller det er en koblet kategori med Collapsed-lenker",
+      "PermalinkMismatch": "Butikkens lenke til det er en annen",
+      "ParentNotResolved": "Den overordnede banen løses ikke",
+      "ParentMismatch": "Det ligger ikke under det forespurte overordnede elementet"
     }
   },
   "permissions": {

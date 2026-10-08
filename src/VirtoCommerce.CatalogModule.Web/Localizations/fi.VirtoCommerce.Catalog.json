@@ -1,4 +1,4 @@
-﻿{
+{
   "catalog": {
     "main-menu-title": "Katalogi",
     "main-blade-title": "Katalogi",
@@ -1273,6 +1273,16 @@
     "link-types": {
       "manual": "Linkki",
       "automatic": "Automaattinen linkki"
+    }
+  },
+  "seo": {
+    "candidate-reasons": {
+      "ObjectInactive": "Kategoria tai tuote ei ole aktiivinen",
+      "NotInStoreCatalog": "Kategoria tai tuote ei ole kaupan katalogissa",
+      "NoSeoPath": "Kauppa ei voi muodostaa linkkiä: yläkohteella ei ole slugia, tai kyseessä on linkitetty kategoria Collapsed-linkeillä",
+      "PermalinkMismatch": "Kaupan linkki siihen on erilainen",
+      "ParentNotResolved": "Yläpolkua ei voida ratkaista",
+      "ParentMismatch": "Se ei sijaitse pyydetyn yläkohteen alla"
     }
   },
   "permissions": {

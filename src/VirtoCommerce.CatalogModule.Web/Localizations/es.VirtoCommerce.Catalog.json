@@ -1,4 +1,4 @@
-﻿{
+{
   "catalog": {
     "main-menu-title": "Catálogo",
     "main-blade-title": "Catálogo",
@@ -1273,6 +1273,16 @@
     "link-types": {
       "manual": "Enlace",
       "automatic": "Enlace automático"
+    }
+  },
+  "seo": {
+    "candidate-reasons": {
+      "ObjectInactive": "La categoría o el producto está inactivo",
+      "NotInStoreCatalog": "La categoría o el producto no está en el catálogo de la tienda",
+      "NoSeoPath": "La tienda no puede crear un enlace: un elemento superior no tiene slug, o es una categoría vinculada con enlaces Collapsed",
+      "PermalinkMismatch": "El enlace de la tienda es diferente",
+      "ParentNotResolved": "La ruta superior no se resuelve",
+      "ParentMismatch": "No se encuentra bajo el elemento superior solicitado"
     }
   },
   "permissions": {

@@ -1,4 +1,4 @@
-﻿{
+{
   "catalog": {
     "main-menu-title": "Katalog",
     "main-blade-title": "Katalog",
@@ -1273,6 +1273,16 @@
     "link-types": {
       "manual": "Link",
       "automatic": "Automatyczny link"
+    }
+  },
+  "seo": {
+    "candidate-reasons": {
+      "ObjectInactive": "Kategoria lub produkt jest nieaktywny",
+      "NotInStoreCatalog": "Kategorii lub produktu nie ma w katalogu sklepu",
+      "NoSeoPath": "Sklep nie może utworzyć linku: element nadrzędny nie ma sluga albo jest to powiązana kategoria z linkami Collapsed",
+      "PermalinkMismatch": "Link sklepu jest inny",
+      "ParentNotResolved": "Ścieżka nadrzędna nie jest rozwiązywana",
+      "ParentMismatch": "Nie znajduje się pod żądanym elementem nadrzędnym"
     }
   },
   "permissions": {

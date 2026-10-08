@@ -33,6 +33,16 @@ namespace VirtoCommerce.CatalogModule.Core
         public const string TermValuesSortingTypeNumericAscending = "NumericAscending";
         public const string TermValuesSortingTypeNumericDescending = "NumericDescending";
 
+        public static class SeoCandidateReasons
+        {
+            public const string ObjectInactive = "ObjectInactive";
+            public const string NotInStoreCatalog = "NotInStoreCatalog";
+            public const string NoSeoPath = "NoSeoPath";
+            public const string PermalinkMismatch = "PermalinkMismatch";
+            public const string ParentNotResolved = "ParentNotResolved";
+            public const string ParentMismatch = "ParentMismatch";
+        }
+
         public static class Security
         {
             public static class Permissions
