@@ -1,4 +1,4 @@
-﻿{
+{
   "catalog": {
     "main-menu-title": "目录",
     "main-blade-title": "目录",
@@ -1278,6 +1278,16 @@
     "link-types": {
       "manual": "链接",
       "automatic": "自动链接"
+    }
+  },
+  "seo": {
+    "candidate-reasons": {
+      "ObjectInactive": "类别或产品未启用",
+      "NotInStoreCatalog": "类别或产品不在商店的目录中",
+      "NoSeoPath": "商店无法为其生成链接：某个父级没有 slug，或者它是使用 Collapsed 链接的关联类别",
+      "PermalinkMismatch": "商店中它的链接不同",
+      "ParentNotResolved": "父级路径无法解析",
+      "ParentMismatch": "它不在请求的父级之下"
     }
   },
   "permissions": {
