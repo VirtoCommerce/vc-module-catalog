@@ -1243,6 +1243,16 @@
       "automatic": "Automatisk länk"
     }
   },
+  "seo": {
+    "candidate-reasons": {
+      "ObjectInactive": "Kategorin eller produkten är inaktiv",
+      "NotInStoreCatalog": "Kategorin eller produkten finns inte i butikens katalog",
+      "NoSeoPath": "Butiken kan inte skapa en länk: ett överordnat objekt saknar slug, eller så är det en länkad kategori med Collapsed-länkar",
+      "PermalinkMismatch": "Butikens länk till det är en annan",
+      "ParentNotResolved": "Den överordnade sökvägen löses inte",
+      "ParentMismatch": "Det ligger inte under det begärda överordnade objektet"
+    }
+  },
   "permissions": {
     "catalog:access": "Öppna katalogmenyn",
     "catalog:create": "Skapa katalogrelaterade data",

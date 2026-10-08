@@ -15,6 +15,16 @@ namespace VirtoCommerce.CatalogModule.Core
         public const string ConfigurationSectionTypeFile = "File";
         public const string ConfigurationSectionFilesScope = "product-configuration";
 
+        public static class SeoCandidateReasons
+        {
+            public const string ObjectInactive = "ObjectInactive";
+            public const string NotInStoreCatalog = "NotInStoreCatalog";
+            public const string NoSeoPath = "NoSeoPath";
+            public const string PermalinkMismatch = "PermalinkMismatch";
+            public const string ParentNotResolved = "ParentNotResolved";
+            public const string ParentMismatch = "ParentMismatch";
+        }
+
         public static class Security
         {
             public static class Permissions
