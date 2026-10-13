@@ -1,5 +1,5 @@
-# v3.1000.3
-# https://virtocommerce.atlassian.net/browse/VCST-6206
+# v3.1000.4
+# https://virtocommerce.atlassian.net/browse/VCST-6033
 name: Release
 
 on:
@@ -11,6 +11,6 @@ permissions:
 
 jobs:
   release:
-    uses: VirtoCommerce/.github/.github/workflows/release.yml@v3.1000.3    
+    uses: VirtoCommerce/.github/.github/workflows/release.yml@v3.1000.4    
     secrets:
       envPAT: ${{ secrets.REPO_TOKEN }}
