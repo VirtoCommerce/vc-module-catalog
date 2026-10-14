@@ -14,7 +14,7 @@
       },
       {
         "id": "measures",
-        "sectionId": "catalog",
+        "sectionId": "configuration",
         "title": "Units of measure",
         "icon": "lucide-ruler",
         "route": "/measures",
