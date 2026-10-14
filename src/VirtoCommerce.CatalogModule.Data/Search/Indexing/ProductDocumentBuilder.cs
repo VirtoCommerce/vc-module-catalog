@@ -88,6 +88,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
         {
             var result = new List<IndexDocument>();
             var products = await GetProducts(documentIds);
+            var loadedProductIds = new HashSet<string>(documentIds, StringComparer.OrdinalIgnoreCase);
 
             foreach (var product in products)
             {
@@ -109,6 +110,7 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                         foreach (var variation in productVariations.Results)
                         {
                             result.Add(await CreateDocumentAsync(variation, product));
+                            loadedProductIds.Add(variation.Id);
 
                             if (variation.IsActive.HasValue && variation.IsActive.Value)
                             {
@@ -123,11 +125,22 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
                 }
             }
 
-            // Forcibly clear products from the cache to reduce memory consumption
-            ItemCacheRegion.ExpireRegion();
-            GC.Collect();
+            // Remove the loaded products from the cache to reduce memory consumption
+            ExpireProductsCache(loadedProductIds);
 
             return result;
+        }
+
+        /// <summary>
+        /// Expires the cache of the given products on this instance only.
+        /// Other products stay cached, and other instances are not notified because their cached data is not stale.
+        /// </summary>
+        protected virtual void ExpireProductsCache(IEnumerable<string> productIds)
+        {
+            foreach (var productId in productIds)
+            {
+                ItemCacheRegion.ExpireTokenForKey(productId, propagate: false);
+            }
         }
 
         protected virtual async Task<CatalogProduct[]> GetProducts(IList<string> productIds)
