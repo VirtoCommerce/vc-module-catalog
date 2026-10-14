@@ -41,7 +41,7 @@ public class ProductDocumentBuilderCacheTests
     }
 
     [Fact]
-    public async Task GetDocumentsAsync_ExpiresIndexedProductsLocally()
+    public async Task GetDocumentsAsync_ExpiresCacheOfIndexedProducts()
     {
         // Arrange
         var productId = NewId();
@@ -60,7 +60,7 @@ public class ProductDocumentBuilderCacheTests
     }
 
     [Fact]
-    public async Task GetDocumentsAsync_DoesNotPropagateCacheExpirationToOtherInstances()
+    public async Task GetDocumentsAsync_DoesNotPropagateTokenExpirationToOtherInstances()
     {
         // Arrange
         var productId = NewId();

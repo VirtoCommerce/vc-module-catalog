@@ -132,8 +132,8 @@ namespace VirtoCommerce.CatalogModule.Data.Search.Indexing
         }
 
         /// <summary>
-        /// Expires the cache of the given products on this instance only.
-        /// Other products stay cached, and other instances are not notified because their cached data is not stale.
+        /// Expires the cache of the given products only; other products stay cached.
+        /// The token expiration is not propagated, because the cached data of other instances is not stale.
         /// </summary>
         protected virtual void ExpireProductsCache(IEnumerable<string> productIds)
         {
