@@ -15,7 +15,7 @@
       {
         "id": "measures",
         "sectionId": "configuration",
-        "title": "Units of measure",
+        "title": "Units of Measure",
         "icon": "lucide-ruler",
         "route": "/measures",
         "permission": "measures:access",

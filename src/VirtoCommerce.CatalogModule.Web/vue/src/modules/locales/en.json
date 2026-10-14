@@ -1,8 +1,8 @@
 {
   "CATALOG": {
     "MENU": {
-      "CATALOG": "Catalog",
-      "MEASURES": "Units of measure"
+      "CATALOG": "Catalogs",
+      "MEASURES": "Units of Measure"
     },
     "TOOLBAR": {
       "REFRESH": "Refresh",
@@ -296,7 +296,7 @@
       "DELETE_CONFIRM": "Remove all automatic links of this category?"
     },
     "MEASURES": {
-      "TITLE": "Units of measure",
+      "TITLE": "Units of Measure",
       "EMPTY": "No measures",
       "ADD": "Add measure",
       "ADD_DEFAULTS": "Add predefined",
