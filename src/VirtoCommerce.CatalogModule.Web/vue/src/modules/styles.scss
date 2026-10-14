@@ -1,0 +1,64 @@
+// Layout shared by the catalog blades. Everything else comes from the vc-shell components (restyled by the host).
+
+/* the design's blade body padding (same as the Orders detail) */
+.catalog-form {
+  padding: 20px 22px 36px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* body of a VcCard section */
+.catalog-card {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  &__error {
+    color: var(--danger-500);
+    font-size: 13px;
+  }
+  &__hint {
+    color: var(--neutrals-500);
+    font-size: 13px;
+  }
+}
+
+/* a list blade's body: controls above a table that fills the rest */
+.catalog-list-blade {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+
+/* the catalog browse and asset picker lists */
+.catalog-browse {
+  &__crumbs {
+    padding: 10px 16px 6px;
+  }
+  &__table {
+    flex: 1;
+    min-height: 0;
+  }
+  &__name {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--neutrals-900);
+  }
+}
+
+/* an input and its add button below a list (custom property, text option) */
+.catalog-inline-add {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  border-top: 1px solid var(--neutrals-200);
+  padding-top: 16px;
+}
+
+/* the id/name column of the lists (design: #171717, other text columns #404040) */
+.catalog-list__name {
+  color: var(--neutrals-900);
+}

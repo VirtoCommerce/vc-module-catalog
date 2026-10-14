@@ -1,0 +1,28 @@
+{
+  // Catalog admin UI for the Admin Shell host (Module Federation remote)
+  "remote": { "name": "catalog_admin", "exposed": "./Module" },
+  "contributions": {
+    "menu": [
+      {
+        "id": "catalog",
+        "sectionId": "catalog",
+        "title": "Catalogs",
+        "icon": "lucide-folder",
+        "route": "/catalog",
+        "permission": "catalog:access",
+        "priority": 10,
+        "replaces": "legacy.catalog"
+      },
+      {
+        "id": "measures",
+        "sectionId": "catalog",
+        "title": "Units of measure",
+        "icon": "lucide-ruler",
+        "route": "/measures",
+        "permission": "measures:access",
+        "priority": 40,
+        "replaces": "legacy.measures"
+      }
+    ]
+  }
+}
