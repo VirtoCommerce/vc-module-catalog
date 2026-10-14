@@ -1,6 +1,6 @@
 <template>
   <VcBlade
-    :title="$t('CATALOG.MEASURES.TITLE')"
+    :title="$t('CATALOG.MENU.MEASURES')"
     :toolbar-items="toolbar"
     :loading="loading"
     width="40%"

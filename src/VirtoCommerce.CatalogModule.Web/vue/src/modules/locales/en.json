@@ -296,7 +296,6 @@
       "DELETE_CONFIRM": "Remove all automatic links of this category?"
     },
     "MEASURES": {
-      "TITLE": "Units of Measure",
       "EMPTY": "No measures",
       "ADD": "Add measure",
       "ADD_DEFAULTS": "Add predefined",
