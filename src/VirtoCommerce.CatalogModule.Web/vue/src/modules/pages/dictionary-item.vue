@@ -68,9 +68,10 @@ const item = ref<PropertyDictionaryItem>(
 );
 const loading = ref(false);
 // legacy property-dictionary-list: only multilanguage properties have localized values, the alias is the value otherwise
-const languages = computed(() =>
-  !options.value?.property.multilanguage ? [] : options.value.languages?.length ? options.value.languages : ["en-US"],
-);
+const languages = computed(() => {
+  if (!options.value?.property.multilanguage) return [];
+  return options.value.languages?.length ? options.value.languages : ["en-US"];
+});
 const form = useBladeForm({ data: item, closeConfirmMessage: computed(() => t("CATALOG.ALERTS.CLOSE_CONFIRM")) });
 form.setBaseline();
 
@@ -83,8 +84,12 @@ const entry = (lang: string) =>
 const valueOf = (lang: string) => entry(lang)?.value ?? "";
 function setValue(lang: string, value: string) {
   const found = entry(lang);
-  if (found) Object.assign(found, { languageCode: lang, value });
-  else (item.value.localizedValues ??= []).push({ languageCode: lang, value });
+  if (found) {
+    Object.assign(found, { languageCode: lang, value });
+    return;
+  }
+  item.value.localizedValues ??= [];
+  item.value.localizedValues.push({ languageCode: lang, value });
 }
 
 const toolbar = computed<IBladeToolbar[]>(() => [

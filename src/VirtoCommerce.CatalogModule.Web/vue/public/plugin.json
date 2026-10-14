@@ -1,5 +1,4 @@
 {
-  // Catalog admin UI for the Admin Shell host (Module Federation remote)
   "remote": { "name": "catalog_admin", "exposed": "./Module" },
   "contributions": {
     "menu": [

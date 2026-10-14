@@ -282,7 +282,7 @@ const allowed = computed(() => {
 // a value type change clears the flags it does not allow (not on load)
 watch(
   () => item.value.valueType,
-  (type, previous) => {
+  (_type, previous) => {
     if (!previous) return;
     for (const flag of ["multivalue", "dictionary", "multilanguage"] as const) if (!allowed.value[flag]) item.value[flag] = false;
   },

@@ -83,7 +83,12 @@ const url = ref("");
 const providers = ref("");
 
 // notify: false: a failure reaches the caller as before, with no extra toast
-const { loading, action: busy } = useAsync(async (action?: () => Promise<unknown>) => void (await action?.()), { notify: false });
+const { loading, action: busy } = useAsync(
+  async (action?: () => Promise<unknown>) => {
+    await action?.();
+  },
+  { notify: false },
+);
 const ownerId = computed(() => options.value?.item.id);
 const load = () =>
   busy(async () => {

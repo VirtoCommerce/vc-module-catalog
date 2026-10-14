@@ -209,14 +209,14 @@ async function save() {
   try {
     const isNew = !item.value.id;
     // the legacy endpoint: unlike the batch one, it gives a new category its SEO slug
-    const saved = await http<Category>("POST", "/api/catalog/categories", item.value);
+    const savedCategory = await http<Category>("POST", "/api/catalog/categories", item.value);
     form.setBaseline();
     callParent("reload");
     if (isNew) {
-      await replaceWith({ name: "CatalogCategoryDetails", param: saved.id });
+      await replaceWith({ name: "CatalogCategoryDetails", param: savedCategory.id });
       return;
     }
-    item.value = await api.categories.getCategory(saved.id!);
+    item.value = await api.categories.getCategory(savedCategory.id!);
     form.setBaseline();
   } finally {
     loading.value = false;

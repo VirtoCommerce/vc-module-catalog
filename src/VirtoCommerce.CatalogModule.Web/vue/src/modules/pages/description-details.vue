@@ -57,7 +57,10 @@ const isCategory = computed(() => options.value?.kind === "category");
 const item = ref<Description>(clone(options.value?.description ?? { languageCode: options.value?.languages?.[0] }));
 const type = computed({
   get: () => (isCategory.value ? item.value.descriptionType : item.value.reviewType),
-  set: (v) => (isCategory.value ? (item.value.descriptionType = v) : (item.value.reviewType = v)),
+  set: (v) => {
+    if (isCategory.value) item.value.descriptionType = v;
+    else item.value.reviewType = v;
+  },
 });
 const types = ref<{ id: string; title: string }[]>([]);
 const languageOptions = computed(() => toOptions(options.value?.languages ?? []));

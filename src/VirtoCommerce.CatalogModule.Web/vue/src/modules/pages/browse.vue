@@ -275,17 +275,16 @@ const globalFilters = computed(() => [
 ]);
 
 const activePreset = ref<string>();
+function presetFilter(preset?: string) {
+  const saved = filters.value.find((f) => `saved:${f.id}` === preset);
+  if (saved) return { keyword: saved.keyword, searchInVariations: saved.searchInVariations };
+  if (preset === "variations") return { searchInVariations: true };
+  return preset ? { keyword: preset } : {};
+}
 function onFilter(event: { filters: Record<string, unknown> }) {
   const preset = event.filters.preset as string | undefined;
   activePreset.value = preset;
-  const saved = filters.value.find((f) => `saved:${f.id}` === preset);
-  filter.value = saved
-    ? { keyword: saved.keyword, searchInVariations: saved.searchInVariations }
-    : preset === "variations"
-      ? { searchInVariations: true }
-      : preset
-        ? { keyword: preset }
-        : {};
+  filter.value = presetFilter(preset);
   pagination.setPage(1);
   load();
 }
@@ -297,9 +296,9 @@ async function load() {
   try {
     if (!catalogId.value && !global.value) {
       // picker root: the catalogs themselves
-      const res = await search.latest(api.catalogs.searchCatalogs({ keyword: keyword.value || undefined, take: 1000, sort: "name" }));
-      if (!res) return;
-      entries.value = (res.results ?? []).map((c) => ({ ...c, type: "catalog", isActive: true }) as Entry);
+      const catalogRes = await search.latest(api.catalogs.searchCatalogs({ keyword: keyword.value || undefined, take: 1000, sort: "name" }));
+      if (!catalogRes) return;
+      entries.value = (catalogRes.results ?? []).map((c) => ({ ...c, type: "catalog", isActive: true }) as Entry);
       totalCount.value = entries.value.length;
       return;
     }
@@ -429,8 +428,10 @@ function manage() {
   else openBlade({ name: "CatalogDetails", param: catalogId.value });
 }
 
-const typeLabel = (e: Entry) =>
-  e.type === "product" ? e.productType ?? "" : t(e.type === "catalog" ? "CATALOG.TYPES.CATALOG" : "CATALOG.TYPES.CATEGORY");
+function typeLabel(e: Entry) {
+  if (e.type === "product") return e.productType ?? "";
+  return t(e.type === "catalog" ? "CATALOG.TYPES.CATALOG" : "CATALOG.TYPES.CATEGORY");
+}
 
 /** legacy labels: hidden category, manual/automatic link in a virtual catalog */
 function labels(e: Entry) {

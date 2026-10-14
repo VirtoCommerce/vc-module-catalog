@@ -529,15 +529,15 @@ async function save() {
     // variations are saved by their own blades; sending them back makes the server re-insert them
     // (legacy item-detail loads without them: respGroup 2015). A clone's first save creates its copies.
     const body: CatalogProduct = isNew ? item.value : { ...item.value, variations: undefined };
-    const saved = await api.products.saveProduct(body);
+    const savedProduct = await api.products.saveProduct(body);
     form.setBaseline();
     callParent("reload");
     if (isNew) {
       // reopen as the saved product so the url, widgets and child blades use its id
-      await replaceWith({ name: "CatalogProductDetails", param: saved.id });
+      await replaceWith({ name: "CatalogProductDetails", param: savedProduct.id });
       return;
     }
-    item.value = await api.products.getProductById(saved.id!);
+    item.value = await api.products.getProductById(savedProduct.id!);
     form.setBaseline();
   } finally {
     loading.value = false;

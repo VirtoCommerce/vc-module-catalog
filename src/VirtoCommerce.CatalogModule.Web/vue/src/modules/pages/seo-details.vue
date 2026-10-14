@@ -88,7 +88,11 @@ function freeSlug(name?: string) {
   const base = slug(name);
   const taken = new Set(options.value?.existing ?? []);
   let candidate = base;
-  for (let i = 2; candidate && taken.has(candidate); i++) candidate = `${base}-${i}`;
+  let i = 2;
+  while (candidate && taken.has(candidate)) {
+    candidate = `${base}-${i}`;
+    i++;
+  }
   return candidate;
 }
 const item = ref<SeoInfo>(
