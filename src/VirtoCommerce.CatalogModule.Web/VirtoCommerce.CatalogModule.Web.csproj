@@ -54,10 +54,20 @@
     <ProjectReference Include="..\VirtoCommerce.CatalogModule.Data.YouTube\VirtoCommerce.CatalogModule.Data.YouTube.csproj" />
     <ProjectReference Include="..\VirtoCommerce.CatalogModule.Data.Vimeo\VirtoCommerce.CatalogModule.Data.Vimeo.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <AdminShellPlugin Include="plugins\**" />
-  </ItemGroup>
-  <Target Name="CopyAdminShellPluginOnPublish" AfterTargets="Publish">
-    <Copy SourceFiles="@(AdminShellPlugin)" DestinationFiles="$(PublishDir)\..\%(Identity)" />
+  <!-- Admin Shell plugin: built from vue/ into plugins/admin-shell/ before publish, so vc-build Compress (locally and in CI)
+       packs it, as VirtoCommerce.SalesRep builds its storefront plugin. SkipAdminShellPlugin=true leaves it out. -->
+  <Target Name="BuildAdminShellPlugin" BeforeTargets="Publish" Condition="'$(SkipAdminShellPlugin)' != 'true' AND Exists('$(MSBuildProjectDirectory)\vue\package.json')">
+    <Exec Command="corepack enable" ContinueOnError="true" />
+    <Exec Command="yarn install --immutable" WorkingDirectory="$(MSBuildProjectDirectory)\vue" />
+    <Exec Command="yarn type-check" WorkingDirectory="$(MSBuildProjectDirectory)\vue" />
+    <Exec Command="yarn build" WorkingDirectory="$(MSBuildProjectDirectory)\vue" />
+  </Target>
+  <!-- The platform probes {moduleRoot}/plugins/, but publish goes to {moduleRoot}/bin. The files are listed here, after the
+       build: listed when the project loads, a clean checkout (no plugins/ yet) would copy nothing. -->
+  <Target Name="CopyAdminShellPluginOnPublish" AfterTargets="Publish" DependsOnTargets="BuildAdminShellPlugin" Condition="'$(SkipAdminShellPlugin)' != 'true'">
+    <ItemGroup>
+      <AdminShellPlugin Include="$(MSBuildProjectDirectory)\plugins\**\*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(AdminShellPlugin)" DestinationFiles="$(PublishDir)\..\plugins\%(RecursiveDir)%(Filename)%(Extension)" />
   </Target>
 </Project>
