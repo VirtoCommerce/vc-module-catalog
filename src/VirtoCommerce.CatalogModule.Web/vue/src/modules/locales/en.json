@@ -390,6 +390,10 @@
       "KEYWORD": "Keyword",
       "KEYWORD_HINT": "Search syntax, e.g. is:hidden, is:priced, price_usd:[100 TO 200], or any words",
       "NEW": "New filter"
+    },
+    "SEARCH": {
+      "PRODUCTS": "Products",
+      "INACTIVE": "Inactive"
     }
   }
 }

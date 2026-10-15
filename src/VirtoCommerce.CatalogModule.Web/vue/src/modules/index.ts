@@ -1,9 +1,10 @@
 import * as blades from "./pages";
 import * as locales from "./locales";
 import { defineAppModule, registerExternalWidget, useExtensionPoint } from "@vc-shell/framework";
-import { defineComponent, h, markRaw } from "vue";
+import { defineComponent, h, markRaw, type App } from "vue";
 import StoreWidget from "./components/StoreWidget.vue";
 import ExportFilterField from "./components/ExportFilterField.vue";
+import { registerProductSearch } from "./search";
 import "./styles.scss";
 
 // Widgets the legacy catalog registered into the Store details blade ("storeDetail")
@@ -33,9 +34,17 @@ for (const [kind, priority] of [["catalogs", 10], ["categories", 20], ["searchIn
   productFilter.add(field(kind, priority));
 useExtensionPoint("export-filter:VirtoCommerce.CatalogModule.Core.Model.Export.ExportableCatalogFull").add(field("catalogs", 10));
 
-export default defineAppModule({
+const appModule = defineAppModule({
   blades,
   locales,
 });
+
+export default {
+  install(app: App) {
+    appModule.install(app);
+    // products in the Admin Shell's global search
+    registerProductSearch(app);
+  },
+};
 
 export * from "./pages";
