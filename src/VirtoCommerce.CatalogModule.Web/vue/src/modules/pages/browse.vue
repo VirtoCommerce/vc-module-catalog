@@ -207,6 +207,8 @@ const { param, options, openBlade, closeSelf, closeChildren, exposeToChildren, e
   pick?: PickOptions;
   /** search across all catalogs (legacy catalogs-list keyword search) */
   global?: boolean;
+  /** list products only, no categories (global search's "Show all N in Products" lists those N) */
+  productsOnly?: boolean;
 }>();
 const { showConfirmation } = usePopup();
 const { debounce } = useFunctions();
@@ -217,6 +219,7 @@ const canCutPaste = () => hasAccess(["catalog:update", "catalog:products:update"
 
 const pick = computed(() => options.value?.pick);
 const global = computed(() => !!options.value?.global);
+const productsOnly = computed(() => !!options.value?.productsOnly);
 const catalog = ref<Catalog | undefined>(options.value?.catalog);
 const catalogId = ref<string | undefined>(param.value ?? catalog.value?.id);
 const path = ref<Folder[]>(
@@ -345,7 +348,9 @@ function criteria(): CatalogListEntrySearchCriteria {
     searchInVariations: filter.value.searchInVariations ?? false,
     excludeProductType: pick.value?.excludeProductType,
     sort: sortExpression.value ?? (words ? "relevance" : undefined),
-    responseGroup: "withCategories, withProducts",
+    ...(productsOnly.value
+      ? { objectTypes: ["CatalogProduct"], responseGroup: "withProducts" }
+      : { responseGroup: "withCategories, withProducts" }),
   };
 }
 

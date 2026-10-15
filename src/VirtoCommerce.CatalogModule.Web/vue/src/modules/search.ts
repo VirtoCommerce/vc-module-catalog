@@ -60,8 +60,8 @@ export function registerProductSearch(app: App) {
       const ranked = search.rankItems(products, query, (p) => [p.name, p.code], products.length);
       return {
         total: result.totalCount,
-        // the catalogs list's own "search in all catalogs"
-        showAll: () => open([{ name: "CatalogBrowse", options: { global: true, keyword: query } }]),
+        // the catalogs list's own "search in all catalogs", products only: it lists the N "Show all N" names
+        showAll: () => open([{ name: "CatalogBrowse", options: { global: true, keyword: query, productsOnly: true } }]),
         items: [...ranked, ...products.filter((p) => !ranked.includes(p))].map((product) => ({
           id: product.id,
           title: product.name ?? product.code ?? product.id,
