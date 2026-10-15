@@ -241,8 +241,9 @@ const { getPropertyValue, setPropertyValue, loadDictionaries, loadMeasurements }
   searchDictionary: async (criteria) =>
     (await api.dictionary.searchPropertyDictionaryItems({ ...criteria, take: criteria.take ?? 100 })).results,
   searchMeasurements: async (measureId: string, locale?: string) => {
-    const measure = await getMeasure(measureId);
-    return (measure.units ?? []).map((u) => ({
+    // a property can point at a measure that was deleted: the server answers null, the value then has no units
+    const measure: Measure | null = await getMeasure(measureId);
+    return (measure?.units ?? []).map((u) => ({
       ...u,
       displayName: (locale && u.localizedName?.values?.[locale]) || u.name,
       displaySymbol: (locale && u.localizedSymbol?.values?.[locale]) || u.symbol || u.code,
