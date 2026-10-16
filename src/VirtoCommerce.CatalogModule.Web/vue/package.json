@@ -1,0 +1,30 @@
+{
+  "name": "catalog-admin",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "serve": "cross-env APP_ENV=development vite --force",
+    "build": "cross-env APP_ENV=production vite build",
+    "build:types": "vue-tsc --declaration --emitDeclarationOnly --outDir dist/types",
+    "type-check": "vue-tsc --noEmit",
+    "generate-api-client": "cross-env api-client-generator --APP_PLATFORM_MODULES='[VirtoCommerce.Catalog]' --APP_TYPE_STYLE=Interface --APP_API_CLIENT_DIRECTORY=./src/api_client/"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.5",
+    "@vc-shell/api-client-generator": "2.6.3-rc.0",
+    "@vc-shell/ts-config": "2.6.3-rc.0",
+    "cross-env": "^7.0.3",
+    "sass": "^1.87.0",
+    "typescript": "^5.8.3",
+    "vite": "^6.3.3",
+    "vue-tsc": "^3.2.5"
+  },
+  "dependencies": {
+    "@vc-shell/config-generator": "2.6.3-rc.0",
+    "@vc-shell/framework": "2.6.3-rc.0",
+    "@vc-shell/mf-module": "2.6.3-rc.0",
+    "vue": "^3.5.30",
+    "vue-router": "^5.0.3"
+  },
+  "packageManager": "yarn@4.9.1"
+}

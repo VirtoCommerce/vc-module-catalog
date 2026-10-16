@@ -120,10 +120,14 @@ public class AutomaticLinkService(
         }
     }
 
+    // Without variations, as the list-entry controller loads products to link: saving loaded variations re-inserts them
+    // (the update doesn't load existing children), which fails on PK_Item.
+    private static readonly string _linksResponseGroup = (ItemResponseGroup.Links | ItemResponseGroup.ItemProperties).ToString();
+
     protected virtual async Task CreateLinks(Category category, IList<string> productIds, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
-        var products = await itemService.GetAsync(productIds);
+        var products = await itemService.GetAsync(productIds, _linksResponseGroup);
 
         if (products.Count == 0)
         {
@@ -156,7 +160,7 @@ public class AutomaticLinkService(
     {
         cancellationToken.ThrowIfCancellationRequested();
         var productIds = links.Select(x => x.EntryId).ToList();
-        var products = await itemService.GetAsync(productIds);
+        var products = await itemService.GetAsync(productIds, _linksResponseGroup);
 
         if (products.Count == 0)
         {

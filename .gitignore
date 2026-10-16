@@ -341,3 +341,5 @@ dist/
 # AI local 
 /.serena
 *.local.*
+# Admin Shell plugin build output (built from src/VirtoCommerce.CatalogModule.Web/vue)
+src/VirtoCommerce.CatalogModule.Web/plugins/
