@@ -5,6 +5,7 @@ import { defineComponent, h, markRaw, type App } from "vue";
 import StoreWidget from "./components/StoreWidget.vue";
 import ExportFilterField from "./components/ExportFilterField.vue";
 import { registerProductSearch } from "./search";
+import { placeSearchIndexWidget } from "./searchIndexWidget";
 import "./styles.scss";
 
 // Widgets the legacy catalog registered into the Store details blade ("storeDetail")
@@ -44,6 +45,8 @@ export default {
     appModule.install(app);
     // products in the Admin Shell's global search
     registerProductSearch(app);
+    // Search's Index widget on the product and category blades
+    placeSearchIndexWidget(app);
   },
 };
 
