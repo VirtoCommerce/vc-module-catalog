@@ -157,6 +157,6 @@ exposeToChildren({ reload: load });
   border-radius: 3px;
   border: 1px solid var(--neutrals-200);
   vertical-align: middle;
-  margin-right: 4px;
+  margin-inline-end: 4px;
 }
 </style>

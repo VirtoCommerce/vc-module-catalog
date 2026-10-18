@@ -321,7 +321,7 @@ function removeCustom(property: Property) {
   }
   /* rename + remove side by side: keep their 44px hit areas apart */
   &__edit + &__edit {
-    margin-left: 20px;
+    margin-inline-start: 20px;
   }
   &__empty {
     color: var(--neutrals-500);
