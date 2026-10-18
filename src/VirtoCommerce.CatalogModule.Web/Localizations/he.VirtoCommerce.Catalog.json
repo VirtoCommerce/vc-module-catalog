@@ -1,0 +1,143 @@
+{
+  "permissions": {
+    "catalog:access": "פתיחת תפריט הקטלוג",
+    "catalog:create": "יצירת נתונים הקשורים לקטלוג",
+    "catalog:read": "צפייה בנתונים הקשורים לקטלוג",
+    "catalog:update": "עדכון נתונים הקשורים לקטלוג",
+    "catalog:delete": "מחיקת נתונים הקשורים לקטלוג",
+    "catalog:export": "ייצוא נתוני קטלוג",
+    "catalog:import": "ייבוא נתוני קטלוג",
+    "measures:access": "פתיחת תפריט יחידות המידה",
+    "measures:create": "יצירת נתונים הקשורים ליחידות מידה",
+    "measures:read": "צפייה בנתונים הקשורים ליחידות מידה",
+    "measures:update": "עדכון נתונים הקשורים ליחידות מידה",
+    "measures:delete": "מחיקת נתונים הקשורים ליחידות מידה",
+    "catalog:metadata-property:edit": "עריכת מטא-נתונים של מאפיינים",
+    "catalog:custom-property:edit": "עריכת מאפיינים מותאמים אישית של מוצרים",
+    "catalog:dictionary-property:edit": "עריכת ערכי מילון של מאפיין",
+    "catalog:categories:create": "יצירת קטגוריות",
+    "catalog:categories:read": "צפייה בקטגוריות",
+    "catalog:categories:update": "עריכת קטגוריות",
+    "catalog:categories:delete": "מחיקת קטגוריות",
+    "catalog:categories:link": "קישור קטגוריות לקטגוריות/קטלוגים אחרים",
+    "catalog:products:create": "יצירת מוצרים",
+    "catalog:products:read": "צפייה במוצרים",
+    "catalog:products:update": "עריכת מוצרים",
+    "catalog:products:delete": "מחיקת מוצרים",
+    "catalog:products:link": "קישור מוצרים/וריאציות לקטגוריות/קטלוגים"
+  },
+  "settings": {
+    "Catalog": {
+      "ImageCategories": {
+        "description": "מילון של אפשרויות קטגוריית התמונה האפשריות לפריטי קטלוג",
+        "title": "קטגוריות תמונה"
+      },
+      "AssociationGroups": {
+        "description": "שמות קבוצות השיוך של מוצרים",
+        "title": "שמות קבוצות שיוך"
+      },
+      "EditorialReviewTypes": {
+        "description": "מילון של סוגי התיאור האפשריים לפריט זה",
+        "title": "סוגי תיאור פריט"
+      },
+      "UseSeoDeduplication": {
+        "description": "הפעלה/השבתה של זיהוי כפילויות SEO",
+        "title": "זיהוי כפילויות SEO"
+      },
+      "CategoryDescriptionTypes": {
+        "description": "מילון של סוגי התיאור האפשריים לקטגוריה זו",
+        "title": "סוגי תיאור קטגוריה"
+      },
+      "AllowToCopyID": {
+        "title": "העתקת מזהה הפריט",
+        "description": "הפעלה מציגה את האפשרות 'העתקת מזהה' בתפריט ההקשר"
+      },
+      "BrandStoreSetting": {
+        "BrandsEnabled": {
+          "title": "הצגת דף המותגים",
+          "description": "הפעלה/השבתה של דף המותגים בחזית החנות"
+        },
+        "BrandCatalogId": {
+          "title": "מזהה קטלוג המותגים",
+          "description": "יש לציין את מזהה הקטלוג המשמש למותגים"
+        },
+        "BrandPropertyName": {
+          "title": "שם מאפיין המותג",
+          "description": "יש להגדיר את שם המאפיין של המותג"
+        }
+      },
+      "Search": {
+        "UseCatalogIndexedSearchInManager": {
+          "description": "הפעלה/השבתה של חיפוש מאונדקס עם תחביר מתקדם עבור מודול הקטלוג",
+          "title": "חיפוש מאונדקס בקטלוג"
+        },
+        "UseFullObjectIndexStoring": {
+          "description": "הפעלה/השבתה של שמירת אובייקטי קטלוג לאחר סריאליזציה באינדקס והחזרתם בתוצאות החיפוש",
+          "title": "שמירת אובייקטי קטלוג לאחר סריאליזציה באינדקס"
+        },
+        "IndexLinkPriorityFields": {
+          "description": "הפעלה/השבתה של אינדוקס השדות המשמשים לחישוב העדיפות של אובייקטים מקושרים בתוצאות החיפוש",
+          "title": "אינדוקס שדות עדיפות של קישורים"
+        },
+        "DefaultAggregationSize": {
+          "description": "יש לציין את גודל הצבירות כאשר הוא אינו מוגדר במאפייני הצבירה של החנות. ערך 0 פירושו גודל בלתי מוגבל",
+          "title": "גודל צבירה המוגדר כברירת מחדל"
+        },
+        "EventBasedIndexation": {
+          "Enable": {
+            "title": "אינדוקס מבוסס אירועים עבור ישויות קטלוג",
+            "description": "הפעלה/השבתה של אינדוקס אוטומטי ברקע של ישויות קטלוג בכל פעם שהן משתנות"
+          }
+        },
+        "ProductSortings": {
+          "title": "מיון מוצרים",
+          "description": "אפשרויות מיון מוצרים (\"מיון לפי\") לכל חנות. העריכה מתבצעת דרך וידג'ט 'הגדרות החיפוש' בדף החנות"
+        },
+        "BarcodeScannerEnabled": {
+          "title": "סורק ברקודים",
+          "description": "הצגת לחצן סורק הברקודים בשורת החיפוש של חזית החנות. העריכה מתבצעת דרך וידג'ט 'הגדרות החיפוש' בדף החנות"
+        },
+        "BarcodeSearchFields": {
+          "title": "שדות חיפוש ברקוד",
+          "description": "שדות אינדקס המוצרים שמולם מושווה קוד שנסרק; ערך ריק פירושו חיפוש בטקסט מלא. יש למלא ב-GTIN את ברקוד האריזה (UPC, EAN, ISBN, JAN) וב-MPN את מספר החלק של היצרן; SKU הוא קוד המוצר. לכל קוד אחר או לקודים מרובים יש להשתמש במאפיין קטלוג מסוג טקסט קצר (אפשר גם עם ערכים מרובים). יש לבצע אינדוקס מחדש של המוצרים לאחר שינוי הערכים. העריכה מתבצעת דרך וידג'ט 'הגדרות החיפוש' בדף החנות"
+        }
+      },
+      "ProductConfigurationMaximumFiles": {
+        "title": "מספר הקבצים המרבי במקטע התצורה",
+        "description": "הגבלת מספר הקבצים המרבי במקטע התצורה"
+      },
+      "BrowseFilters": {
+        "FilteredBrowsing": {
+          "title": "מאפייני סינון",
+          "description": "הגדרת מסנני הניווט לפי היבטים לכל חנות. העריכה מתבצעת דרך וידג'ט 'מאפייני סינון' בדף החנות"
+        }
+      },
+      "BackupRestore": {
+        "BatchSize": {
+          "title": "גודל אצווה לייבוא/ייצוא",
+          "description": "מספר הרשומות הנשמרות בכל אצווה במהלך ייצוא וייבוא של הקטלוג. ערכים נמוכים מפחיתים את צריכת הזיכרון; ערכים גבוהים משפרים את התפוקה"
+        },
+        "ErrorPolicy": {
+          "title": "מדיניות שגיאות בייבוא",
+          "description": "ההתנהגות כאשר שמירת אצווה נכשלת במהלך ייבוא: 'Stop' מפסיק את ייבוא המודול, 'SkipBatch' מדלג על כל האצווה שנכשלה, 'SkipItem' מנסה שוב את הפריטים אחד אחד ומדלג רק על השורות שנכשלו"
+        }
+      }
+    },
+    "VirtoCommerce": {
+      "Search": {
+        "IndexingJobs": {
+          "IndexationDate": {
+            "Product": {
+              "title": "תאריך ושעת אינדוקס מוצרים",
+              "description": "התאריך והשעה שבהם מתחילה משימת אינדוקס המוצרים"
+            },
+            "Category": {
+              "title": "תאריך ושעת אינדוקס קטגוריות",
+              "description": "התאריך והשעה שבהם מתחיל אינדוקס הקטגוריות"
+            }
+          }
+        }
+      }
+    }
+  }
+}
