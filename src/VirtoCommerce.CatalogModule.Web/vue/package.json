@@ -11,8 +11,8 @@
   },
   "devDependencies": {
     "@types/node": "^20.10.5",
-    "@vc-shell/api-client-generator": "2.6.3-rc.0",
-    "@vc-shell/ts-config": "2.6.3-rc.0",
+    "@vc-shell/api-client-generator": "2.7.0",
+    "@vc-shell/ts-config": "2.7.0",
     "cross-env": "^7.0.3",
     "sass": "^1.87.0",
     "typescript": "^5.8.3",
@@ -20,9 +20,9 @@
     "vue-tsc": "^3.2.5"
   },
   "dependencies": {
-    "@vc-shell/config-generator": "2.6.3-rc.0",
-    "@vc-shell/framework": "2.6.3-rc.0",
-    "@vc-shell/mf-module": "2.6.3-rc.0",
+    "@vc-shell/config-generator": "2.7.0",
+    "@vc-shell/framework": "2.7.0",
+    "@vc-shell/mf-module": "2.7.0",
     "vue": "^3.5.30",
     "vue-router": "^5.0.3"
   },
