@@ -78,7 +78,7 @@ public class CatalogModulePropertyGroupsController : Controller
     {
         var propertyGroups = await _propertyGroupService.GetAsync(ids);
 
-        var authorizationResult = await _authorizationService.AuthorizeAsync(User, propertyGroups, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.CatalogDictionaryPropertyEdit));
+        var authorizationResult = await _authorizationService.AuthorizeAsync(User, propertyGroups, new CatalogAuthorizationRequirement(ModuleConstants.Security.Permissions.CatalogMetadataPropertyEdit));
         if (!authorizationResult.Succeeded)
         {
             return Forbid();
