@@ -43,6 +43,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VirtoCommerce.CatalogModule
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VirtoCommerce.CatalogModule.Data.Vimeo", "src\VirtoCommerce.CatalogModule.Data.Vimeo\VirtoCommerce.CatalogModule.Data.Vimeo.csproj", "{26A7B61F-E127-4548-BC6B-A80828316E74}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "benchmarks", "benchmarks", "{80F85627-EDD6-437A-B186-7E3FC20BA19E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VirtoCommerce.CatalogModule.Benchmark", "benchmarks\VirtoCommerce.CatalogModule.Benchmark\VirtoCommerce.CatalogModule.Benchmark.csproj", "{D851E96C-5BC6-464A-AFD1-F6CB17B3403E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -93,6 +97,10 @@ Global
 		{26A7B61F-E127-4548-BC6B-A80828316E74}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{26A7B61F-E127-4548-BC6B-A80828316E74}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{26A7B61F-E127-4548-BC6B-A80828316E74}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D851E96C-5BC6-464A-AFD1-F6CB17B3403E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D851E96C-5BC6-464A-AFD1-F6CB17B3403E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D851E96C-5BC6-464A-AFD1-F6CB17B3403E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D851E96C-5BC6-464A-AFD1-F6CB17B3403E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -109,6 +117,7 @@ Global
 		{67C8590A-4EA0-48EF-9E58-288BE1F9ED51} = {DFA3417F-2FA2-4187-B367-F809CB5D804A}
 		{C072B31F-3D90-4AB9-A1A3-51E1FCDDD6C4} = {DFA3417F-2FA2-4187-B367-F809CB5D804A}
 		{26A7B61F-E127-4548-BC6B-A80828316E74} = {DFA3417F-2FA2-4187-B367-F809CB5D804A}
+		{D851E96C-5BC6-464A-AFD1-F6CB17B3403E} = {80F85627-EDD6-437A-B186-7E3FC20BA19E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C9B2BF9E-097A-48E6-A338-9176A75C0AA2}

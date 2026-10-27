@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BenchmarkDotNet" Version="0.15.8" />
+    <PackageReference Include="Moq" Version="4.21.0" />
+  </ItemGroup>
+
+  <!-- $(BaselineSrc) defaults to the in-repo source; the before/after comparison mode overrides it per
+       BenchmarkDotNet job via /p:BaselineSrc=(baseline-worktree)/src. The name is the contract between
+       this file and the `/p:BaselineSrc=` the runner builds, and it is deliberately the same as in the
+       other modules' benchmarks — rename it here and both jobs quietly fall back to the default, giving
+       a comparison of the branch against itself and a 1.00 ratio that looks like "no change". -->
+  <PropertyGroup>
+    <BaselineSrc Condition="'$(BaselineSrc)' == ''">..\..\src</BaselineSrc>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="$(BaselineSrc)\VirtoCommerce.CatalogModule.Data\VirtoCommerce.CatalogModule.Data.csproj" />
+  </ItemGroup>
+
+</Project>
