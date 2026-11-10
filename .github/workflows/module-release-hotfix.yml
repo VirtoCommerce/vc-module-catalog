@@ -1,5 +1,5 @@
-# v3.1000.4
-# https://virtocommerce.atlassian.net/browse/VCST-6033
+# v3.1000.8
+# https://virtocommerce.atlassian.net/browse/VCST-6642
 name: Release hotfix
 
 on:
@@ -17,12 +17,12 @@ permissions:
 
 jobs:
   test:
-    uses: VirtoCommerce/.github/.github/workflows/test-and-sonar.yml@v3.1000.4
+    uses: VirtoCommerce/.github/.github/workflows/test-and-sonar.yml@v3.1000.8
     secrets:
       sonarToken: ${{ secrets.SONAR_TOKEN }}
 
   build:
-    uses: VirtoCommerce/.github/.github/workflows/build.yml@v3.1000.4
+    uses: VirtoCommerce/.github/.github/workflows/build.yml@v3.1000.8
     with:
       uploadPackage: 'true'
       uploadDocker: 'false'
@@ -46,12 +46,10 @@ jobs:
 
     - name: Get Changelog
       id: changelog
-      uses: VirtoCommerce/.github/actions/changelog-generator@v3.1000.4
+      uses: VirtoCommerce/.github/actions/changelog-generator@v3.1000.8
 
-  # Trusted Publishing: mint the OIDC key and push in ONE job. A short-lived key can't cross
-  # job boundaries (GitHub redacts masked values from job outputs), and the push can't move
-  # into the cross-repo publish-github.yml (its job_workflow_ref wouldn't match this repo's
-  # policy — NuGet/login issues #6/#9). job_workflow_ref here is module-release-hotfix.yml, which matches.
+  # Trusted Publishing: vc-nuget-publisher holds the one nuget.org policy and pushes the packages.
+  # The push can't run in a cross-repo reusable workflow (job_workflow_ref wouldn't match any policy — NuGet/login issues #6/#9).
   # needs get-metadata too: a metadata failure must block the push, else the package publishes while
   # publish-github-release (which needs get-metadata) is skipped — package with no GitHub release.
   publish-nuget:
@@ -59,17 +57,7 @@ jobs:
     runs-on: ubuntu-24.04
     permissions:
       contents: read
-      id-token: write
-    env:
-      GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
     steps:
-      - name: Install VirtoCommerce.GlobalTool
-        uses: VirtoCommerce/.github/actions/setup-vcbuild@v3.1000.4
-
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-
       # Reuse the package built by the `build` job (same cache key/path it wrote).
       - name: Get package from cache
         id: restore-build
@@ -88,20 +76,12 @@ jobs:
           echo "::error::Package cache not found for key ${FULL_KEY}"
           exit 1
 
-      - name: NuGet login (OIDC -> temp API key)
-        id: nuget_login
-        uses: NuGet/login@8d196754b4036150537f80ac539e15c2f1028841 # v1.2.0
-        with:
-          # nuget.org user that created the trust policy (shared service account). Hardcoded because
-          # private repos can't read org-level Actions variables in the current plan.
-          user: virto
-
       - name: Publish Nuget
-        uses: VirtoCommerce/.github/actions/publish-nuget@v3.1000.4
+        # Bounds the wait for the publisher run; a normal publish takes under a minute.
+        timeout-minutes: 30
+        uses: VirtoCommerce/.github/actions/publish-nuget-central@v3.1000.8
         with:
-          skipString: 'Clean+Restore+Compile+Test+Pack'
-        env:
-          NUGET_KEY: ${{ steps.nuget_login.outputs.NUGET_API_KEY }}
+          githubToken: ${{ secrets.REPO_TOKEN }}
 
   # GitHub release only. forceNuget: false — the push is done by publish-nuget above.
   # publish-github.yml creates the release + edits the PR via the passed GITHUB_TOKEN — grant write to both.
@@ -111,7 +91,7 @@ jobs:
       pull-requests: write
     needs:
       [build, test, get-metadata, publish-nuget]
-    uses: VirtoCommerce/.github/.github/workflows/publish-github.yml@v3.1000.4
+    uses: VirtoCommerce/.github/.github/workflows/publish-github.yml@v3.1000.8
     with:
       fullKey: ${{ needs.build.outputs.packageFullKey }}
       changeLog: '${{ needs.get-metadata.outputs.changeLog }}'
@@ -134,10 +114,10 @@ jobs:
         persist-credentials: false
 
     - name: Install VirtoCommerce.GlobalTool
-      uses: VirtoCommerce/.github/actions/setup-vcbuild@v3.1000.4
+      uses: VirtoCommerce/.github/actions/setup-vcbuild@v3.1000.8
 
     - name: Setup Git Credentials
-      uses: VirtoCommerce/.github/actions/setup-git-credentials-github@v3.1000.4
+      uses: VirtoCommerce/.github/actions/setup-git-credentials-github@v3.1000.8
       with:
         githubToken: ${{ secrets.REPO_TOKEN }}
 
