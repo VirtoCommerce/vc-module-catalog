@@ -189,15 +189,10 @@ public class CatalogStoreSetupPart(
 
         if (id == null)
         {
-            if (!HasDefaultLanguage(plan, store))
+            if (!PlanNewCatalog(plan, store, name, $"a new, empty catalog '{name}'"))
             {
                 return plan;
             }
-
-            plan.Catalog = CreateCatalog(store, name);
-            plan.IsNewCatalog = true;
-            store.Catalog = plan.Catalog.Id;
-            plan.AddChange(StoreCatalogField, null, $"a new, empty catalog '{name}'");
 
             var sameName = (await GetCatalogsAsync()).Where(x => x.Name.EqualsIgnoreCase(name)).Select(x => x.Id).ToList();
 
@@ -249,13 +244,9 @@ public class CatalogStoreSetupPart(
         // The store points to a catalog that is missing: a name creates it again under that id.
         if (catalog == null)
         {
-            if (name != null && HasDefaultLanguage(plan, store))
-            {
-                plan.Catalog = CreateCatalog(store, name);
-                plan.IsNewCatalog = true;
-                plan.AddChange(StoreCatalogField, null, $"a new, empty catalog '{name}', under the store's catalog id '{store.Catalog}'");
-            }
-            else if (id != null)
+            var created = name != null && PlanNewCatalog(plan, store, name, $"a new, empty catalog '{name}', under the store's catalog id '{store.Catalog}'");
+
+            if (!created && id != null)
             {
                 plan.Errors.Add($"Catalog '{id}' does not exist. Send name to create it again under this id, or give the store " +
                     $"an existing catalog in the back office: Stores > {storeName}, field Catalog.");
@@ -283,6 +274,23 @@ public class CatalogStoreSetupPart(
         PlanLanguages(plan, catalog, store);
 
         return plan;
+    }
+
+    // A new, empty catalog for the store, under the store's catalog id when it has one, as a row of the plan; false when the
+    // store has no default language, which HasDefaultLanguage refuses.
+    protected virtual bool PlanNewCatalog(CatalogStoreSetupPlan plan, Store store, string name, string row)
+    {
+        if (!HasDefaultLanguage(plan, store))
+        {
+            return false;
+        }
+
+        plan.Catalog = CreateCatalog(store, name);
+        plan.IsNewCatalog = true;
+        store.Catalog = plan.Catalog.Id;
+        plan.AddChange(StoreCatalogField, null, row);
+
+        return true;
     }
 
     // A catalog is saved with a default language, and the store's default becomes the new catalog's: a store without one

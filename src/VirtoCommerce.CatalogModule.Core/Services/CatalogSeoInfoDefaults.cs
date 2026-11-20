@@ -12,7 +12,7 @@ public class CatalogSeoInfoDefaults
     // A catalog without an SEO record gets one in its default language: slug "catalog", title "Catalog".
     public virtual void EnsureSeoInfo(Catalog catalog)
     {
-        if (catalog.SeoInfos != null && catalog.SeoInfos.Any())
+        if (!catalog.SeoInfos.IsNullOrEmpty())
         {
             return;
         }
