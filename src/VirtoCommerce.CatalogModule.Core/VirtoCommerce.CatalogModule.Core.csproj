@@ -19,6 +19,6 @@
     <PackageReference Include="VirtoCommerce.Platform.Core" Version="3.1100.0" />
     <PackageReference Include="VirtoCommerce.SearchModule.Core" Version="3.1010.0" />
     <PackageReference Include="VirtoCommerce.Seo.Core" Version="3.1006.0" />
-    <PackageReference Include="VirtoCommerce.StoreModule.Core" Version="3.1014.0-alpha.825-vcst-6918-store-admin-toolset" />
+    <PackageReference Include="VirtoCommerce.StoreModule.Core" Version="3.1014.0-alpha.830-vcst-6918-store-admin-toolset" />
   </ItemGroup>
 </Project>

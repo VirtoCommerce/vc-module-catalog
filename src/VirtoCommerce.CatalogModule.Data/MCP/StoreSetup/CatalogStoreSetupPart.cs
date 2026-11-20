@@ -22,10 +22,13 @@ namespace VirtoCommerce.CatalogModule.Data.MCP.StoreSetup;
 // renamed; which catalog a store sells from is changed in the back office. Whenever the section is planned, the catalog
 // gains the store's languages it lacks, and never loses one. Store cannot create a catalog itself, as Catalog depends on
 // Store: Catalog registers this part in its Module.Initialize with AddStoreSetupPart.
+// A plan names the permissions it needs (RequiredPermissions), whether or not the store is new: catalog:read when it
+// reads or shows a catalog, catalog:update when it changes one, and catalog:create when it creates one.
 public class CatalogStoreSetupPart(
     ICatalogService catalogService,
     ICatalogSearchService catalogSearchService,
-    IStoreSearchService storeSearchService)
+    IStoreSearchService storeSearchService,
+    IStoreSetupFindings setupFindings)
     : IStoreSetupChoices, IStoreSetupState, IStoreSetupCheck, IStoreSetupSection
 {
     public const string PartName = "catalog";
@@ -35,6 +38,10 @@ public class CatalogStoreSetupPart(
 
     // The row that says, in words for the approver, which catalog the store sells from: a new one or an existing one.
     public const string StoreCatalogField = "store_catalog";
+
+    // The rows of a rename and of the languages a catalog gains: the plan writes them, and the apply reads them back.
+    public const string NameField = "name";
+    public const string LanguagesField = "languages";
 
     public virtual string Name => PartName;
 
@@ -113,11 +120,16 @@ public class CatalogStoreSetupPart(
             return [];
         }
 
-        return [CreateFinding(store, "catalog-lacks-store-languages", McpFindingSeverities.Warning,
+        // Fixed on the catalog, not on the store's screen: the fix says where.
+        var finding = CreateFinding(store, "catalog-lacks-store-languages", McpFindingSeverities.Warning,
             "The store's catalog lacks some of the store's languages",
             "Products cannot have names and descriptions in these languages, so customers see them in another one.",
             $"Missing in the catalog '{catalog.Name}': {string.Join(", ", missing)}.",
-            $"Send the catalog section with the store's catalog id ({catalog.Id}): the catalog gains the store's languages.")];
+            $"Send the catalog section with the store's catalog id ({catalog.Id}): the catalog gains the store's languages. " +
+                $"A person adds them in the back office too: Catalog > {catalog.Name}, Languages.");
+        finding.Screen = null;
+
+        return [finding];
     }
 
     // Plans without side effects. A new store: an existing catalog by its id, or a new, empty catalog by its name. An
@@ -130,8 +142,10 @@ public class CatalogStoreSetupPart(
         var id = catalogSection.Id?.Trim().EmptyToNull();
         var name = catalogSection.Name?.Trim();
         var plan = AbstractTypeFactory<CatalogStoreSetupPlan>.TryCreateInstance();
+        // The plan adds each permission as it reads, changes or creates a catalog; a refusal before that needs none.
+        plan.RequiredPermissions = [];
 
-        if (name is { Length: 0 or > MaxNameLength })
+        if (name != null && !IsValidName(name))
         {
             plan.Errors.Add($"The catalog needs a name of 1 to {MaxNameLength} characters.");
             return plan;
@@ -159,7 +173,7 @@ public class CatalogStoreSetupPart(
             return;
         }
 
-        var renamed = plan.Changes.Any(x => x.Field == "name");
+        var renamed = plan.Changes.Any(x => x.Field == NameField);
 
         if (!renamed && catalogPlan.AddedLanguages.Count == 0)
         {
@@ -194,6 +208,8 @@ public class CatalogStoreSetupPart(
                 return plan;
             }
 
+            // The catalogs are read for one with the same name, found or not.
+            plan.RequirePermission(Permissions.Read);
             var sameName = (await GetCatalogsAsync()).Where(x => x.Name.EqualsIgnoreCase(name)).Select(x => x.Id).ToList();
 
             if (sameName.Count > 0)
@@ -205,6 +221,8 @@ public class CatalogStoreSetupPart(
             return plan;
         }
 
+        // Whether the catalog exists, and what it is, is the catalog's data.
+        plan.RequirePermission(Permissions.Read);
         var catalog = await GetCatalogAsync(id);
 
         if (catalog == null)
@@ -213,7 +231,7 @@ public class CatalogStoreSetupPart(
             return plan;
         }
 
-        if (name != null && !string.Equals(catalog.Name, name, StringComparison.Ordinal))
+        if (name != null && !IsSameName(catalog.Name, name))
         {
             plan.Errors.Add($"Creating a store never renames a catalog. To sell from the catalog '{catalog.Name}' ({catalog.Id}), " +
                 $"leave out name; to create a new catalog named '{name}', leave out id.");
@@ -231,6 +249,8 @@ public class CatalogStoreSetupPart(
     protected virtual async Task<CatalogStoreSetupPlan> PlanExistingStoreAsync(CatalogStoreSetupPlan plan, Store store, string id, string name)
     {
         var storeName = store.Name ?? store.Id;
+        // The store's catalog is read, and its name and languages are shown.
+        plan.RequirePermission(Permissions.Read);
         var catalog = await GetCatalogAsync(store.Catalog);
 
         if (id != null && !id.EqualsIgnoreCase(store.Catalog))
@@ -244,9 +264,12 @@ public class CatalogStoreSetupPart(
         // The store points to a catalog that is missing: a name creates it again under that id.
         if (catalog == null)
         {
-            var created = name != null && PlanNewCatalog(plan, store, name, $"a new, empty catalog '{name}', under the store's catalog id '{store.Catalog}'");
+            if (name != null)
+            {
+                PlanNewCatalog(plan, store, name, $"a new, empty catalog '{name}', under the store's catalog id '{store.Catalog}'");
+            }
 
-            if (!created && id != null)
+            if (name == null && id != null)
             {
                 plan.Errors.Add($"Catalog '{id}' does not exist. Send name to create it again under this id, or give the store " +
                     $"an existing catalog in the back office: Stores > {storeName}, field Catalog.");
@@ -255,9 +278,10 @@ public class CatalogStoreSetupPart(
             return plan;
         }
 
-        if (name != null && !string.Equals(catalog.Name, name, StringComparison.Ordinal))
+        if (name != null && !IsSameName(catalog.Name, name))
         {
-            plan.AddChange("name", catalog.Name, name);
+            plan.RequirePermission(Permissions.Update);
+            plan.AddChange(NameField, catalog.Name, name);
             catalog.Name = name;
 
             var otherStores = await CountOtherStoresAsync(catalog.Id, store.Id);
@@ -285,6 +309,7 @@ public class CatalogStoreSetupPart(
             return false;
         }
 
+        plan.RequirePermission(Permissions.Create);
         plan.Catalog = CreateCatalog(store, name);
         plan.IsNewCatalog = true;
         store.Catalog = plan.Catalog.Id;
@@ -321,8 +346,9 @@ public class CatalogStoreSetupPart(
 
         var before = (catalog.Languages ?? []).Select(x => x.LanguageCode).ToList();
         AddLanguages(catalog, missing, store.DefaultLanguage);
+        plan.RequirePermission(Permissions.Update);
         plan.AddedLanguages = missing;
-        plan.AddChange("languages", before, catalog.Languages.Select(x => x.LanguageCode).ToList());
+        plan.AddChange(LanguagesField, before, catalog.Languages.Select(x => x.LanguageCode).ToList());
     }
 
     // The store's languages, its default first, that the catalog lacks. None for a virtual catalog: its texts live in the
@@ -401,7 +427,7 @@ public class CatalogStoreSetupPart(
 
     protected virtual McpFinding CreateFinding(Store store, string id, string severity, string title, string why, string evidence, string fix)
     {
-        var finding = StoreSetupFindings.ForStore(store, PartName, id, severity);
+        var finding = setupFindings.ForStore(store, PartName, id, severity);
         finding.Title = title;
         finding.Why = why;
         finding.Evidence = evidence;
@@ -411,7 +437,9 @@ public class CatalogStoreSetupPart(
     }
 
     // How many stores sell from each catalog, the store with the given id left out. Store's search has no catalog filter,
-    // and stores are few, so they are read in pages; only planning the section and listing the choices read them.
+    // and stores are few, so they are read in pages; only planning the section and listing the choices read them. Every
+    // store counts, one the user may not read too: how widely a catalog is shared is the catalog's fact, which the user
+    // needs before renaming it.
     protected virtual async Task<IDictionary<string, int>> GetStoreCountsAsync(string exceptStoreId = null)
     {
         var stores = await storeSearchService.SearchAllNoCloneAsync(AbstractTypeFactory<StoreSearchCriteria>.TryCreateInstance());
@@ -438,7 +466,20 @@ public class CatalogStoreSetupPart(
         return string.IsNullOrEmpty(catalogId) ? null : await catalogService.GetByIdAsync(catalogId);
     }
 
-    private static List<string> GetStoreLanguages(Store store)
+    // A catalog's name: 1 to 128 characters, without the spaces around it.
+    protected virtual bool IsValidName(string name)
+    {
+        return name.Length is > 0 and <= MaxNameLength;
+    }
+
+    // A name sent is the catalog's name when they differ only by spaces around them, so a state sent back renames nothing.
+    protected virtual bool IsSameName(string catalogName, string name)
+    {
+        return string.Equals(catalogName?.Trim(), name, StringComparison.Ordinal);
+    }
+
+    // The store's languages, its default first.
+    protected virtual IList<string> GetStoreLanguages(Store store)
     {
         return new[] { store.DefaultLanguage }
             .Concat(store.Languages ?? [])

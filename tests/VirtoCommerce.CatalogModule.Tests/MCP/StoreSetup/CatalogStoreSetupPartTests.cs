@@ -18,12 +18,14 @@ using Xunit;
 
 namespace VirtoCommerce.CatalogModule.Tests.MCP.StoreSetup;
 
+[Trait("Category", "Unit")]
 public class CatalogStoreSetupPartTests
 {
     private const string CatalogId = "eu-catalog";
     private const string MainId = "main";
 
-    // The catalogs saved so far, by id, and the stores; the services return copies, as the platform's do.
+    // The catalogs saved so far, by id, and the stores; the services return copies, as the platform's do, or the saved
+    // catalogs themselves when asked for no copy, as the platform returns its cached ones.
     private readonly Dictionary<string, Catalog> _saved = [];
     private readonly List<Store> _stores = [];
     private readonly Mock<ICatalogService> _catalogService = new();
@@ -32,7 +34,7 @@ public class CatalogStoreSetupPartTests
     {
         _catalogService
             .Setup(x => x.GetAsync(It.IsAny<IList<string>>(), It.IsAny<string>(), It.IsAny<bool>()))
-            .ReturnsAsync((IList<string> ids, string _, bool _) => ids.Where(_saved.ContainsKey).Select(x => Copy(_saved[x])).ToList());
+            .ReturnsAsync((IList<string> ids, string _, bool clone) => ids.Where(_saved.ContainsKey).Select(x => clone ? Copy(_saved[x]) : _saved[x]).ToList());
         _catalogService
             .Setup(x => x.SaveChangesAsync(It.IsAny<IList<Catalog>>()))
             .Callback((IList<Catalog> catalogs) => catalogs.ToList().ForEach(x =>
@@ -67,6 +69,8 @@ public class CatalogStoreSetupPartTests
         Assert.Equal([("de-DE", true), ("en-US", false), ("fr-FR", false)], plan.Catalog.Languages.Select(x => (x.LanguageCode, x.IsDefault)));
         var change = Assert.Single(plan.Changes);
         Assert.Equal((CatalogStoreSetupPart.StoreCatalogField, (object)null, (object)"a new, empty catalog 'EU catalog'"), (change.Field, change.From, change.To));
+        // It creates a catalog, and reads the catalogs for one with the same name.
+        Assert.Equal(["catalog:create", "catalog:read"], plan.RequiredPermissions);
         _catalogService.Verify(x => x.SaveChangesAsync(It.IsAny<IList<Catalog>>()), Times.Never);
     }
 
@@ -106,6 +110,8 @@ public class CatalogStoreSetupPartTests
         Assert.Equal(MainId, context.Store.Catalog);
         var change = Assert.Single(plan.Changes);
         Assert.Equal((CatalogStoreSetupPart.StoreCatalogField, "the existing catalog 'Main' (main), shared with 2 other stores"), (change.Field, change.To));
+        // A catalog it reuses as it is: shown, not changed.
+        Assert.Equal(["catalog:read"], plan.RequiredPermissions);
         _catalogService.Verify(x => x.SaveChangesAsync(It.IsAny<IList<Catalog>>()), Times.Never);
     }
 
@@ -117,6 +123,8 @@ public class CatalogStoreSetupPartTests
 
         //Assert
         Assert.Equal(["Catalog 'missing' does not exist. get_store_setup_options lists the catalogs."], plan.Errors);
+        // Whether a catalog exists is the catalog's data.
+        Assert.Equal(["catalog:read"], plan.RequiredPermissions);
     }
 
     // Creating a store never renames a catalog: the refusal says which field to leave out for each intent.
@@ -143,6 +151,7 @@ public class CatalogStoreSetupPartTests
 
         //Assert
         Assert.Equal(["A new store needs its catalog: send name to create a new, empty catalog, or id to sell from an existing one."], plan.Errors);
+        Assert.Empty(plan.RequiredPermissions);
     }
 
     // An existing store's name renames its catalog, alone or with the store's own catalog id; other stores using the
@@ -164,6 +173,7 @@ public class CatalogStoreSetupPartTests
         var change = Assert.Single(plan.Changes);
         Assert.Equal(("name", (object)"Old name", (object)"New name"), (change.Field, change.From, change.To));
         Assert.Equal("1 other store sells from this catalog and shows the new name.", Assert.Single(plan.Warnings));
+        Assert.Equal(["catalog:read", "catalog:update"], plan.RequiredPermissions);
         Assert.Equal("Old name", _saved[CatalogId].Name);
     }
 
@@ -204,6 +214,7 @@ public class CatalogStoreSetupPartTests
 
         //Assert
         Assert.Equal(["The catalog needs a name of 1 to 128 characters."], plan.Errors);
+        Assert.Empty(plan.RequiredPermissions);
     }
 
     // A store whose catalog is missing gets it again under its catalog id; its id alone names nothing.
@@ -222,7 +233,9 @@ public class CatalogStoreSetupPartTests
         Assert.True(byName.IsNewCatalog);
         Assert.Equal(CatalogId, byName.Catalog.Id);
         Assert.Equal("a new, empty catalog 'EU catalog', under the store's catalog id 'eu-catalog'", Assert.Single(byName.Changes).To);
+        Assert.Equal(["catalog:read", "catalog:create"], byName.RequiredPermissions);
         Assert.Equal(["Catalog 'eu-catalog' does not exist. Send name to create it again under this id, or give the store an existing catalog in the back office: Stores > EU store, field Catalog."], byId.Errors);
+        Assert.Equal(["catalog:read"], byId.RequiredPermissions);
     }
 
     // The catalog gains the store's languages it lacks, as a row, and keeps the ones the store does not have.
@@ -261,6 +274,8 @@ public class CatalogStoreSetupPartTests
         //Assert
         Assert.Equal([CatalogStoreSetupPart.StoreCatalogField, "languages"], plan.Changes.Select(x => x.Field));
         Assert.Equal(["fr-FR"], plan.AddedLanguages);
+        // A new store's languages change the catalog it reuses: catalog:update, not catalog:create.
+        Assert.Equal(["catalog:read", "catalog:update"], plan.RequiredPermissions);
     }
 
     // A virtual catalog's texts live in the catalogs behind it: it gains no language, and none is missing.
@@ -296,6 +311,43 @@ public class CatalogStoreSetupPartTests
         //Assert
         Assert.Empty(plan.Errors);
         Assert.Empty(plan.Changes);
+        Assert.Equal(["catalog:read"], plan.RequiredPermissions);
+    }
+
+    // A name that differs from the catalog's only by spaces around it, as a catalog saved by hand may have, renames nothing:
+    // its state sent back changes nothing.
+    [Fact]
+    public async Task PlanAsync_ANameThatDiffersOnlyBySpacesAroundIt_RenamesNothing()
+    {
+        //Arrange
+        _saved[CatalogId] = new Catalog { Id = CatalogId, Name = " EU catalog ", Languages = [new CatalogLanguage { LanguageCode = "de-DE", IsDefault = true }] };
+
+        //Act
+        var plan = await CreatePart().PlanAsync(CreateContext(CreateStore()), new CatalogStoreSetupSection { Name = "EU catalog" });
+
+        //Assert
+        Assert.Empty(plan.Errors);
+        Assert.Empty(plan.Changes);
+    }
+
+    // The part reads copies: a plan leaves the cached catalog as it is.
+    [Fact]
+    public async Task PlanAsync_LeavesTheCachedCatalogAsItIs()
+    {
+        //Arrange
+        var cached = new Catalog { Id = CatalogId, Name = "EU catalog", Languages = [new CatalogLanguage { LanguageCode = "de-DE", IsDefault = true }] };
+        _saved[CatalogId] = cached;
+        var store = CreateStore();
+        store.Languages = ["de-DE", "en-US"];
+
+        //Act
+        var plan = (CatalogStoreSetupPlan)await CreatePart().PlanAsync(CreateContext(store), new CatalogStoreSetupSection { Name = "Renamed" });
+
+        //Assert
+        Assert.Equal("Renamed", plan.Catalog.Name);
+        Assert.Same(cached, _saved[CatalogId]);
+        Assert.Equal("EU catalog", cached.Name);
+        Assert.Equal(["de-DE"], cached.Languages.Select(x => x.LanguageCode));
     }
 
     // A store's language its catalog lacks is a warning, with the fix to send; once the request plans the catalog
@@ -319,7 +371,9 @@ public class CatalogStoreSetupPartTests
         var finding = Assert.Single(findings);
         Assert.Equal(("catalog-lacks-store-languages", McpFindingSeverities.Warning), (finding.Id, finding.Severity));
         Assert.Equal("Missing in the catalog 'EU catalog': en-US.", finding.Evidence);
-        Assert.Equal("Send the catalog section with the store's catalog id (eu-catalog): the catalog gains the store's languages.", finding.Fix);
+        Assert.Equal("Send the catalog section with the store's catalog id (eu-catalog): the catalog gains the store's languages. " +
+            "A person adds them in the back office too: Catalog > EU catalog, Languages.", finding.Fix);
+        Assert.Null(finding.Screen);
         Assert.Empty(findingsWithSection);
     }
 
@@ -411,11 +465,13 @@ public class CatalogStoreSetupPartTests
         Assert.Equal((CatalogId, "EU catalog"), (state.Id, state.Name));
     }
 
-    // Every catalog is a choice for catalog.id: the catalogs stores sell from first, the most used first, then by name.
+    // Every catalog is a choice for catalog.id: the catalogs stores sell from first, the most used first, then by name, in
+    // whatever order the search returns them.
     [Fact]
     public async Task GetChoicesAsync_ListsEveryCatalog_TheMostUsedFirst_WithWhetherItIsVirtual()
     {
         //Arrange
+        _saved["gamma"] = new Catalog { Id = "gamma", Name = "Gamma" };
         _saved["alpha"] = new Catalog { Id = "alpha", Name = "Alpha" };
         _saved["beta"] = new Catalog { Id = "beta", Name = "Beta", IsVirtual = true };
         _saved["zeta"] = new Catalog { Id = "zeta", Name = "Zeta" };
@@ -427,7 +483,12 @@ public class CatalogStoreSetupPartTests
         //Assert
         Assert.All(choices, x => Assert.Equal("catalog.id", x.Field));
         Assert.Equal(
-            [("zeta", "Zeta", "Physical catalog, used by 2 stores."), ("beta", "Beta", "Virtual catalog, used by 1 store."), ("alpha", "Alpha", "Physical catalog, used by no store.")],
+            [
+                ("zeta", "Zeta", "Physical catalog, used by 2 stores."),
+                ("beta", "Beta", "Virtual catalog, used by 1 store."),
+                ("alpha", "Alpha", "Physical catalog, used by no store."),
+                ("gamma", "Gamma", "Physical catalog, used by no store."),
+            ],
             choices.Select(x => (x.Value, x.Title, x.Description)));
     }
 
@@ -448,10 +509,13 @@ public class CatalogStoreSetupPartTests
         //Act
         var forNewStore = await CreatePart().PlanAsync(CreateContext(newStore, isNewStore: true), new CatalogStoreSetupSection { Name = "EU catalog" });
         var forMissingCatalog = await CreatePart().PlanAsync(CreateContext(storeWithoutDefault), new CatalogStoreSetupSection { Name = "EU catalog" });
+        var forMissingCatalogById = await CreatePart().PlanAsync(CreateContext(storeWithoutDefault), new CatalogStoreSetupSection { Id = CatalogId, Name = "EU catalog" });
 
         //Assert
         Assert.Equal([expected], forNewStore.Errors);
         Assert.Equal([expected], forMissingCatalog.Errors);
+        // The name was sent: no second error asks for it.
+        Assert.Equal([expected], forMissingCatalogById.Errors);
         Assert.Null(newStore.Catalog);
     }
 
@@ -497,7 +561,7 @@ public class CatalogStoreSetupPartTests
                 Results = _stores.Skip(criteria.Skip).Take(criteria.Take).ToList(),
             });
 
-        return new CatalogStoreSetupPart(_catalogService.Object, catalogSearchService.Object, storeSearchService.Object);
+        return new CatalogStoreSetupPart(_catalogService.Object, catalogSearchService.Object, storeSearchService.Object, new StoreSetupFindings());
     }
 
     private static Store CreateStore()
