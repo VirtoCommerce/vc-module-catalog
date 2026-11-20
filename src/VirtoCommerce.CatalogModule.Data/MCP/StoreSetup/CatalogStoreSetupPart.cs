@@ -189,6 +189,11 @@ public class CatalogStoreSetupPart(
 
         if (id == null)
         {
+            if (!HasDefaultLanguage(plan, store))
+            {
+                return plan;
+            }
+
             plan.Catalog = CreateCatalog(store, name);
             plan.IsNewCatalog = true;
             store.Catalog = plan.Catalog.Id;
@@ -244,7 +249,7 @@ public class CatalogStoreSetupPart(
         // The store points to a catalog that is missing: a name creates it again under that id.
         if (catalog == null)
         {
-            if (name != null)
+            if (name != null && HasDefaultLanguage(plan, store))
             {
                 plan.Catalog = CreateCatalog(store, name);
                 plan.IsNewCatalog = true;
@@ -278,6 +283,21 @@ public class CatalogStoreSetupPart(
         PlanLanguages(plan, catalog, store);
 
         return plan;
+    }
+
+    // A catalog is saved with a default language, and the store's default becomes the new catalog's: a store without one
+    // is refused here, before anything is saved.
+    protected virtual bool HasDefaultLanguage(CatalogStoreSetupPlan plan, Store store)
+    {
+        if (!string.IsNullOrEmpty(store.DefaultLanguage))
+        {
+            return true;
+        }
+
+        plan.Errors.Add("A new catalog needs a default language, and the store has none: send basics.languages (the first " +
+            "becomes the default) or basics.default_language.");
+
+        return false;
     }
 
     // The store's languages the catalog lacks become the catalog's, as a row of the plan; nothing is removed, as other
@@ -332,6 +352,7 @@ public class CatalogStoreSetupPart(
         catalog.Languages = GetStoreLanguages(store)
             .Select(code => CreateLanguage(code, isDefault: code.EqualsIgnoreCase(store.DefaultLanguage)))
             .ToList();
+        AbstractTypeFactory<CatalogSeoInfoDefaults>.TryCreateInstance().EnsureSeoInfo(catalog);
 
         return catalog;
     }

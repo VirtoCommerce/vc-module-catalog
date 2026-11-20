@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -147,16 +146,8 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         [Authorize(Permissions.Create)]
         public async Task<ActionResult<Catalog>> CreateCatalog([FromBody] Catalog catalog)
         {
-            //Ensure that new category has SeoInfo
-            if (catalog.SeoInfos == null || !catalog.SeoInfos.Any())
-            {
-                var defaultLanguage = catalog.Languages.First(x => x.IsDefault).LanguageCode;
-                var seoInfo = AbstractTypeFactory<SeoInfo>.TryCreateInstance();
-                seoInfo.LanguageCode = defaultLanguage;
-                seoInfo.SemanticUrl = "catalog";
-                seoInfo.PageTitle = "Catalog";
-                catalog.SeoInfos = [seoInfo];
-            }
+            // A new catalog without an SEO record gets the default one, as the store setup's catalogs do.
+            AbstractTypeFactory<CatalogSeoInfoDefaults>.TryCreateInstance().EnsureSeoInfo(catalog);
 
             await catalogService.SaveChangesAsync([catalog]);
             return Ok(catalog);

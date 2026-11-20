@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -34,7 +35,16 @@ public class CatalogStoreSetupPartTests
             .ReturnsAsync((IList<string> ids, string _, bool _) => ids.Where(_saved.ContainsKey).Select(x => Copy(_saved[x])).ToList());
         _catalogService
             .Setup(x => x.SaveChangesAsync(It.IsAny<IList<Catalog>>()))
-            .Callback((IList<Catalog> catalogs) => catalogs.ToList().ForEach(x => _saved[x.Id] = Copy(x)))
+            .Callback((IList<Catalog> catalogs) => catalogs.ToList().ForEach(x =>
+            {
+                // As CatalogEntity.FromModel: a catalog is saved with a default language.
+                if (x.DefaultLanguage == null)
+                {
+                    throw new InvalidOperationException($"Catalog '{x.Id}' has no default language.");
+                }
+
+                _saved[x.Id] = Copy(x);
+            }))
             .Returns(Task.CompletedTask);
     }
 
@@ -419,6 +429,42 @@ public class CatalogStoreSetupPartTests
         Assert.Equal(
             [("zeta", "Zeta", "Physical catalog, used by 2 stores."), ("beta", "Beta", "Virtual catalog, used by 1 store."), ("alpha", "Alpha", "Physical catalog, used by no store.")],
             choices.Select(x => (x.Value, x.Title, x.Description)));
+    }
+
+    // The save refuses a catalog without a default language, so the plan refuses it first: a new store without
+    // languages, and a store whose missing catalog would be created again without a default.
+    [Fact]
+    public async Task PlanAsync_ACatalogWithoutADefaultLanguage_IsRefusedBeforeTheSave()
+    {
+        //Arrange
+        var newStore = CreateNewStore();
+        newStore.DefaultLanguage = null;
+        newStore.Languages = [];
+        var storeWithoutDefault = CreateStore();
+        storeWithoutDefault.DefaultLanguage = null;
+        storeWithoutDefault.Languages = [];
+        const string expected = "A new catalog needs a default language, and the store has none: send basics.languages (the first becomes the default) or basics.default_language.";
+
+        //Act
+        var forNewStore = await CreatePart().PlanAsync(CreateContext(newStore, isNewStore: true), new CatalogStoreSetupSection { Name = "EU catalog" });
+        var forMissingCatalog = await CreatePart().PlanAsync(CreateContext(storeWithoutDefault), new CatalogStoreSetupSection { Name = "EU catalog" });
+
+        //Assert
+        Assert.Equal([expected], forNewStore.Errors);
+        Assert.Equal([expected], forMissingCatalog.Errors);
+        Assert.Null(newStore.Catalog);
+    }
+
+    // A new catalog gets the SEO record the catalogs API gives one: slug "catalog", title "Catalog", the default language.
+    [Fact]
+    public async Task PlanAsync_ANewCatalog_GetsTheDefaultSeoRecord()
+    {
+        //Act
+        var plan = (CatalogStoreSetupPlan)await CreatePart().PlanAsync(CreateContext(CreateNewStore(), isNewStore: true), new CatalogStoreSetupSection { Name = "EU catalog" });
+
+        //Assert
+        var seoInfo = Assert.Single(plan.Catalog.SeoInfos);
+        Assert.Equal(("catalog", "Catalog", "de-DE"), (seoInfo.SemanticUrl, seoInfo.PageTitle, seoInfo.LanguageCode));
     }
 
     [Fact]
