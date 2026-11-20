@@ -33,6 +33,7 @@ using VirtoCommerce.CatalogModule.Data.BackgroundJobs;
 using VirtoCommerce.CatalogModule.Data.ExportImport;
 using VirtoCommerce.CatalogModule.Data.Handlers;
 using VirtoCommerce.CatalogModule.Data.Jobs;
+using VirtoCommerce.CatalogModule.Data.MCP.StoreSetup;
 using VirtoCommerce.CatalogModule.Data.MySql;
 using VirtoCommerce.CatalogModule.Data.PostgreSql;
 using VirtoCommerce.CatalogModule.Data.Repositories;
@@ -65,6 +66,7 @@ using VirtoCommerce.Platform.Data.SqlServer.Extensions;
 using VirtoCommerce.Platform.Security.Authorization;
 using VirtoCommerce.SearchModule.Core.Model;
 using VirtoCommerce.SearchModule.Core.Services;
+using VirtoCommerce.StoreModule.Core.Extensions;
 using VirtoCommerce.StoreModule.Core.Model;
 using AuthorizationOptions = Microsoft.AspNetCore.Authorization.AuthorizationOptions;
 using ISeoDuplicatesDetector = VirtoCommerce.Seo.Core.Services.ISeoDuplicatesDetector;
@@ -127,6 +129,7 @@ namespace VirtoCommerce.CatalogModule.Web
             serviceCollection.AddTransient<ICategorySearchService, CategorySearchService>();
 
             serviceCollection.AddTransient<ICatalogService, CatalogService>();
+            serviceCollection.AddStoreSetupPart<CatalogStoreSetupPart>();
             serviceCollection.AddTransient<ICatalogSearchService, CatalogSearchService>();
             serviceCollection.AddTransient<IListEntrySearchService, ListEntrySearchService>();
 
