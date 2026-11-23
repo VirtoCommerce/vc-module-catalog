@@ -19,14 +19,17 @@ namespace VirtoCommerce.CatalogModule.Data.MCP.StoreSetup;
 
 // Catalog's part of a store's setup: the catalog a store sells from. A new store gets a new, empty catalog by its name,
 // or sells from an existing catalog by its id, shared with the stores that already do. An existing store's catalog is
-// renamed; which catalog a store sells from is changed in the back office. Whenever the section is planned, the catalog
-// gains the store's languages it lacks, and never loses one. Store cannot create a catalog itself, as Catalog depends on
-// Store: Catalog registers this part in its Module.Initialize with AddStoreSetupPart.
+// renamed by its name, or the store switches to another existing catalog by its id: this part saves the store's new
+// catalog id, as Store saves only its own fields of an existing store. Whenever the section is planned, the catalog gains
+// the store's languages it lacks, and never loses one. Store cannot create a catalog itself, as Catalog depends on Store:
+// Catalog registers this part in its Module.Initialize with AddStoreSetupPart.
 // A plan names the permissions it needs (RequiredPermissions), whether or not the store is new: catalog:read when it
-// reads or shows a catalog, catalog:update when it changes one, and catalog:create when it creates one.
+// reads or shows a catalog, catalog:update when it changes one, and catalog:create when it creates one. A switch changes
+// the store, which the setup's tools allow only with the store's update permission.
 public class CatalogStoreSetupPart(
     ICatalogService catalogService,
     ICatalogSearchService catalogSearchService,
+    IStoreService storeService,
     IStoreSearchService storeSearchService,
     IStoreSetupFindings setupFindings)
     : IStoreSetupChoices, IStoreSetupState, IStoreSetupCheck, IStoreSetupSection
@@ -36,7 +39,8 @@ public class CatalogStoreSetupPart(
     // The catalogs table holds names of up to 128 characters.
     public const int MaxNameLength = 128;
 
-    // The row that says, in words for the approver, which catalog the store sells from: a new one or an existing one.
+    // The row that says, in words for the approver, which catalog the store sells from: a new one, an existing one, or the
+    // one an existing store switches to, which the apply reads back.
     public const string StoreCatalogField = "store_catalog";
 
     // The rows of a rename and of the languages a catalog gains: the plan writes them, and the apply reads them back.
@@ -128,7 +132,8 @@ public class CatalogStoreSetupPart(
     }
 
     // Plans without side effects. A new store: an existing catalog by its id, or a new, empty catalog by its name. An
-    // existing store: renames its catalog. In both, the catalog gains the store's languages it lacks.
+    // existing store: renames its catalog, or switches to another catalog by its id. In both, the catalog gains the
+    // store's languages it lacks.
     public virtual async Task<McpSetupPartPlan> PlanAsync(StoreSetupContext context, object section)
     {
         ArgumentNullException.ThrowIfNull(context);
@@ -150,8 +155,14 @@ public class CatalogStoreSetupPart(
             ? await PlanNewStoreAsync(plan, context.Store, id, name)
             : await PlanExistingStoreAsync(plan, context.Store, id, name);
 
-        // An override of the methods above that skips base names no permission, so the permissions of what ApplyAsync
-        // saves are named here too: catalog:create for a new catalog, catalog:update for a rename or added languages.
+        // An override of the methods above that skips base names no permission, so the permissions of what the plan shows
+        // and ApplyAsync saves are named here too: catalog:read for an existing catalog, catalog:create for a new one,
+        // catalog:update for a rename or added languages.
+        if (plan.Catalog != null && !plan.IsNewCatalog)
+        {
+            plan.RequirePermission(Permissions.Read);
+        }
+
         if (plan.IsNewCatalog)
         {
             plan.RequirePermission(Permissions.Create);
@@ -165,8 +176,9 @@ public class CatalogStoreSetupPart(
         return plan;
     }
 
-    // Creates the new catalog, or applies the plan to the store's catalog read again: its new name and the languages it
-    // gains, so a change made since the plan stays. A repeat changes nothing.
+    // Creates the new catalog, or applies the plan to the catalog read again: its new name and the languages it gains, so a
+    // change made since the plan stays. Then an existing store that switches is saved with its new catalog id, after the
+    // catalog, so its customers never see the catalog without the store's languages. A repeat changes nothing.
     public virtual async Task ApplyAsync(StoreSetupContext context, McpSetupPartPlan plan)
     {
         var catalogPlan = (CatalogStoreSetupPlan)plan;
@@ -184,22 +196,26 @@ public class CatalogStoreSetupPart(
 
         var renamed = plan.Changes.Any(x => x.Field == NameField);
 
-        if (!renamed && catalogPlan.AddedLanguages.Count == 0)
+        if (renamed || catalogPlan.AddedLanguages.Count > 0)
         {
-            return;
+            var catalog = await GetCatalogAsync(catalogPlan.Catalog.Id)
+                ?? throw new InvalidOperationException($"Catalog '{catalogPlan.Catalog.Id}' was not found.");
+
+            if (renamed)
+            {
+                catalog.Name = catalogPlan.Catalog.Name;
+            }
+
+            AddLanguages(catalog, catalogPlan.AddedLanguages, context.Store.DefaultLanguage);
+
+            await catalogService.SaveChangesAsync([catalog]);
         }
 
-        var catalog = await GetCatalogAsync(catalogPlan.Catalog.Id)
-            ?? throw new InvalidOperationException($"Catalog '{catalogPlan.Catalog.Id}' was not found.");
-
-        if (renamed)
+        // A new store's row is saved by basics, with the catalog id the plan gave it.
+        if (!context.IsNewStore && plan.Changes.Any(x => x.Field == StoreCatalogField))
         {
-            catalog.Name = catalogPlan.Catalog.Name;
+            await SwitchStoreAsync(context.Store.Id, catalogPlan.Catalog.Id);
         }
-
-        AddLanguages(catalog, catalogPlan.AddedLanguages, context.Store.DefaultLanguage);
-
-        await catalogService.SaveChangesAsync([catalog]);
     }
 
     protected virtual async Task<CatalogStoreSetupPlan> PlanNewStoreAsync(CatalogStoreSetupPlan plan, Store store, string id, string name)
@@ -230,13 +246,10 @@ public class CatalogStoreSetupPart(
             return plan;
         }
 
-        // Whether the catalog exists, and what it is, is the catalog's data.
-        plan.RequirePermission(Permissions.Read);
-        var catalog = await GetCatalogAsync(id);
+        var catalog = await FindCatalogAsync(plan, id);
 
         if (catalog == null)
         {
-            plan.Errors.Add($"Catalog '{id}' does not exist. get_store_setup_options lists the catalogs.");
             return plan;
         }
 
@@ -257,13 +270,12 @@ public class CatalogStoreSetupPart(
 
     protected virtual async Task<CatalogStoreSetupPlan> PlanExistingStoreAsync(CatalogStoreSetupPlan plan, Store store, string id, string name)
     {
-        var storeName = store.Name ?? store.Id;
-
-        // A store without a catalog id gets one in the back office: a catalog created here would never become the
-        // store's, as Store saves only its own fields of an existing store. Refused before a catalog is read, so the
-        // refusal needs no permission.
+        // A store saved without a catalog id gets one in the back office: the section renames or switches the catalog a
+        // store has, and gives none to a store that has none. Refused before a catalog is read, so the refusal needs no
+        // permission.
         if (string.IsNullOrEmpty(store.Catalog))
         {
+            var storeName = store.Name ?? store.Id;
             plan.Errors.Add($"Store '{storeName}' has no catalog. A store's catalog is set in the back office: " +
                 $"Stores > {storeName}, field Catalog.");
             return plan;
@@ -275,10 +287,7 @@ public class CatalogStoreSetupPart(
 
         if (id != null && !id.EqualsIgnoreCase(store.Catalog))
         {
-            var current = catalog == null ? $"'{store.Catalog}'" : $"'{catalog.Name}' ({catalog.Id})";
-            plan.Errors.Add($"Store '{storeName}' sells from the catalog {current}. A store's catalog is changed in the back " +
-                $"office: Stores > {storeName}, field Catalog.");
-            return plan;
+            return await PlanSwitchAsync(plan, store, catalog, id, name);
         }
 
         // The store points to a catalog that is missing: a name creates it again under that id.
@@ -297,6 +306,76 @@ public class CatalogStoreSetupPart(
         PlanLanguages(plan, catalog, store);
 
         return plan;
+    }
+
+    // Another catalog's id switches the store to that catalog, a product catalog or a virtual one: a row from the store's
+    // catalog to the new one, with the other stores that use it, and what the switch changes for customers. One call never
+    // switches and renames. A store whose catalog is missing is not switched: a name creates its catalog again, or a person
+    // gives the store an existing one in the back office.
+    protected virtual async Task<CatalogStoreSetupPlan> PlanSwitchAsync(CatalogStoreSetupPlan plan, Store store, Catalog current, string id, string name)
+    {
+        if (current == null)
+        {
+            plan.Errors.Add($"The store's catalog '{store.Catalog}' does not exist, so the store is not switched. Send name to " +
+                $"create it again under this id, or give the store an existing catalog in the back office: Stores > " +
+                $"{store.Name ?? store.Id}, field Catalog.");
+            return plan;
+        }
+
+        var catalog = await FindCatalogAsync(plan, id);
+
+        if (catalog == null)
+        {
+            return plan;
+        }
+
+        if (name != null && !IsSameName(catalog.Name, name))
+        {
+            plan.Errors.Add($"One call never switches and renames a catalog. To switch the store to the catalog '{catalog.Name}' " +
+                $"({catalog.Id}), leave out name; to rename the store's catalog, leave out id.");
+            return plan;
+        }
+
+        plan.AddChange(StoreCatalogField, DescribeCurrent(current), DescribeExisting(catalog, await CountOtherStoresAsync(catalog.Id, store.Id)));
+        store.Catalog = catalog.Id;
+        plan.Catalog = catalog;
+        AddSwitchWarnings(plan, store, current, catalog);
+        PlanLanguages(plan, catalog, store);
+
+        return plan;
+    }
+
+    // What a switch changes for customers, as the platform works: the storefront searches and browses the store's catalog,
+    // and prices come from the price lists assigned to the store's catalog or to the store. An open store shows the switch
+    // at once; a closed one gets no sentence, as the store's state does not decide yet what its customers see.
+    protected virtual void AddSwitchWarnings(CatalogStoreSetupPlan plan, Store store, Catalog current, Catalog catalog)
+    {
+        plan.Warnings.Add($"Customers search and browse the catalog '{catalog.Name}' instead of '{current.Name}'.");
+        plan.Warnings.Add($"Prices come from the price lists assigned to '{catalog.Name}' or to the store, no longer from the " +
+            $"ones assigned to '{current.Name}'.");
+
+        var state = store.StoreState switch
+        {
+            StoreState.Open => "open",
+            StoreState.RestrictedAccess => "open with restricted access",
+            _ => null,
+        };
+
+        if (state != null)
+        {
+            plan.Warnings.Add($"The store is {state}: customers see the switch as soon as it is applied.");
+        }
+    }
+
+    // The store read again, with its new catalog id, so a change saved since the plan stays. Store saves only its own fields
+    // of an existing store, so the part that switches its catalog saves it.
+    protected virtual async Task SwitchStoreAsync(string storeId, string catalogId)
+    {
+        var store = await storeService.GetByIdAsync(storeId)
+            ?? throw new InvalidOperationException($"Store '{storeId}' was not found.");
+
+        store.Catalog = catalogId;
+        await storeService.SaveChangesAsync([store]);
     }
 
     // A name creates the store's missing catalog again under the store's catalog id, so the store sells from it again.
@@ -434,6 +513,12 @@ public class CatalogStoreSetupPart(
         return language;
     }
 
+    // "the catalog 'Main' (main)": the catalog a store sells from before a switch.
+    protected virtual string DescribeCurrent(Catalog catalog)
+    {
+        return $"the {(catalog.IsVirtual ? "virtual catalog" : "catalog")} '{catalog.Name}' ({catalog.Id})";
+    }
+
     // "the existing catalog 'Main' (main), shared with 2 other stores": what the approver reads for a reused catalog.
     protected virtual string DescribeExisting(Catalog catalog, int otherStores)
     {
@@ -516,6 +601,21 @@ public class CatalogStoreSetupPart(
     protected virtual async Task<IList<Catalog>> GetCatalogsAsync()
     {
         return await catalogSearchService.SearchAllNoCloneAsync(AbstractTypeFactory<CatalogSearchCriteria>.TryCreateInstance());
+    }
+
+    // A copy of the existing catalog the section's id names, or null with the refusal. Whether a catalog exists, and what
+    // it is, is the catalog's data, so catalog:read is named before it is read, found or not.
+    protected virtual async Task<Catalog> FindCatalogAsync(CatalogStoreSetupPlan plan, string id)
+    {
+        plan.RequirePermission(Permissions.Read);
+        var catalog = await GetCatalogAsync(id);
+
+        if (catalog == null)
+        {
+            plan.Errors.Add($"Catalog '{id}' does not exist. get_store_setup_options lists the catalogs.");
+        }
+
+        return catalog;
     }
 
     // A copy of the catalog, or null.

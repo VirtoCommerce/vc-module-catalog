@@ -10,14 +10,15 @@ using VirtoCommerce.StoreModule.Core.Services;
 namespace VirtoCommerce.CatalogModule.Tests.MCP.StoreSetup;
 
 // A solution's catalog part whose overrides plan a new catalog, the languages a catalog gains and a rename without
-// calling the base methods, so they name no permission. Each sets what the apply reads: the catalog, IsNewCatalog or
-// AddedLanguages, and the row.
+// calling the base methods, so they name no permission, not even catalog:read for the catalog they read. Each sets what
+// the apply reads: the catalog, IsNewCatalog or AddedLanguages, and the row.
 public class BaseSkippingCatalogStoreSetupPart(
     ICatalogService catalogService,
     ICatalogSearchService catalogSearchService,
+    IStoreService storeService,
     IStoreSearchService storeSearchService,
     IStoreSetupFindings setupFindings)
-    : CatalogStoreSetupPart(catalogService, catalogSearchService, storeSearchService, setupFindings)
+    : CatalogStoreSetupPart(catalogService, catalogSearchService, storeService, storeSearchService, setupFindings)
 {
     protected override bool PlanNewCatalog(CatalogStoreSetupPlan plan, Store store, string name, string row)
     {

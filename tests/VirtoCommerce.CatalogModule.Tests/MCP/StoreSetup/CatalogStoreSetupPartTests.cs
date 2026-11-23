@@ -10,6 +10,7 @@ using VirtoCommerce.CatalogModule.Core.Search;
 using VirtoCommerce.CatalogModule.Core.Services;
 using VirtoCommerce.CatalogModule.Data.MCP.StoreSetup;
 using VirtoCommerce.MCP.Core.Models;
+using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.StoreModule.Core.MCP.StoreSetup;
 using VirtoCommerce.StoreModule.Core.Model;
 using VirtoCommerce.StoreModule.Core.Model.Search;
@@ -25,10 +26,13 @@ public class CatalogStoreSetupPartTests
     private const string MainId = "main";
 
     // The catalogs saved so far, by id, and the stores; the services return copies, as the platform's do, or the saved
-    // catalogs themselves when asked for no copy, as the platform returns its cached ones.
+    // catalogs and stores themselves when asked for no copy, as the platform returns its cached ones. Each save is
+    // recorded in order.
     private readonly Dictionary<string, Catalog> _saved = [];
     private readonly List<Store> _stores = [];
+    private readonly List<string> _saves = [];
     private readonly Mock<ICatalogService> _catalogService = new();
+    private readonly Mock<IStoreService> _storeService = new();
 
     public CatalogStoreSetupPartTests()
     {
@@ -46,6 +50,18 @@ public class CatalogStoreSetupPartTests
                 }
 
                 _saved[x.Id] = Copy(x);
+                _saves.Add($"catalog {x.Id}");
+            }))
+            .Returns(Task.CompletedTask);
+        _storeService
+            .Setup(x => x.GetAsync(It.IsAny<IList<string>>(), It.IsAny<string>(), It.IsAny<bool>()))
+            .ReturnsAsync((IList<string> ids, string _, bool clone) => _stores.Where(x => ids.ContainsIgnoreCase(x.Id)).Select(x => clone ? x.CloneTyped() : x).ToList());
+        _storeService
+            .Setup(x => x.SaveChangesAsync(It.IsAny<IList<Store>>()))
+            .Callback((IList<Store> stores) => stores.ToList().ForEach(x =>
+            {
+                _stores[_stores.FindIndex(s => s.Id.EqualsIgnoreCase(x.Id))] = x.CloneTyped();
+                _saves.Add($"store {x.Id}");
             }))
             .Returns(Task.CompletedTask);
     }
@@ -177,19 +193,157 @@ public class CatalogStoreSetupPartTests
         Assert.Equal("Old name", _saved[CatalogId].Name);
     }
 
-    // Changing a store's catalog is done in the back office: the refusal names the screen.
+    // Another catalog's id switches an existing store to it: a row from the store's catalog to the new one, with the other
+    // stores that use it, and what the switch changes for customers. The catalog gains the store's languages it lacks.
     [Fact]
-    public async Task PlanAsync_AnExistingStore_ByAnotherId_IsRefused_AndNamesTheScreen()
+    public async Task PlanAsync_AnExistingStore_ByAnotherId_SwitchesToThatCatalog_AndSaysWhatChangesForCustomers()
     {
         //Arrange
-        _saved[CatalogId] = new Catalog { Id = CatalogId, Name = "EU catalog" };
-        _saved[MainId] = new Catalog { Id = MainId, Name = "Main" };
+        _saved[CatalogId] = new Catalog { Id = CatalogId, Name = "EU catalog", Languages = [new CatalogLanguage { LanguageCode = "de-DE", IsDefault = true }] };
+        _saved[MainId] = new Catalog { Id = MainId, Name = "Main", Languages = [new CatalogLanguage { LanguageCode = "en-US", IsDefault = true }] };
+        _stores.AddRange([CreateStore(), new Store { Id = "us-store", Catalog = MainId }, new Store { Id = "uk-store", Catalog = MainId }]);
+        var context = CreateContext(CreateStore());
 
         //Act
-        var plan = await CreatePart().PlanAsync(CreateContext(CreateStore()), new CatalogStoreSetupSection { Id = MainId });
+        var plan = (CatalogStoreSetupPlan)await CreatePart().PlanAsync(context, new CatalogStoreSetupSection { Id = MainId });
 
         //Assert
-        Assert.Equal(["Store 'EU store' sells from the catalog 'EU catalog' (eu-catalog). A store's catalog is changed in the back office: Stores > EU store, field Catalog."], plan.Errors);
+        Assert.Empty(plan.Errors);
+        Assert.Equal(MainId, context.Store.Catalog);
+        Assert.Equal(MainId, plan.Catalog.Id);
+        Assert.False(plan.IsNewCatalog);
+        Assert.Equal([CatalogStoreSetupPart.StoreCatalogField, CatalogStoreSetupPart.LanguagesField], plan.Changes.Select(x => x.Field));
+        Assert.Equal(((object)"the catalog 'EU catalog' (eu-catalog)", (object)"the existing catalog 'Main' (main), shared with 2 other stores"),
+            (plan.Changes[0].From, plan.Changes[0].To));
+        Assert.Equal(["en-US", "de-DE"], (IEnumerable<string>)plan.Changes[1].To);
+        Assert.Equal(["de-DE"], plan.AddedLanguages);
+        Assert.Equal(
+            [
+                "Customers search and browse the catalog 'Main' instead of 'EU catalog'.",
+                "Prices come from the price lists assigned to 'Main' or to the store, no longer from the ones assigned to 'EU catalog'.",
+                "The store is open: customers see the switch as soon as it is applied.",
+            ],
+            plan.Warnings);
+        // Both catalogs are read, and the new one gains languages. The switch changes the store, which the setup's tools
+        // allow with the store's update permission, not a catalog one.
+        Assert.Equal(["catalog:read", "catalog:update"], plan.RequiredPermissions);
+    }
+
+    // A virtual catalog's texts live in the catalogs behind it, so a switch to one adds no language. Customers see the
+    // switch at once in an open store, with restricted access too; a closed store gets no sentence, as its state does not
+    // decide yet what its customers see.
+    [Theory]
+    [InlineData(StoreState.Open, "The store is open: customers see the switch as soon as it is applied.")]
+    [InlineData(StoreState.RestrictedAccess, "The store is open with restricted access: customers see the switch as soon as it is applied.")]
+    [InlineData(StoreState.Closed, null)]
+    public async Task PlanAsync_ASwitchToAVirtualCatalog_GainsNoLanguage_AndSaysWhenCustomersSeeIt(StoreState state, string expected)
+    {
+        //Arrange
+        _saved[CatalogId] = new Catalog { Id = CatalogId, Name = "EU catalog", Languages = [new CatalogLanguage { LanguageCode = "de-DE", IsDefault = true }] };
+        _saved[MainId] = new Catalog { Id = MainId, Name = "Main virtual", IsVirtual = true, Languages = [] };
+        var store = CreateStore();
+        store.StoreState = state;
+
+        //Act
+        var plan = (CatalogStoreSetupPlan)await CreatePart().PlanAsync(CreateContext(store), new CatalogStoreSetupSection { Id = MainId });
+
+        //Assert
+        Assert.Empty(plan.Errors);
+        var change = Assert.Single(plan.Changes);
+        Assert.Equal(((object)"the catalog 'EU catalog' (eu-catalog)", (object)"the existing virtual catalog 'Main virtual' (main), used by no other store"),
+            (change.From, change.To));
+        Assert.Empty(plan.AddedLanguages);
+        Assert.Equal(expected == null ? 2 : 3, plan.Warnings.Count);
+        Assert.Equal(expected, plan.Warnings.ElementAtOrDefault(2));
+        Assert.Equal(["catalog:read"], plan.RequiredPermissions);
+    }
+
+    // A state copied from another store sends its catalog's id and name: that catalog's own name is no rename. Any other
+    // name is refused, as one call never switches and renames; the refusal says which field to leave out for each intent.
+    [Theory]
+    [InlineData("Main", true)]
+    [InlineData(" Main ", true)]
+    [InlineData("MAIN", false)]
+    [InlineData("EU catalog", false)]
+    public async Task PlanAsync_ASwitchWithAName_TakesOnlyThatCatalogsOwnName(string name, bool switches)
+    {
+        //Arrange
+        _saved[CatalogId] = new Catalog { Id = CatalogId, Name = "EU catalog", Languages = [new CatalogLanguage { LanguageCode = "de-DE", IsDefault = true }] };
+        _saved[MainId] = new Catalog { Id = MainId, Name = "Main", Languages = [new CatalogLanguage { LanguageCode = "de-DE", IsDefault = true }] };
+        var context = CreateContext(CreateStore());
+
+        //Act
+        var plan = await CreatePart().PlanAsync(context, new CatalogStoreSetupSection { Id = MainId, Name = name });
+
+        //Assert
+        Assert.Equal(switches ? [] : ["One call never switches and renames a catalog. To switch the store to the catalog 'Main' (main), leave out name; to rename the store's catalog, leave out id."],
+            plan.Errors);
+        Assert.Equal(switches ? [CatalogStoreSetupPart.StoreCatalogField] : [], plan.Changes.Select(x => x.Field));
+        Assert.Equal(switches ? MainId : CatalogId, context.Store.Catalog);
+        Assert.Equal("Main", _saved[MainId].Name);
+    }
+
+    // A catalog that does not exist is refused. Its plan names catalog:read, as the plan of one that exists does, so a user
+    // without it is refused for the permission first and does not learn whether the catalog exists.
+    [Fact]
+    public async Task PlanAsync_ASwitchToACatalogThatDoesNotExist_IsRefused_AndNeedsCatalogRead()
+    {
+        //Arrange
+        _saved[CatalogId] = new Catalog { Id = CatalogId, Name = "EU catalog", Languages = [new CatalogLanguage { LanguageCode = "de-DE", IsDefault = true }] };
+        var context = CreateContext(CreateStore());
+
+        //Act
+        var plan = await CreatePart().PlanAsync(context, new CatalogStoreSetupSection { Id = "missing" });
+
+        //Assert
+        Assert.Equal(["Catalog 'missing' does not exist. get_store_setup_options lists the catalogs."], plan.Errors);
+        Assert.Empty(plan.Changes);
+        Assert.Equal(["catalog:read"], plan.RequiredPermissions);
+        Assert.Equal(CatalogId, context.Store.Catalog);
+    }
+
+    // A store whose catalog is missing is not switched: a name creates its catalog again, or a person gives the store an
+    // existing one in the back office. The catalog the id names is not read.
+    [Fact]
+    public async Task PlanAsync_AStoreWhoseCatalogIsMissing_IsNotSwitched()
+    {
+        //Arrange
+        _saved[MainId] = new Catalog { Id = MainId, Name = "Main", Languages = [new CatalogLanguage { LanguageCode = "de-DE", IsDefault = true }] };
+        var context = CreateContext(CreateStore());
+
+        //Act
+        var plan = (CatalogStoreSetupPlan)await CreatePart().PlanAsync(context, new CatalogStoreSetupSection { Id = MainId });
+
+        //Assert
+        Assert.Equal(["The store's catalog 'eu-catalog' does not exist, so the store is not switched. Send name to create it again under this id, or give the store an existing catalog in the back office: Stores > EU store, field Catalog."],
+            plan.Errors);
+        Assert.Empty(plan.Changes);
+        Assert.Null(plan.Catalog);
+        Assert.Equal(CatalogId, context.Store.Catalog);
+        _catalogService.Verify(x => x.GetAsync(It.Is<IList<string>>(ids => ids.Contains(MainId)), It.IsAny<string>(), It.IsAny<bool>()), Times.Never);
+    }
+
+    // The part reads copies: a switch's plan leaves the cached store and catalogs as they are, and saves nothing.
+    [Fact]
+    public async Task PlanAsync_ASwitch_LeavesTheCachedStoresAndCatalogsAsTheyAre()
+    {
+        //Arrange
+        var cachedCatalog = new Catalog { Id = MainId, Name = "Main", Languages = [new CatalogLanguage { LanguageCode = "en-US", IsDefault = true }] };
+        _saved[CatalogId] = new Catalog { Id = CatalogId, Name = "EU catalog", Languages = [new CatalogLanguage { LanguageCode = "de-DE", IsDefault = true }] };
+        _saved[MainId] = cachedCatalog;
+        var cachedStore = CreateStore();
+        _stores.Add(cachedStore);
+
+        //Act
+        var plan = (CatalogStoreSetupPlan)await CreatePart().PlanAsync(CreateContext(CreateStore()), new CatalogStoreSetupSection { Id = MainId });
+
+        //Assert
+        Assert.Equal(["en-US", "de-DE"], plan.Catalog.Languages.Select(x => x.LanguageCode));
+        Assert.Same(cachedStore, Assert.Single(_stores));
+        Assert.Equal(CatalogId, cachedStore.Catalog);
+        Assert.Same(cachedCatalog, _saved[MainId]);
+        Assert.Equal(["en-US"], cachedCatalog.Languages.Select(x => x.LanguageCode));
+        Assert.Empty(_saves);
     }
 
     // The catalogs table holds names of up to 128 characters.
@@ -238,9 +392,9 @@ public class CatalogStoreSetupPartTests
         Assert.Equal(["catalog:read"], byId.RequiredPermissions);
     }
 
-    // A store saved without a catalog id gets its catalog in the back office: a catalog the section created would never
-    // become the store's. A name, an id and an empty section are refused alike, before a catalog is read, so the
-    // refusal needs no permission.
+    // A store saved without a catalog id gets its catalog in the back office: the section renames or switches the catalog a
+    // store has, and gives none to a store that has none. A name, an id and an empty section are refused alike, before a
+    // catalog is read, so the refusal needs no permission.
     [Theory]
     [InlineData(null, "EU catalog")]
     [InlineData(MainId, null)]
@@ -458,6 +612,33 @@ public class CatalogStoreSetupPartTests
         Assert.False(finding.ManualOnly);
     }
 
+    // After a switch, the check reads the new catalog: in the dry run as the plan leaves it, after the apply as saved. A
+    // language the old catalog lacks is no longer reported.
+    [Fact]
+    public async Task CheckAsync_AfterASwitch_ReadsTheNewCatalog()
+    {
+        //Arrange
+        _saved[CatalogId] = new Catalog { Id = CatalogId, Name = "EU catalog", Languages = [new CatalogLanguage { LanguageCode = "de-DE", IsDefault = true }] };
+        _saved[MainId] = new Catalog { Id = MainId, Name = "Main", Languages = [new CatalogLanguage { LanguageCode = "de-DE", IsDefault = true }, new CatalogLanguage { LanguageCode = "en-US" }] };
+        var store = CreateStore();
+        store.Languages = ["de-DE", "en-US"];
+        _stores.Add(store.CloneTyped());
+        var context = CreateContext(store);
+        var before = await CreatePart().CheckAsync(context);
+        var plan = await CreatePart().PlanAsync(context, new CatalogStoreSetupSection { Id = MainId });
+        context.Plans[CatalogStoreSetupPart.PartName] = plan;
+
+        //Act
+        var dryRun = await CreatePart().CheckAsync(context);
+        await CreatePart().ApplyAsync(context, plan);
+        var applied = await CreatePart().CheckAsync(CreateContext(_stores[0].CloneTyped()));
+
+        //Assert
+        Assert.Equal("Missing in the catalog 'EU catalog': en-US.", Assert.Single(before).Evidence);
+        Assert.Empty(dryRun);
+        Assert.Empty(applied);
+    }
+
     [Fact]
     public async Task ApplyAsync_SavesTheNewCatalog_AndARepeatChangesNothing()
     {
@@ -499,7 +680,62 @@ public class CatalogStoreSetupPartTests
         Assert.Equal(["de-DE", "it-IT", "en-US"], _saved[CatalogId].Languages.Select(x => x.LanguageCode));
     }
 
-    // A reused catalog that gains nothing is not saved: the store's row, which basics saves, is the change.
+    // Applying a switch saves the languages the catalog gains first, then the store read again with its new catalog id, so
+    // the store's other fields stay as they are saved, a change made since the plan included. The store's old catalog is
+    // left as it is, and a repeat plans nothing.
+    [Fact]
+    public async Task ApplyAsync_ASwitch_SavesTheCatalogsLanguages_ThenTheStoresNewCatalogId_AndARepeatChangesNothing()
+    {
+        //Arrange
+        _saved[CatalogId] = new Catalog { Id = CatalogId, Name = "EU catalog", Languages = [new CatalogLanguage { LanguageCode = "de-DE", IsDefault = true }] };
+        _saved[MainId] = new Catalog { Id = MainId, Name = "Main", Languages = [new CatalogLanguage { LanguageCode = "en-US", IsDefault = true }] };
+        _stores.Add(CreateStore());
+        var context = CreateContext(CreateStore());
+        var plan = await CreatePart().PlanAsync(context, new CatalogStoreSetupSection { Id = MainId });
+
+        // A person changes the store's description in the back office between the plan and the apply.
+        _stores[0].Description = "Changed in the back office";
+
+        //Act
+        await CreatePart().ApplyAsync(context, plan);
+        var repeat = await CreatePart().PlanAsync(CreateContext(_stores[0].CloneTyped()), new CatalogStoreSetupSection { Id = MainId });
+
+        //Assert
+        Assert.Equal(["catalog main", "store eu-store"], _saves);
+        var store = Assert.Single(_stores);
+        Assert.Equal((MainId, "EU store", "Changed in the back office", "de-DE"), (store.Catalog, store.Name, store.Description, store.DefaultLanguage));
+        Assert.Equal(["de-DE"], store.Languages);
+        Assert.Equal(["en-US", "de-DE"], _saved[MainId].Languages.Select(x => x.LanguageCode));
+        Assert.Equal("EU catalog", _saved[CatalogId].Name);
+        Assert.Equal(["de-DE"], _saved[CatalogId].Languages.Select(x => x.LanguageCode));
+        Assert.Empty(repeat.Changes);
+    }
+
+    // A switch to a catalog that gains no language saves the store only, and the store switches back the same way: the
+    // row names the virtual catalog it leaves.
+    [Fact]
+    public async Task ApplyAsync_ASwitchToAVirtualCatalogAndBack_SavesTheStoreOnly()
+    {
+        //Arrange
+        _saved[CatalogId] = new Catalog { Id = CatalogId, Name = "EU catalog", Languages = [new CatalogLanguage { LanguageCode = "de-DE", IsDefault = true }] };
+        _saved[MainId] = new Catalog { Id = MainId, Name = "Main virtual", IsVirtual = true, Languages = [] };
+        _stores.Add(CreateStore());
+        var there = CreateContext(CreateStore());
+        await CreatePart().ApplyAsync(there, await CreatePart().PlanAsync(there, new CatalogStoreSetupSection { Id = MainId }));
+        var back = CreateContext(_stores[0].CloneTyped());
+
+        //Act
+        var plan = await CreatePart().PlanAsync(back, new CatalogStoreSetupSection { Id = CatalogId });
+        await CreatePart().ApplyAsync(back, plan);
+
+        //Assert
+        Assert.Equal((object)"the virtual catalog 'Main virtual' (main)", Assert.Single(plan.Changes).From);
+        Assert.Equal(["store eu-store", "store eu-store"], _saves);
+        Assert.Equal(CatalogId, _stores[0].Catalog);
+    }
+
+    // A reused catalog that gains nothing is not saved, and neither is the new store: its row, which basics saves, is the
+    // change.
     [Fact]
     public async Task ApplyAsync_AReusedCatalogThatGainsNothing_SavesNothing()
     {
@@ -512,7 +748,7 @@ public class CatalogStoreSetupPartTests
         await CreatePart().ApplyAsync(context, plan);
 
         //Assert
-        _catalogService.Verify(x => x.SaveChangesAsync(It.IsAny<IList<Catalog>>()), Times.Never);
+        Assert.Empty(_saves);
     }
 
     // The state is the catalog's id and name: copied into a new store's setup, it reuses the catalog.
@@ -635,9 +871,9 @@ public class CatalogStoreSetupPartTests
         Assert.Equal(["catalog:read", "catalog:update"], plan.RequiredPermissions);
     }
 
-    // catalog:update for a rename.
+    // catalog:read for the existing catalog the plan shows, and catalog:update for a rename.
     [Fact]
-    public async Task PlanAsync_ARenameOverrideThatSkipsBase_StillNeedsCatalogUpdate()
+    public async Task PlanAsync_ARenameOverrideThatSkipsBase_StillNeedsCatalogReadAndUpdate()
     {
         //Arrange
         _saved[CatalogId] = new Catalog { Id = CatalogId, Name = "Old name", Languages = [new CatalogLanguage { LanguageCode = "de-DE", IsDefault = true }] };
@@ -647,17 +883,17 @@ public class CatalogStoreSetupPartTests
 
         //Assert
         Assert.Equal(CatalogStoreSetupPart.NameField, Assert.Single(plan.Changes).Field);
-        Assert.Equal(["catalog:update"], plan.RequiredPermissions);
+        Assert.Equal(["catalog:read", "catalog:update"], plan.RequiredPermissions);
     }
 
     private CatalogStoreSetupPart CreatePart()
     {
-        return new CatalogStoreSetupPart(_catalogService.Object, CreateCatalogSearchService(), CreateStoreSearchService(), new StoreSetupFindings());
+        return new CatalogStoreSetupPart(_catalogService.Object, CreateCatalogSearchService(), _storeService.Object, CreateStoreSearchService(), new StoreSetupFindings());
     }
 
     private BaseSkippingCatalogStoreSetupPart CreateBaseSkippingPart()
     {
-        return new BaseSkippingCatalogStoreSetupPart(_catalogService.Object, CreateCatalogSearchService(), CreateStoreSearchService(), new StoreSetupFindings());
+        return new BaseSkippingCatalogStoreSetupPart(_catalogService.Object, CreateCatalogSearchService(), _storeService.Object, CreateStoreSearchService(), new StoreSetupFindings());
     }
 
     private ICatalogSearchService CreateCatalogSearchService()
