@@ -105,26 +105,7 @@ public class CatalogStoreSetupPart(
 
         if (catalog == null)
         {
-            // A new store gets its catalog from the section. The section refuses an existing store without a catalog id,
-            // so only a person gives it one, in the back office.
-            var noCatalogId = string.IsNullOrEmpty(store.Catalog);
-            var fix = (noCatalogId, context.IsNewStore) switch
-            {
-                (false, _) => "Send the catalog section with a name to create the catalog again under the store's " +
-                    "catalog id, or give the store an existing catalog in the back office.",
-                (true, true) => "Send the catalog section with a name for a new, empty catalog, or with the id of an " +
-                    "existing one.",
-                (true, false) => "A person gives the store an existing catalog in the back office: " +
-                    $"Stores > {store.Name ?? store.Id}, field Catalog.",
-            };
-            var notFound = CreateFinding(store, "catalog-not-found", McpFindingSeverities.Critical,
-                "The store's catalog does not exist",
-                "Customers find no products in the store.",
-                noCatalogId ? "Catalog: none." : $"Catalog '{store.Catalog}': not found.",
-                fix);
-            notFound.ManualOnly = noCatalogId && !context.IsNewStore;
-
-            return [notFound];
+            return [CreateCatalogNotFoundFinding(store, context.IsNewStore)];
         }
 
         var missing = GetMissingLanguages(catalog, store);
@@ -303,40 +284,54 @@ public class CatalogStoreSetupPart(
         // The store points to a catalog that is missing: a name creates it again under that id.
         if (catalog == null)
         {
-            if (name != null)
-            {
-                PlanNewCatalog(plan, store, name, $"a new, empty catalog '{name}', under the store's catalog id '{store.Catalog}'");
-            }
-
-            if (name == null && id != null)
-            {
-                plan.Errors.Add($"Catalog '{id}' does not exist. Send name to create it again under this id, or give the store " +
-                    $"an existing catalog in the back office: Stores > {storeName}, field Catalog.");
-            }
-
+            PlanMissingCatalog(plan, store, id, name);
             return plan;
         }
 
         if (name != null && !IsSameName(catalog.Name, name))
         {
-            plan.RequirePermission(Permissions.Update);
-            plan.AddChange(NameField, catalog.Name, name);
-            catalog.Name = name;
-
-            var otherStores = await CountOtherStoresAsync(catalog.Id, store.Id);
-
-            if (otherStores > 0)
-            {
-                plan.Warnings.Add(otherStores == 1
-                    ? "1 other store sells from this catalog and shows the new name."
-                    : $"{otherStores} other stores sell from this catalog and show the new name.");
-            }
+            await PlanRenameAsync(plan, catalog, store, name);
         }
 
         plan.Catalog = catalog;
         PlanLanguages(plan, catalog, store);
 
         return plan;
+    }
+
+    // A name creates the store's missing catalog again under the store's catalog id, so the store sells from it again.
+    // An id alone is refused, as a new catalog needs a name.
+    protected virtual void PlanMissingCatalog(CatalogStoreSetupPlan plan, Store store, string id, string name)
+    {
+        if (name != null)
+        {
+            PlanNewCatalog(plan, store, name, $"a new, empty catalog '{name}', under the store's catalog id '{store.Catalog}'");
+        }
+
+        if (name == null && id != null)
+        {
+            var storeName = store.Name ?? store.Id;
+            plan.Errors.Add($"Catalog '{id}' does not exist. Send name to create it again under this id, or give the store " +
+                $"an existing catalog in the back office: Stores > {storeName}, field Catalog.");
+        }
+    }
+
+    // The catalog's new name, as a row of the plan. Every store that sells from the catalog shows the new name, so the
+    // other stores are counted in a warning.
+    protected virtual async Task PlanRenameAsync(CatalogStoreSetupPlan plan, Catalog catalog, Store store, string name)
+    {
+        plan.RequirePermission(Permissions.Update);
+        plan.AddChange(NameField, catalog.Name, name);
+        catalog.Name = name;
+
+        var otherStores = await CountOtherStoresAsync(catalog.Id, store.Id);
+
+        if (otherStores > 0)
+        {
+            plan.Warnings.Add(otherStores == 1
+                ? "1 other store sells from this catalog and shows the new name."
+                : $"{otherStores} other stores sell from this catalog and show the new name.");
+        }
     }
 
     // A new, empty catalog for the store, under the store's catalog id when it has one, as a row of the plan; false when the
@@ -462,6 +457,30 @@ public class CatalogStoreSetupPart(
         choice.Description = $"{(catalog.IsVirtual ? "Virtual" : "Physical")} catalog, used by {stores switch { 0 => "no store", 1 => "1 store", _ => $"{stores} stores" }}.";
 
         return choice;
+    }
+
+    // The finding for a store whose catalog does not exist. A new store gets its catalog from the section. The section
+    // refuses an existing store without a catalog id, so only a person gives it one, in the back office.
+    protected virtual McpFinding CreateCatalogNotFoundFinding(Store store, bool isNewStore)
+    {
+        var noCatalogId = string.IsNullOrEmpty(store.Catalog);
+        var fix = (noCatalogId, isNewStore) switch
+        {
+            (false, _) => "Send the catalog section with a name to create the catalog again under the store's " +
+                "catalog id, or give the store an existing catalog in the back office.",
+            (true, true) => "Send the catalog section with a name for a new, empty catalog, or with the id of an " +
+                "existing one.",
+            (true, false) => "A person gives the store an existing catalog in the back office: " +
+                $"Stores > {store.Name ?? store.Id}, field Catalog.",
+        };
+        var notFound = CreateFinding(store, "catalog-not-found", McpFindingSeverities.Critical,
+            "The store's catalog does not exist",
+            "Customers find no products in the store.",
+            noCatalogId ? "Catalog: none." : $"Catalog '{store.Catalog}': not found.",
+            fix);
+        notFound.ManualOnly = noCatalogId && !isNewStore;
+
+        return notFound;
     }
 
     protected virtual McpFinding CreateFinding(Store store, string id, string severity, string title, string why, string evidence, string fix)
