@@ -155,9 +155,16 @@ public class CatalogStoreSetupPart(
             ? await PlanNewStoreAsync(plan, context.Store, id, name)
             : await PlanExistingStoreAsync(plan, context.Store, id, name);
 
-        // An override of the methods above that skips base names no permission, so the permissions of what the plan shows
-        // and ApplyAsync saves are named here too: catalog:read for an existing catalog, catalog:create for a new one,
-        // catalog:update for a rename or added languages.
+        RequirePlannedPermissions(plan);
+
+        return plan;
+    }
+
+    // The permissions of what the plan shows and ApplyAsync saves, named again after the planning steps, as an override of
+    // a step that skips base names none: catalog:read for an existing catalog, catalog:create for a new one, and
+    // catalog:update for a rename or added languages.
+    protected virtual void RequirePlannedPermissions(CatalogStoreSetupPlan plan)
+    {
         if (plan.Catalog != null && !plan.IsNewCatalog)
         {
             plan.RequirePermission(Permissions.Read);
@@ -172,8 +179,6 @@ public class CatalogStoreSetupPart(
         {
             plan.RequirePermission(Permissions.Update);
         }
-
-        return plan;
     }
 
     // Creates the new catalog, or applies the plan to the catalog read again: its new name and the languages it gains, so a
