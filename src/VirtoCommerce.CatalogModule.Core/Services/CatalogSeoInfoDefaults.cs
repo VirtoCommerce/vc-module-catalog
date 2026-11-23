@@ -5,8 +5,9 @@ using VirtoCommerce.Seo.Core.Models;
 
 namespace VirtoCommerce.CatalogModule.Core.Services;
 
-// The SEO record a new catalog gets when none is sent: the catalogs API, the store setup and the JSON import create
-// catalogs, and all take it from here. A solution changes it with AbstractTypeFactory<CatalogSeoInfoDefaults>.OverrideType.
+// The SEO record of a catalog that has none: the catalogs API and the store setup create catalogs with it, and the JSON
+// import gives it to every imported catalog without one. A solution changes it with
+// AbstractTypeFactory<CatalogSeoInfoDefaults>.OverrideType.
 public class CatalogSeoInfoDefaults
 {
     // A catalog without an SEO record gets one in its default language: slug "catalog", title "Catalog".

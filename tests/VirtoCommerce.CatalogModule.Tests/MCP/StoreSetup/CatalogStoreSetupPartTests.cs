@@ -238,6 +238,33 @@ public class CatalogStoreSetupPartTests
         Assert.Equal(["catalog:read"], byId.RequiredPermissions);
     }
 
+    // A store saved without a catalog id gets its catalog in the back office: a catalog the section created would never
+    // become the store's. A name, an id and an empty section are refused alike, before a catalog is read, so the
+    // refusal needs no permission.
+    [Theory]
+    [InlineData(null, "EU catalog")]
+    [InlineData(MainId, null)]
+    [InlineData(null, null)]
+    public async Task PlanAsync_AnExistingStoreWithoutACatalogId_IsRefused_BeforeAnyCatalogIsRead(string id, string name)
+    {
+        //Arrange
+        _saved[MainId] = new Catalog { Id = MainId, Name = "Main", Languages = [new CatalogLanguage { LanguageCode = "de-DE", IsDefault = true }] };
+        var store = CreateStore();
+        store.Catalog = "";
+        var context = CreateContext(store);
+
+        //Act
+        var plan = (CatalogStoreSetupPlan)await CreatePart().PlanAsync(context, new CatalogStoreSetupSection { Id = id, Name = name });
+
+        //Assert
+        Assert.Equal(["Store 'EU store' has no catalog. A store's catalog is set in the back office: Stores > EU store, field Catalog."], plan.Errors);
+        Assert.Empty(plan.Changes);
+        Assert.Null(plan.Catalog);
+        Assert.False(plan.IsNewCatalog);
+        Assert.Equal("", context.Store.Catalog);
+        Assert.Empty(plan.RequiredPermissions);
+    }
+
     // The catalog gains the store's languages it lacks, as a row, and keeps the ones the store does not have.
     [Fact]
     public async Task PlanAsync_TheCatalogGainsTheStoresLanguages_AndLosesNone()
@@ -391,7 +418,44 @@ public class CatalogStoreSetupPartTests
         //Assert
         var finding = Assert.Single(withoutPlan);
         Assert.Equal(("catalog-not-found", McpFindingSeverities.Critical, "Catalog: none."), (finding.Id, finding.Severity, finding.Evidence));
+        // A new store gets its catalog from the section, so the fix names the section, not the back office.
+        Assert.Equal("Send the catalog section with a name for a new, empty catalog, or with the id of an existing one.", finding.Fix);
+        Assert.False(finding.ManualOnly);
         Assert.Empty(withPlan);
+    }
+
+    // The section refuses a store without a catalog id, so the fix names the back office only, and no tool.
+    [Fact]
+    public async Task CheckAsync_AStoreWithoutACatalogId_IsFixedInTheBackOfficeOnly()
+    {
+        //Arrange
+        var store = CreateStore();
+        store.Catalog = "";
+
+        //Act
+        var findings = await CreatePart().CheckAsync(CreateContext(store));
+
+        //Assert
+        var finding = Assert.Single(findings);
+        Assert.Equal(("catalog-not-found", McpFindingSeverities.Critical, "Catalog: none."), (finding.Id, finding.Severity, finding.Evidence));
+        Assert.Equal("A person gives the store an existing catalog in the back office: Stores > EU store, field Catalog.", finding.Fix);
+        Assert.True(finding.ManualOnly);
+    }
+
+    // A store whose catalog was deleted: the evidence names its catalog id, and the fix the section that creates the
+    // catalog again under it.
+    [Fact]
+    public async Task CheckAsync_AStoreWhoseCatalogIsMissing_NamesItsCatalogId_AndTheSectionThatCreatesItAgain()
+    {
+        //Act
+        var findings = await CreatePart().CheckAsync(CreateContext(CreateStore()));
+
+        //Assert
+        var finding = Assert.Single(findings);
+        Assert.Equal(("catalog-not-found", McpFindingSeverities.Critical, "Catalog 'eu-catalog': not found."), (finding.Id, finding.Severity, finding.Evidence));
+        Assert.Equal("Send the catalog section with a name to create the catalog again under the store's catalog id, or give " +
+            "the store an existing catalog in the back office.", finding.Fix);
+        Assert.False(finding.ManualOnly);
     }
 
     [Fact]
@@ -541,7 +605,62 @@ public class CatalogStoreSetupPartTests
         Assert.Equal(("catalog:read", "catalog:update", "catalog:create", (string)null), (permissions.Read, permissions.Update, permissions.Create, permissions.ScopeType));
     }
 
+    // The plan needs the permission of what the apply saves even when an override plans it without calling base, which
+    // names the permission: catalog:create for a new catalog.
+    [Fact]
+    public async Task PlanAsync_APlanNewCatalogOverrideThatSkipsBase_StillNeedsCatalogCreate()
+    {
+        //Act
+        var plan = (CatalogStoreSetupPlan)await CreateBaseSkippingPart().PlanAsync(CreateContext(CreateNewStore(), isNewStore: true), new CatalogStoreSetupSection { Name = "EU catalog" });
+
+        //Assert
+        Assert.True(plan.IsNewCatalog);
+        Assert.Equal(["catalog:read", "catalog:create"], plan.RequiredPermissions);
+    }
+
+    // catalog:update for the languages a catalog gains.
+    [Fact]
+    public async Task PlanAsync_APlanLanguagesOverrideThatSkipsBase_StillNeedsCatalogUpdate()
+    {
+        //Arrange
+        _saved[MainId] = new Catalog { Id = MainId, Name = "Main", Languages = [new CatalogLanguage { LanguageCode = "de-DE", IsDefault = true }] };
+        var store = CreateNewStore();
+        store.Languages = ["de-DE", "fr-FR"];
+
+        //Act
+        var plan = (CatalogStoreSetupPlan)await CreateBaseSkippingPart().PlanAsync(CreateContext(store, isNewStore: true), new CatalogStoreSetupSection { Id = MainId });
+
+        //Assert
+        Assert.Equal(["fr-FR"], plan.AddedLanguages);
+        Assert.Equal(["catalog:read", "catalog:update"], plan.RequiredPermissions);
+    }
+
+    // catalog:update for a rename.
+    [Fact]
+    public async Task PlanAsync_ARenameOverrideThatSkipsBase_StillNeedsCatalogUpdate()
+    {
+        //Arrange
+        _saved[CatalogId] = new Catalog { Id = CatalogId, Name = "Old name", Languages = [new CatalogLanguage { LanguageCode = "de-DE", IsDefault = true }] };
+
+        //Act
+        var plan = await CreateBaseSkippingPart().PlanAsync(CreateContext(CreateStore()), new CatalogStoreSetupSection { Name = "New name" });
+
+        //Assert
+        Assert.Equal(CatalogStoreSetupPart.NameField, Assert.Single(plan.Changes).Field);
+        Assert.Equal(["catalog:update"], plan.RequiredPermissions);
+    }
+
     private CatalogStoreSetupPart CreatePart()
+    {
+        return new CatalogStoreSetupPart(_catalogService.Object, CreateCatalogSearchService(), CreateStoreSearchService(), new StoreSetupFindings());
+    }
+
+    private BaseSkippingCatalogStoreSetupPart CreateBaseSkippingPart()
+    {
+        return new BaseSkippingCatalogStoreSetupPart(_catalogService.Object, CreateCatalogSearchService(), CreateStoreSearchService(), new StoreSetupFindings());
+    }
+
+    private ICatalogSearchService CreateCatalogSearchService()
     {
         var catalogSearchService = new Mock<ICatalogSearchService>();
         catalogSearchService
@@ -552,6 +671,11 @@ public class CatalogStoreSetupPartTests
                 Results = _saved.Values.Skip(criteria.Skip).Take(criteria.Take).Select(Copy).ToList(),
             });
 
+        return catalogSearchService.Object;
+    }
+
+    private IStoreSearchService CreateStoreSearchService()
+    {
         var storeSearchService = new Mock<IStoreSearchService>();
         storeSearchService
             .Setup(x => x.SearchAsync(It.IsAny<StoreSearchCriteria>(), It.IsAny<bool>()))
@@ -561,7 +685,7 @@ public class CatalogStoreSetupPartTests
                 Results = _stores.Skip(criteria.Skip).Take(criteria.Take).ToList(),
             });
 
-        return new CatalogStoreSetupPart(_catalogService.Object, catalogSearchService.Object, storeSearchService.Object, new StoreSetupFindings());
+        return storeSearchService.Object;
     }
 
     private static Store CreateStore()

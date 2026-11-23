@@ -105,12 +105,26 @@ public class CatalogStoreSetupPart(
 
         if (catalog == null)
         {
-            return [CreateFinding(store, "catalog-not-found", McpFindingSeverities.Critical,
+            // A new store gets its catalog from the section. The section refuses an existing store without a catalog id,
+            // so only a person gives it one, in the back office.
+            var noCatalogId = string.IsNullOrEmpty(store.Catalog);
+            var fix = (noCatalogId, context.IsNewStore) switch
+            {
+                (false, _) => "Send the catalog section with a name to create the catalog again under the store's " +
+                    "catalog id, or give the store an existing catalog in the back office.",
+                (true, true) => "Send the catalog section with a name for a new, empty catalog, or with the id of an " +
+                    "existing one.",
+                (true, false) => "A person gives the store an existing catalog in the back office: " +
+                    $"Stores > {store.Name ?? store.Id}, field Catalog.",
+            };
+            var notFound = CreateFinding(store, "catalog-not-found", McpFindingSeverities.Critical,
                 "The store's catalog does not exist",
                 "Customers find no products in the store.",
-                string.IsNullOrEmpty(store.Catalog) ? "Catalog: none." : $"Catalog '{store.Catalog}': not found.",
-                "Send the catalog section with a name to create the catalog again under the store's catalog id, or give " +
-                    "the store an existing catalog in the back office.")];
+                noCatalogId ? "Catalog: none." : $"Catalog '{store.Catalog}': not found.",
+                fix);
+            notFound.ManualOnly = noCatalogId && !context.IsNewStore;
+
+            return [notFound];
         }
 
         var missing = GetMissingLanguages(catalog, store);
@@ -151,9 +165,23 @@ public class CatalogStoreSetupPart(
             return plan;
         }
 
-        return context.IsNewStore
+        plan = context.IsNewStore
             ? await PlanNewStoreAsync(plan, context.Store, id, name)
             : await PlanExistingStoreAsync(plan, context.Store, id, name);
+
+        // An override of the methods above that skips base names no permission, so the permissions of what ApplyAsync
+        // saves are named here too: catalog:create for a new catalog, catalog:update for a rename or added languages.
+        if (plan.IsNewCatalog)
+        {
+            plan.RequirePermission(Permissions.Create);
+        }
+
+        if (plan.Changes.Any(x => x.Field == NameField) || plan.AddedLanguages.Count > 0)
+        {
+            plan.RequirePermission(Permissions.Update);
+        }
+
+        return plan;
     }
 
     // Creates the new catalog, or applies the plan to the store's catalog read again: its new name and the languages it
@@ -249,6 +277,17 @@ public class CatalogStoreSetupPart(
     protected virtual async Task<CatalogStoreSetupPlan> PlanExistingStoreAsync(CatalogStoreSetupPlan plan, Store store, string id, string name)
     {
         var storeName = store.Name ?? store.Id;
+
+        // A store without a catalog id gets one in the back office: a catalog created here would never become the
+        // store's, as Store saves only its own fields of an existing store. Refused before a catalog is read, so the
+        // refusal needs no permission.
+        if (string.IsNullOrEmpty(store.Catalog))
+        {
+            plan.Errors.Add($"Store '{storeName}' has no catalog. A store's catalog is set in the back office: " +
+                $"Stores > {storeName}, field Catalog.");
+            return plan;
+        }
+
         // The store's catalog is read, and its name and languages are shown.
         plan.RequirePermission(Permissions.Read);
         var catalog = await GetCatalogAsync(store.Catalog);
