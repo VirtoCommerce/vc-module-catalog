@@ -85,10 +85,11 @@
     "BROWSE": {
       "SEARCH": "Search by name, code or keyword",
       "EMPTY": "No categories or products here",
-      "FILTER": "Filter",
       "FILTERS": {
         "VARIATIONS": "Display variations",
+        "ACTIVE": "Active",
         "HIDDEN": "Not active",
+        "PRICES": "Price",
         "PRICED": "With price",
         "UNPRICED": "Without price"
       },
@@ -107,7 +108,6 @@
       "DELETE_CONFIRM": "Delete {count} item(s) and unlink {links} linked item(s)? Deleting a category deletes its subcategories and products.",
       "COPY_SKU": "Copy SKU",
       "GENERIC_EXPORT": "Generic export",
-      "SAVED_FILTERS": "Saved filters",
       "SEARCH_ALL": "Search all catalogs"
     },
     "CATEGORY": {
@@ -383,13 +383,6 @@
       "CATEGORIES": "Categories",
       "IN_VARIATIONS": "Search in variations",
       "IN_CHILDREN": "Search in child categories"
-    },
-    "FILTERS": {
-      "ADD": "Add filter",
-      "EMPTY": "No saved filters",
-      "KEYWORD": "Keyword",
-      "KEYWORD_HINT": "Search syntax, e.g. is:hidden, is:priced, price_usd:[100 TO 200], or any words",
-      "NEW": "New filter"
     },
     "SEARCH": {
       "PRODUCTS": "Products",

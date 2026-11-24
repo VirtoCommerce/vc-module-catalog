@@ -26,8 +26,6 @@ export { default as CatalogMeasureDetails } from "./measure-details.vue";
 export { default as CatalogMeasureUnitDetails } from "./measure-unit-details.vue";
 export { default as CatalogStoreBrands } from "./store-brands.vue";
 export { default as CatalogStoreSearch } from "./store-search.vue";
-export { default as CatalogFilters } from "./filters.vue";
-export { default as CatalogFilterDetails } from "./filter-details.vue";
 export { default as CatalogAssociationDetails } from "./association-details.vue";
 export { default as CatalogAssetPicker } from "./asset-picker.vue";
 export { default as CatalogImageLink } from "./image-link.vue";

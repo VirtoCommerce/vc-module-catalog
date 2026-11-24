@@ -85,10 +85,11 @@
     "BROWSE": {
       "SEARCH": "Sök på namn, kod eller nyckelord",
       "EMPTY": "Inga kategorier eller produkter här",
-      "FILTER": "Filter",
       "FILTERS": {
         "VARIATIONS": "Visa varianter",
+        "ACTIVE": "Aktiva",
         "HIDDEN": "Inte aktiva",
+        "PRICES": "Pris",
         "PRICED": "Med pris",
         "UNPRICED": "Utan pris"
       },
@@ -107,7 +108,6 @@
       "DELETE_CONFIRM": "Ta bort {count} objekt och avlänka {links} länkade objekt? Om en kategori tas bort tas även dess underkategorier och produkter bort.",
       "COPY_SKU": "Kopiera SKU",
       "GENERIC_EXPORT": "Allmän export",
-      "SAVED_FILTERS": "Sparade filter",
       "SEARCH_ALL": "Sök i alla kataloger"
     },
     "CATEGORY": {
@@ -383,13 +383,6 @@
       "CATEGORIES": "Kategorier",
       "IN_VARIATIONS": "Sök i varianter",
       "IN_CHILDREN": "Sök i underkategorier"
-    },
-    "FILTERS": {
-      "ADD": "Lägg till filter",
-      "EMPTY": "Inga sparade filter",
-      "KEYWORD": "Nyckelord",
-      "KEYWORD_HINT": "Söksyntax, t.ex. is:hidden, is:priced, price_usd:[100 TO 200] eller valfria ord",
-      "NEW": "Nytt filter"
     },
     "SEARCH": {
       "PRODUCTS": "Produkter",
