@@ -9,7 +9,7 @@ public class CatalogStoreSetupSection
 {
     [Description("Id of an existing catalog, as get_store_setup_options lists the catalogs; one that is not listed can " +
         "still be sent by its id. A new store sells from it, shared with the stores that already do, and nothing is " +
-        "created. For an existing store, another catalog's id switches the store to that catalog, a product catalog or a " +
+        "created. For an existing store, another catalog's id switches the store to that catalog, a physical catalog or a " +
         "virtual one; the preview says what the switch changes for customers.")]
     public string Id { get; set; }
 

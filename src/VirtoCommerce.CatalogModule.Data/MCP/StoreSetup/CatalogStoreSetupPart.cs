@@ -313,7 +313,7 @@ public class CatalogStoreSetupPart(
         return plan;
     }
 
-    // Another catalog's id switches the store to that catalog, a product catalog or a virtual one: a row from the store's
+    // Another catalog's id switches the store to that catalog, a physical catalog or a virtual one: a row from the store's
     // catalog to the new one, with the other stores that use it, and what the switch changes for customers. One call never
     // switches and renames. A store whose catalog is missing is not switched: a name creates its catalog again, or a person
     // gives the store an existing one in the back office.

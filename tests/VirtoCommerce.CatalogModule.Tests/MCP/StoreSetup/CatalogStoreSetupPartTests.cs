@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Moq;
 using VirtoCommerce.CatalogModule.Core.MCP.StoreSetup;
@@ -829,6 +831,18 @@ public class CatalogStoreSetupPartTests
         //Assert
         var seoInfo = Assert.Single(plan.Catalog.SeoInfos);
         Assert.Equal(("catalog", "Catalog", "de-DE"), (seoInfo.SemanticUrl, seoInfo.PageTitle, seoInfo.LanguageCode));
+    }
+
+    // The section names the kinds of catalog as the back office and the choices do: "physical" or "virtual".
+    [Fact]
+    public void Section_Id_SaysPhysicalCatalog_TheBackOfficesTerm()
+    {
+        //Act
+        var description = typeof(CatalogStoreSetupSection).GetProperty(nameof(CatalogStoreSetupSection.Id)).GetCustomAttribute<DescriptionAttribute>().Description;
+
+        //Assert
+        Assert.Contains("a physical catalog or a virtual one", description);
+        Assert.DoesNotContain("product catalog", description);
     }
 
     [Fact]
