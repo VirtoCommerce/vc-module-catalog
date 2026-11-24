@@ -85,10 +85,11 @@
     "BROWSE": {
       "SEARCH": "Pesquisar por nome, código ou palavra-chave",
       "EMPTY": "Não há categorias nem produtos aqui",
-      "FILTER": "Filtro",
       "FILTERS": {
         "VARIATIONS": "Exibir variações",
+        "ACTIVE": "Ativos",
         "HIDDEN": "Não ativos",
+        "PRICES": "Preço",
         "PRICED": "Com preço",
         "UNPRICED": "Sem preço"
       },
@@ -107,7 +108,6 @@
       "DELETE_CONFIRM": "Excluir {count} item(ns) e desvincular {links} item(ns) vinculado(s)? Excluir uma categoria exclui as suas subcategorias e produtos.",
       "COPY_SKU": "Copiar SKU",
       "GENERIC_EXPORT": "Exportação genérica",
-      "SAVED_FILTERS": "Filtros salvos",
       "SEARCH_ALL": "Pesquisar em todos os catálogos"
     },
     "CATEGORY": {
@@ -383,13 +383,6 @@
       "CATEGORIES": "Categorias",
       "IN_VARIATIONS": "Pesquisar em variações",
       "IN_CHILDREN": "Pesquisar em categorias filhas"
-    },
-    "FILTERS": {
-      "ADD": "Adicionar filtro",
-      "EMPTY": "Nenhum filtro salvo",
-      "KEYWORD": "Palavra-chave",
-      "KEYWORD_HINT": "Sintaxe de pesquisa, por exemplo is:hidden, is:priced, price_usd:[100 TO 200] ou quaisquer palavras",
-      "NEW": "Novo filtro"
     },
     "SEARCH": {
       "PRODUCTS": "Produtos",

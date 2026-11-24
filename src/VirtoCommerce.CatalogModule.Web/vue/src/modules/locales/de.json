@@ -85,10 +85,11 @@
     "BROWSE": {
       "SEARCH": "Nach Name, Code oder Stichwort suchen",
       "EMPTY": "Hier gibt es keine Kategorien oder Produkte",
-      "FILTER": "Filter",
       "FILTERS": {
         "VARIATIONS": "Variationen anzeigen",
+        "ACTIVE": "Aktiv",
         "HIDDEN": "Nicht aktiv",
+        "PRICES": "Preis",
         "PRICED": "Mit Preis",
         "UNPRICED": "Ohne Preis"
       },
@@ -107,7 +108,6 @@
       "DELETE_CONFIRM": "{count} Element(e) löschen und {links} verknüpfte(s) Element(e) entknüpfen? Beim Löschen einer Kategorie werden ihre Unterkategorien und Produkte gelöscht.",
       "COPY_SKU": "SKU kopieren",
       "GENERIC_EXPORT": "Allgemeiner Export",
-      "SAVED_FILTERS": "Gespeicherte Filter",
       "SEARCH_ALL": "Alle Kataloge durchsuchen"
     },
     "CATEGORY": {
@@ -383,13 +383,6 @@
       "CATEGORIES": "Kategorien",
       "IN_VARIATIONS": "In Variationen suchen",
       "IN_CHILDREN": "In Unterkategorien suchen"
-    },
-    "FILTERS": {
-      "ADD": "Filter hinzufügen",
-      "EMPTY": "Keine gespeicherten Filter",
-      "KEYWORD": "Stichwort",
-      "KEYWORD_HINT": "Suchsyntax, z. B. is:hidden, is:priced, price_usd:[100 TO 200] oder beliebige Wörter",
-      "NEW": "Neuer Filter"
     },
     "SEARCH": {
       "PRODUCTS": "Produkte",

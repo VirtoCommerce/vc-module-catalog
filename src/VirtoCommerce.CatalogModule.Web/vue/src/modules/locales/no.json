@@ -85,10 +85,11 @@
     "BROWSE": {
       "SEARCH": "Søk etter navn, kode eller nøkkelord",
       "EMPTY": "Ingen kategorier eller produkter her",
-      "FILTER": "Filter",
       "FILTERS": {
         "VARIATIONS": "Vis varianter",
+        "ACTIVE": "Aktive",
         "HIDDEN": "Ikke aktive",
+        "PRICES": "Pris",
         "PRICED": "Med pris",
         "UNPRICED": "Uten pris"
       },
@@ -107,7 +108,6 @@
       "DELETE_CONFIRM": "Slette {count} element(er) og fjerne lenking for {links} lenket(e) element(er)? Når en kategori slettes, slettes også underkategoriene og produktene.",
       "COPY_SKU": "Kopier SKU",
       "GENERIC_EXPORT": "Generell eksport",
-      "SAVED_FILTERS": "Lagrede filtre",
       "SEARCH_ALL": "Søk i alle kataloger"
     },
     "CATEGORY": {
@@ -383,13 +383,6 @@
       "CATEGORIES": "Kategorier",
       "IN_VARIATIONS": "Søk i varianter",
       "IN_CHILDREN": "Søk i underkategorier"
-    },
-    "FILTERS": {
-      "ADD": "Legg til filter",
-      "EMPTY": "Ingen lagrede filtre",
-      "KEYWORD": "Nøkkelord",
-      "KEYWORD_HINT": "Søkesyntaks, f.eks. is:hidden, is:priced, price_usd:[100 TO 200] eller hvilke som helst ord",
-      "NEW": "Nytt filter"
     },
     "SEARCH": {
       "PRODUCTS": "Produkter",

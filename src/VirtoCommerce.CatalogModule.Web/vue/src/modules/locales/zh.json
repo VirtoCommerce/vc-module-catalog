@@ -85,10 +85,11 @@
     "BROWSE": {
       "SEARCH": "按名称、代码或关键字搜索",
       "EMPTY": "此处没有类别或产品",
-      "FILTER": "过滤器",
       "FILTERS": {
         "VARIATIONS": "显示变体",
+        "ACTIVE": "已激活",
         "HIDDEN": "未激活",
+        "PRICES": "价格",
         "PRICED": "有价格",
         "UNPRICED": "无价格"
       },
@@ -107,7 +108,6 @@
       "DELETE_CONFIRM": "删除 {count} 个项目并取消链接 {links} 个已链接项目？删除类别会同时删除其子类别和产品。",
       "COPY_SKU": "复制 SKU",
       "GENERIC_EXPORT": "通用导出",
-      "SAVED_FILTERS": "已保存的过滤器",
       "SEARCH_ALL": "搜索所有目录"
     },
     "CATEGORY": {
@@ -383,13 +383,6 @@
       "CATEGORIES": "类别",
       "IN_VARIATIONS": "在变体中搜索",
       "IN_CHILDREN": "在子类别中搜索"
-    },
-    "FILTERS": {
-      "ADD": "添加过滤器",
-      "EMPTY": "没有已保存的过滤器",
-      "KEYWORD": "关键字",
-      "KEYWORD_HINT": "搜索语法，例如 is:hidden、is:priced、price_usd:[100 TO 200] 或任意词语",
-      "NEW": "新过滤器"
     },
     "SEARCH": {
       "PRODUCTS": "产品",

@@ -127,29 +127,6 @@ export function assetUrl(url?: string | null) {
   return "/" + url;
 }
 
-/** Saved catalog search filters (legacy filter-detail; per browser, like the legacy $localStorage). */
-export interface SavedFilter {
-  id: string;
-  name: string;
-  keyword?: string;
-  searchInVariations?: boolean;
-}
-const FILTERS_KEY = "catalog.searchFilters";
-export function savedFilters(): SavedFilter[] {
-  try {
-    return JSON.parse(localStorage.getItem(FILTERS_KEY) ?? "[]") as SavedFilter[];
-  } catch {
-    return [];
-  }
-}
-export function storeFilters(filters: SavedFilter[]) {
-  try {
-    localStorage.setItem(FILTERS_KEY, JSON.stringify(filters));
-  } catch {
-    // per-browser convenience only
-  }
-}
-
 /** string[] <-> VcMultivalue items (free-text chips are labelled by `title`) */
 export const toChips = (values?: string[] | null) => options(values ?? []) as { id?: string }[];
 export const fromChips = (items: object[]) =>
