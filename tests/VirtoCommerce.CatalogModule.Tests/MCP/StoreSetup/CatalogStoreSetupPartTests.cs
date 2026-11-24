@@ -833,15 +833,16 @@ public class CatalogStoreSetupPartTests
         Assert.Equal(("catalog", "Catalog", "de-DE"), (seoInfo.SemanticUrl, seoInfo.PageTitle, seoInfo.LanguageCode));
     }
 
-    // The section names the kinds of catalog as the back office and the choices do: "physical" or "virtual".
+    // The section names the kinds of catalog as the back office and the choices do: "physical" or "virtual". It says when
+    // a switch is refused, as the part refuses it for a store whose own catalog is missing.
     [Fact]
-    public void Section_Id_SaysPhysicalCatalog_TheBackOfficesTerm()
+    public void Section_Id_SaysPhysicalCatalog_TheBackOfficesTerm_AndWhenASwitchIsRefused()
     {
         //Act
         var description = typeof(CatalogStoreSetupSection).GetProperty(nameof(CatalogStoreSetupSection.Id)).GetCustomAttribute<DescriptionAttribute>().Description;
 
         //Assert
-        Assert.Contains("a physical catalog or a virtual one", description);
+        Assert.Contains("a physical catalog or a virtual one, unless the store's own catalog is missing", description);
         Assert.DoesNotContain("product catalog", description);
     }
 
