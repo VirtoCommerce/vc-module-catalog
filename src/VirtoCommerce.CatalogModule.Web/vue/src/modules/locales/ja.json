@@ -85,10 +85,11 @@
     "BROWSE": {
       "SEARCH": "名前、コード、キーワードで検索",
       "EMPTY": "ここにはカテゴリも製品もありません",
-      "FILTER": "フィルター",
       "FILTERS": {
         "VARIATIONS": "バリエーションを表示",
+        "ACTIVE": "アクティブ",
         "HIDDEN": "非アクティブ",
+        "PRICES": "価格",
         "PRICED": "価格あり",
         "UNPRICED": "価格なし"
       },
@@ -107,7 +108,6 @@
       "DELETE_CONFIRM": "{count} 件のアイテムを削除し、{links} 件のリンク済みアイテムのリンクを解除しますか？カテゴリを削除すると、そのサブカテゴリと製品も削除されます。",
       "COPY_SKU": "SKUをコピー",
       "GENERIC_EXPORT": "汎用エクスポート",
-      "SAVED_FILTERS": "保存済みフィルター",
       "SEARCH_ALL": "すべてのカタログを検索"
     },
     "CATEGORY": {
@@ -383,13 +383,6 @@
       "CATEGORIES": "カテゴリ",
       "IN_VARIATIONS": "バリエーション内を検索",
       "IN_CHILDREN": "子カテゴリ内を検索"
-    },
-    "FILTERS": {
-      "ADD": "フィルターを追加",
-      "EMPTY": "保存済みフィルターがありません",
-      "KEYWORD": "キーワード",
-      "KEYWORD_HINT": "検索構文 (例: is:hidden、is:priced、price_usd:[100 TO 200]、または任意の語句)",
-      "NEW": "新しいフィルター"
     },
     "SEARCH": {
       "PRODUCTS": "製品",

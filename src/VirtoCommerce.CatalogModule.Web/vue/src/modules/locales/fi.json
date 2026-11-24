@@ -85,10 +85,11 @@
     "BROWSE": {
       "SEARCH": "Hae nimellä, koodilla tai hakusanalla",
       "EMPTY": "Täällä ei ole kategorioita eikä tuotteita",
-      "FILTER": "Suodatin",
       "FILTERS": {
         "VARIATIONS": "Näytä tuotevaihtoehdot",
+        "ACTIVE": "Aktiiviset",
         "HIDDEN": "Ei aktiiviset",
+        "PRICES": "Hinta",
         "PRICED": "Hinnalliset",
         "UNPRICED": "Hinnattomat"
       },
@@ -107,7 +108,6 @@
       "DELETE_CONFIRM": "Poistetaanko kohteet ({count}) ja puretaanko linkitettyjen kohteiden linkitys ({links})? Kategorian poistaminen poistaa myös sen alakategoriat ja tuotteet.",
       "COPY_SKU": "Kopioi SKU",
       "GENERIC_EXPORT": "Yleinen vienti",
-      "SAVED_FILTERS": "Tallennetut suodattimet",
       "SEARCH_ALL": "Hae kaikista katalogeista"
     },
     "CATEGORY": {
@@ -383,13 +383,6 @@
       "CATEGORIES": "Kategoriat",
       "IN_VARIATIONS": "Hae tuotevaihtoehdoista",
       "IN_CHILDREN": "Hae alakategorioista"
-    },
-    "FILTERS": {
-      "ADD": "Lisää suodatin",
-      "EMPTY": "Ei tallennettuja suodattimia",
-      "KEYWORD": "Hakusana",
-      "KEYWORD_HINT": "Hakusyntaksi, esim. is:hidden, is:priced, price_usd:[100 TO 200] tai mitä tahansa sanoja",
-      "NEW": "Uusi suodatin"
     },
     "SEARCH": {
       "PRODUCTS": "Tuotteet",
