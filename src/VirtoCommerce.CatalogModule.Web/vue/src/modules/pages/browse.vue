@@ -24,8 +24,9 @@
         :total-count="totalCount"
         :pagination="pagination"
         :searchable="true"
+        :search-bar="!pick"
         :search-placeholder="$t('CATALOG.BROWSE.SEARCH')"
-        :global-filters="pick || global ? [] : globalFilters"
+        :global-filters="pick ? [] : globalFilters"
         :state-key="pick ? 'CATALOG_PICK' : global ? 'CATALOG_SEARCH' : 'CATALOG_BROWSE'"
         :active-item-id="activeItemId"
         :show-all-columns="expanded"
@@ -141,12 +142,13 @@ import {
   useLatestRequest,
   usePermissions,
   usePopup,
+  type GlobalFilterConfig,
   type IBladeToolbar,
 } from "@vc-shell/framework";
 import { VcBlade, VcBreadcrumbs, VcColumn, VcDataTable, VcIcon, VcStatus } from "@vc-shell/framework/ui";
 import { computed, inject, markRaw, ref, watch, type Component } from "vue";
 import { useI18n } from "vue-i18n";
-import { api, assetUrl, clipboard, savedFilters, type SavedFilter } from "../api";
+import { api, assetUrl, clipboard } from "../api";
 import PropertyValuesEditor from "../components/PropertyValues.vue";
 import type { Catalog, CatalogListEntrySearchCriteria, ListEntryBase } from "../../api_client/virtocommerce.catalog";
 
@@ -234,9 +236,9 @@ const selection = ref<Entry[]>([]);
 const activeItemId = ref<string>();
 const keyword = ref(options.value?.keyword ?? "");
 const { sortField, sortOrder, sortExpression } = useDataTableSort();
-const filter = ref<{ keyword?: string; searchInVariations?: boolean }>({});
+/** the search bar's filters: `phrase` holds the is:... search-phrase terms */
+const filter = ref<{ phrase?: string; searchInVariations?: boolean; catalogIds?: string[] }>({});
 const allSelected = ref(false);
-const filters = ref<SavedFilter[]>(savedFilters());
 // the Export module's UI is loaded (legacy: virtoCommerce.exportModule): its ExportSettings blade is registered
 const modulesReady = inject(ModulesReadyKey, ref(true));
 const exportAvailable = computed(() => modulesReady.value && !!getBladeConfig("ExportSettings"));
@@ -261,33 +263,57 @@ const crumbs = computed(() => [
   ...path.value.map((f, i) => ({ id: f.id, title: f.name, clickHandler: () => goTo(i + 1) })),
 ]);
 
-const globalFilters = computed(() => [
-  {
-    id: "preset",
-    label: t("CATALOG.BROWSE.FILTER"),
-    filter: {
-      options: [
-        { value: "variations", label: t("CATALOG.BROWSE.FILTERS.VARIATIONS") },
-        { value: "is:hidden", label: t("CATALOG.BROWSE.FILTERS.HIDDEN") },
-        { value: "is:priced", label: t("CATALOG.BROWSE.FILTERS.PRICED") },
-        { value: "is:unpriced", label: t("CATALOG.BROWSE.FILTERS.UNPRICED") },
-        ...filters.value.map((f) => ({ value: `saved:${f.id}`, label: f.name })),
-      ],
-    },
-  },
-]);
+// the cross-catalog search narrows by catalog; the catalogs load only for it
+const catalogOptions = ref<{ value: string; label: string }[]>([]);
+if (global.value)
+  api.catalogs
+    .searchCatalogs({ take: 1000, sort: "name" })
+    .then((r) => (catalogOptions.value = (r.results ?? []).map((c) => ({ value: c.id!, label: c.name ?? c.id! }))));
 
-const activePreset = ref<string>();
-function presetFilter(preset?: string) {
-  const saved = filters.value.find((f) => `saved:${f.id}` === preset);
-  if (saved) return { keyword: saved.keyword, searchInVariations: saved.searchInVariations };
-  if (preset === "variations") return { searchInVariations: true };
-  return preset ? { keyword: preset } : {};
-}
+// Visibility and prices are search-phrase terms (is:visible / is:hidden, is:priced / is:unpriced), which the
+// indexed search applies. The search bar takes toggle fields, which vc-shell 2.13 does not yet type in GlobalFilterConfig.
+const globalFilters = computed(
+  () =>
+    [
+      ...(global.value
+        ? [{ id: "catalogIds", label: t("CATALOG.CATALOGS.TITLE"), filter: { multiple: true, options: catalogOptions.value } }]
+        : []),
+      {
+        id: "visibility",
+        label: t("CATALOG.FIELDS.STATUS"),
+        filter: {
+          options: [
+            { value: "visible", label: t("CATALOG.BROWSE.FILTERS.ACTIVE") },
+            { value: "hidden", label: t("CATALOG.BROWSE.FILTERS.HIDDEN") },
+          ],
+        },
+      },
+      {
+        id: "prices",
+        label: t("CATALOG.BROWSE.FILTERS.PRICES"),
+        filter: {
+          options: [
+            { value: "priced", label: t("CATALOG.BROWSE.FILTERS.PRICED") },
+            { value: "unpriced", label: t("CATALOG.BROWSE.FILTERS.UNPRICED") },
+          ],
+        },
+      },
+      { id: "searchInVariations", label: t("CATALOG.BROWSE.FILTERS.VARIATIONS"), filter: { toggle: true } },
+    ] as unknown as GlobalFilterConfig[],
+);
+
 function onFilter(event: { filters: Record<string, unknown> }) {
-  const preset = event.filters.preset as string | undefined;
-  activePreset.value = preset;
-  filter.value = presetFilter(preset);
+  const f = event.filters;
+  const phrase = [f.visibility, f.prices]
+    .filter((v) => typeof v === "string" && v)
+    .map((v) => `is:${v}`)
+    .join(" ");
+  const catalogIds = ([] as string[]).concat((f.catalogIds as string | string[] | undefined) ?? []);
+  filter.value = {
+    phrase: phrase || undefined,
+    searchInVariations: f.searchInVariations === true,
+    catalogIds: catalogIds.length ? catalogIds : undefined,
+  };
   pagination.setPage(1);
   load();
 }
@@ -305,7 +331,8 @@ async function load() {
       totalCount.value = entries.value.length;
       return;
     }
-    if (global.value && !keyword.value) {
+    // the cross-catalog search needs a keyword or a visibility / prices filter
+    if (global.value && !keyword.value && !filter.value.phrase) {
       search.invalidate();
       entries.value = [];
       totalCount.value = 0;
@@ -340,9 +367,10 @@ const toolbarContext = (): CatalogToolbarContext => ({
 
 /** the search behind the list (also used for "select all" bulk operations) */
 function criteria(): CatalogListEntrySearchCriteria {
-  const words = [filter.value.keyword, keyword.value].filter(Boolean).join(" ");
+  const words = [filter.value.phrase, keyword.value].filter(Boolean).join(" ");
   return {
     catalogId: catalogId.value,
+    catalogIds: filter.value.catalogIds,
     categoryId: categoryId.value,
     keyword: words || undefined,
     searchInVariations: filter.value.searchInVariations ?? false,
@@ -635,12 +663,6 @@ const toolbar = computed<IBladeToolbar[]>(() => {
           },
         }),
     },
-    {
-      id: "filters",
-      title: t("CATALOG.BROWSE.SAVED_FILTERS"),
-      icon: "lucide-filter",
-      clickHandler: () => openBlade({ name: "CatalogFilters" }),
-    },
     // commands other modules add (extension point "catalog-items-toolbar")
     ...extensions.components.value
       .filter((x) => x.meta && (!x.meta.isVisible || x.meta.isVisible(ctx)))
@@ -656,14 +678,5 @@ const toolbar = computed<IBladeToolbar[]>(() => {
   ];
 });
 
-exposeToChildren({
-  reload: load,
-  /** saved filters changed (CatalogFilters) */
-  reloadFilters: () => {
-    filters.value = savedFilters();
-    const active = activePreset.value;
-    if (active?.startsWith("saved:"))
-      onFilter({ filters: { preset: filters.value.some((f) => `saved:${f.id}` === active) ? active : undefined } });
-  },
-});
+exposeToChildren({ reload: load });
 </script>
