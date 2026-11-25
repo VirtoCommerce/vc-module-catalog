@@ -18,6 +18,8 @@ using VirtoCommerce.CatalogModule.BulkActions.Models;
 using VirtoCommerce.CatalogModule.BulkActions.Services;
 using VirtoCommerce.CatalogModule.Core;
 using VirtoCommerce.CatalogModule.Core.Events;
+using VirtoCommerce.CatalogModule.Core.Extensions;
+using VirtoCommerce.CatalogModule.Core.MCP.ProductSetup;
 using VirtoCommerce.CatalogModule.Core.Model;
 using VirtoCommerce.CatalogModule.Core.Model.Export;
 using VirtoCommerce.CatalogModule.Core.Model.OutlinePart;
@@ -33,6 +35,7 @@ using VirtoCommerce.CatalogModule.Data.BackgroundJobs;
 using VirtoCommerce.CatalogModule.Data.ExportImport;
 using VirtoCommerce.CatalogModule.Data.Handlers;
 using VirtoCommerce.CatalogModule.Data.Jobs;
+using VirtoCommerce.CatalogModule.Data.MCP.ProductSetup;
 using VirtoCommerce.CatalogModule.Data.MCP.StoreSetup;
 using VirtoCommerce.CatalogModule.Data.MySql;
 using VirtoCommerce.CatalogModule.Data.PostgreSql;
@@ -47,11 +50,13 @@ using VirtoCommerce.CatalogModule.Data.SqlServer;
 using VirtoCommerce.CatalogModule.Data.Validation;
 using VirtoCommerce.CatalogModule.Data.Vimeo;
 using VirtoCommerce.CatalogModule.Data.YouTube;
+using VirtoCommerce.CatalogModule.MCP;
 using VirtoCommerce.CatalogModule.Web.Authorization;
 using VirtoCommerce.ExportModule.Core.Model;
 using VirtoCommerce.ExportModule.Core.Services;
 using VirtoCommerce.ExportModule.Data.Extensions;
 using VirtoCommerce.ExportModule.Data.Services;
+using VirtoCommerce.MCP.Core.Extensions;
 using VirtoCommerce.Platform.Core.Common;
 using VirtoCommerce.Platform.Core.Events;
 using VirtoCommerce.Platform.Core.ExportImport;
@@ -87,6 +92,9 @@ namespace VirtoCommerce.CatalogModule.Web
         // optional modules
         private const string BulkActionsModuleId = "VirtoCommerce.BulkActionsModule";
         private const string GenericExportModuleId = "VirtoCommerce.Export";
+        // When the MCP module is installed, it initializes before this module. Its contracts (VirtoCommerce.MCP.Core and the
+        // MCP SDK) come with the Store module's package, so the product setup loads without it.
+        private const string McpModuleId = "VirtoCommerce.MCP";
 
         public void Initialize(IServiceCollection serviceCollection)
         {
@@ -139,6 +147,19 @@ namespace VirtoCommerce.CatalogModule.Web
 
             serviceCollection.AddTransient<IItemService, ItemService>();
             serviceCollection.AddTransient<IProductIndexedSearchService, ProductIndexedSearchService>();
+
+            // A product as a store sells it: Catalog's own part here; other modules add theirs with AddProductSetupPart.
+            serviceCollection.AddTransient<IProductSetupService, ProductSetupService>();
+            serviceCollection.AddTransient<IProductSetupFindings, ProductSetupFindings>();
+            serviceCollection.AddTransient<ProductIndexingTexts>();
+            serviceCollection.AddProductSetupPart<CatalogProductSetupPart>();
+
+            if (ModuleService.IsInstalled(McpModuleId))
+            {
+                // The catalog manager toolset, in the MCP module's admin scope.
+                serviceCollection.AddCatalogMcpServices();
+                serviceCollection.AddMcpCapabilities<McpAssemblyMarker>();
+            }
             serviceCollection.AddSingleton<IProductSuggestionService, ProductSuggestionService>();
             serviceCollection.AddTransient<IAssociationService, AssociationService>();
 

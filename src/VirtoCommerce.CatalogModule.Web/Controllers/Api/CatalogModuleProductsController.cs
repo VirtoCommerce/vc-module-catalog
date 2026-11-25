@@ -491,27 +491,12 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             existingProductIds ??= await GetExistingProductIdsAsync(products);
 
             var catalogs = await catalogService.GetNoCloneAsync(products.Select(pr => pr.CatalogId).Distinct().ToList());
+            var seoInfoDefaults = AbstractTypeFactory<CatalogSeoInfoDefaults>.TryCreateInstance();
             foreach (var product in products)
             {
-                if (!product.Name.IsNullOrEmpty())
-                {
-                    product.Name = product.Name.Trim();
-                }
-
                 var isNewProduct = product.Id.IsNullOrEmpty() || !existingProductIds.Contains(product.Id);
-                if (isNewProduct && product.SeoInfos.IsNullOrEmpty())
-                {
-                    var slugUrl = GenerateProductDefaultSlugUrl(product);
-                    if (!slugUrl.IsNullOrEmpty())
-                    {
-                        var catalog = catalogs.FirstOrDefault(x => x.Id.EqualsIgnoreCase(product.CatalogId));
-                        var defaultLanguageCode = catalog?.Languages.First(x => x.IsDefault).LanguageCode;
-                        var seoInfo = AbstractTypeFactory<SeoInfo>.TryCreateInstance();
-                        seoInfo.LanguageCode = defaultLanguageCode;
-                        seoInfo.SemanticUrl = slugUrl;
-                        product.SeoInfos = [seoInfo];
-                    }
-                }
+                var catalog = catalogs.FirstOrDefault(x => x.Id.EqualsIgnoreCase(product.CatalogId));
+                seoInfoDefaults.PrepareProduct(product, catalog, isNewProduct);
 
                 toSaveList.Add(product);
             }
@@ -548,22 +533,6 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
             return existingProducts
                 .Select(x => x.Id)
                 .ToHashSet(StringComparer.OrdinalIgnoreCase);
-        }
-
-        private string GenerateProductDefaultSlugUrl(CatalogProduct product)
-        {
-            var retVal = new List<string>
-            {
-                product.Name
-            };
-            if (product.Properties != null)
-            {
-                //foreach (var property in product.Properties.Where(x => x.Type == PropertyType.Variation && x.Values != null))
-                //{
-                //    retVal.AddRange(property.Values.Select(x => x.PropertyName + "-" + x.Value));
-                //}
-            }
-            return string.Join(" ", retVal).GenerateSlug();
         }
     }
 }

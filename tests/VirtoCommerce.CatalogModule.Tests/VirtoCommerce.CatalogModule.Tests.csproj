@@ -22,6 +22,7 @@
     <PackageReference Include="MockQueryable.Moq" Version="10.0.12" />
     <PackageReference Include="Moq" Version="4.21.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="10.0.13" />
+    <PackageReference Include="VirtoCommerce.MCP.Testing" Version="3.1003.0-alpha.29-vcst-6918-store-admin-toolset" />
     <PackageReference Include="xunit.v3" Version="3.2.2" />
     <PackageReference Include="xunit.v3.runner.console" Version="3.2.2">
       <PrivateAssets>all</PrivateAssets>
@@ -37,6 +38,7 @@
     <ProjectReference Include="..\..\src\VirtoCommerce.CatalogModule.Core\VirtoCommerce.CatalogModule.Core.csproj" />
     <ProjectReference Include="..\..\src\VirtoCommerce.CatalogModule.Data\VirtoCommerce.CatalogModule.Data.csproj" />
     <ProjectReference Include="..\..\src\VirtoCommerce.CatalogModule.Data.YouTube\VirtoCommerce.CatalogModule.Data.YouTube.csproj" />
+    <ProjectReference Include="..\..\src\VirtoCommerce.CatalogModule.MCP\VirtoCommerce.CatalogModule.MCP.csproj" />
     <ProjectReference Include="..\..\src\VirtoCommerce.CatalogModule.Web\VirtoCommerce.CatalogModule.Web.csproj" />
   </ItemGroup>
 </Project>

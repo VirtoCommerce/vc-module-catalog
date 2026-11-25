@@ -162,23 +162,11 @@ namespace VirtoCommerce.CatalogModule.Web.Controllers.Api
         {
             var categoryExists = await CategoryExistsAsync(category);
 
-            if (!categoryExists)
+            //Ensure that new category has SeoInfo
+            if (!categoryExists && category.SeoInfos.IsNullOrEmpty())
             {
-                //Ensure that new category has SeoInfo
-                if (category.SeoInfos == null || !category.SeoInfos.Any())
-                {
-                    var slugUrl = category.Name.GenerateSlug();
-                    if (!slugUrl.IsNullOrEmpty())
-                    {
-                        var catalog = await catalogService.GetNoCloneAsync(category.CatalogId);
-                        var defaultLanguage = catalog?.Languages.First(x => x.IsDefault).LanguageCode;
-                        var seoInfo = AbstractTypeFactory<SeoInfo>.TryCreateInstance();
-                        seoInfo.LanguageCode = defaultLanguage;
-                        seoInfo.SemanticUrl = slugUrl;
-                        seoInfo.PageTitle = category.Name.SoftTruncate(ModuleConstants.MaxSEOTitleLength);
-                        category.SeoInfos = [seoInfo];
-                    }
-                }
+                var catalog = await catalogService.GetNoCloneAsync(category.CatalogId);
+                AbstractTypeFactory<CatalogSeoInfoDefaults>.TryCreateInstance().EnsureSeoInfo(category, catalog);
             }
 
             var permission = categoryExists
