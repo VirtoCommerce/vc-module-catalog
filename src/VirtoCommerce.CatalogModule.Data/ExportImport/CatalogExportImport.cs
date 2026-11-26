@@ -469,15 +469,7 @@ namespace VirtoCommerce.CatalogModule.Data.ExportImport
                     // Do not import property groups, they are imported separately
                     catalog.PropertyGroups = null;
 
-                    if (catalog.SeoInfos == null || !catalog.SeoInfos.Any())
-                    {
-                        var defaultLanguage = catalog.Languages.First(x => x.IsDefault).LanguageCode;
-                        var seoInfo = AbstractTypeFactory<SeoInfo>.TryCreateInstance();
-                        seoInfo.LanguageCode = defaultLanguage;
-                        seoInfo.SemanticUrl = "catalog";
-                        seoInfo.PageTitle = "Catalog";
-                        catalog.SeoInfos = [seoInfo];
-                    }
+                    AbstractTypeFactory<CatalogSeoInfoDefaults>.TryCreateInstance().EnsureSeoInfo(catalog);
 
                     foreach (var seoInfo in catalog.SeoInfos)
                     {
