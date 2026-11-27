@@ -684,6 +684,16 @@ namespace VirtoCommerce.CatalogModule.Data.Repositories
 
                 await RemoveCategoriesInternalAsync(categoryIds);
 
+                // Remove the remaining products of the catalogs: products whose CatalogId points to the catalog
+                // but whose CategoryId points to a category of another catalog (e.g. created by an import).
+                // They are not removed by the steps above and would break the catalog removal (FK_Item_Catalog_CatalogId).
+                var orphanItemIds = await Items
+                    .Where(i => ids.Contains(i.CatalogId))
+                    .Select(i => i.Id)
+                    .ToListAsync();
+
+                await RemoveItemsInternalAsync(orphanItemIds);
+
                 // Remove catalogs
                 await _rawDatabaseCommand.RemoveCatalogsAsync(DbContext, ids);
             });
