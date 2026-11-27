@@ -217,7 +217,9 @@ namespace VirtoCommerce.CatalogModule.Data.Model
                     DecimalValue = Convert.ToDecimal(value, CultureInfo.InvariantCulture);
                     break;
                 case PropertyValueType.DateTime:
-                    DateTimeValue = Convert.ToDateTime(value, CultureInfo.InvariantCulture);
+                    DateTimeValue = value is string text
+                        ? DateTime.Parse(text, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal | DateTimeStyles.AssumeUniversal)
+                        : Convert.ToDateTime(value, CultureInfo.InvariantCulture);
                     break;
                 case PropertyValueType.Boolean:
                     BooleanValue = Convert.ToBoolean(value);
