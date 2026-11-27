@@ -210,6 +210,8 @@ namespace VirtoCommerce.CatalogModule.Data.Services
 
         private async Task CascadeProductsAsync(IList<string> categoryIds, string targetCatalogId)
         {
+            var movedCategoryIds = new HashSet<string>(categoryIds, StringComparer.OrdinalIgnoreCase);
+
             foreach (var idsChunk in categoryIds.Chunk(CategoryIdsChunkSize))
             {
                 var skip = 0;
@@ -229,13 +231,8 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     }
 
                     var toSave = page.Results
-                        .Where(x => x.CatalogId != targetCatalogId)
+                        .Where(x => MoveProductToCatalog(x, movedCategoryIds, targetCatalogId))
                         .ToList();
-
-                    foreach (var product in toSave)
-                    {
-                        product.CatalogId = targetCatalogId;
-                    }
 
                     if (toSave.Count > 0)
                     {
@@ -250,6 +247,32 @@ namespace VirtoCommerce.CatalogModule.Data.Services
                     skip += ProductPageSize;
                 }
             }
+        }
+
+        private static bool MoveProductToCatalog(CatalogProduct product, HashSet<string> movedCategoryIds, string targetCatalogId)
+        {
+            var changed = false;
+
+            if (product.CategoryId != null &&
+                movedCategoryIds.Contains(product.CategoryId) &&
+                product.CatalogId != targetCatalogId)
+            {
+                product.CatalogId = targetCatalogId;
+                changed = true;
+            }
+
+            foreach (var link in product.Links ?? [])
+            {
+                if (link.CategoryId != null &&
+                    movedCategoryIds.Contains(link.CategoryId) &&
+                    link.CatalogId != targetCatalogId)
+                {
+                    link.CatalogId = targetCatalogId;
+                    changed = true;
+                }
+            }
+
+            return changed;
         }
     }
 }
